@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/theme/app_theme.dart';
-import 'lamoda_converter_view.dart';
 import 'cubit/lamoda_cubit.dart';
+import 'lamoda_converter_view.dart';
 
 @RoutePage()
 class LamodaConverterScreen extends StatelessWidget {
@@ -21,7 +21,7 @@ class LamodaConverterScreen extends StatelessWidget {
       ),
       body: LamodaConverterView(
         file: files.isEmpty ? 'no files' : files[0],
-        onUpload: () => context.read<LamodaCubit>().onUpload,
+        onUpload: context.read<LamodaCubit>().onUpload,
       )
     );
   }

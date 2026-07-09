@@ -1,0 +1,24 @@
+{
+  "lamoda_converter": "Lamoda конвертер",
+  "upload_source_files": "Загрузить исходные файлы",
+  "download_result": "Скачать результат",
+  "download_result_again": "Скачать результат ещё раз",
+  "waiting_for_source_files": "Ожидание загрузки исходных файлов",
+  "source_files_loading": "Загрузка исходных файлов",
+  "file_handling": "{} из {}: обработка файла '{}'",
+  "result_ready": "Все файлы обработаны, результат готов к скачиванию",
+  "file_downloading": "Скачивание результата",
+  "file_downloaded": "Pезультат успешно скачан в '{}'",
+  "day": "День",
+  "night": "Ночь",
+  "from_date": "с {}",
+  "version": "Версия {}",
+
+  "@_____________________ERRORS_____________________": {},
+  "no_errors": "Ошибок нет",
+  "errors": "Ошибки:",
+  "fail_open_excel_file": "Не удалось открыть Excel файл, ошибка: {}",
+  "fail_download_excel_file": "Не удалось сохранить Excel файл, ошибка: {}",
+  "blank_excel_file": "Пустой Excel файл",
+  "no_data": "Нет данных для формирования результата"
+}

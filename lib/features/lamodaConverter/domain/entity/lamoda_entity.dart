@@ -1,5 +1,8 @@
-class LamodaEntity {
-  final String uploadPath;
+import 'typedefs.dart';
 
-  LamodaEntity({required this.uploadPath});
+class LamodaEntity {
+  LamodaShifts shifts;
+  Set<String> worksSet;
+
+  LamodaEntity({required this.shifts, required this.worksSet});
 }

@@ -17,11 +17,17 @@ class AppTheme {
             fontSize: 14,
             fontWeight: FontWeight.bold
           ),
+          smallText: TextStyle(
+            color: Colors.black26,
+            fontSize: 12,
+            fontWeight: FontWeight.bold
+          ),
         ),
-        const AppButtonStyles(
+        AppButtonStyles(
           uploadButton: ButtonStyle(
-            backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 22, 99, 69)),
-            foregroundColor: WidgetStatePropertyAll(Colors.white),
+            textStyle: WidgetStateProperty.all(
+              const TextStyle(fontSize: 15),
+            ),
           ),  
         ),
       ],

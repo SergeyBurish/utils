@@ -13,16 +13,26 @@ class LamodaConverterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final files = context.watch<LamodaCubit>().state.files;
+    // final List<String> files = context.watch<LamodaCubit>().state.files;
     return Scaffold(
       appBar: AppBar(
         title: Text('lamoda_converter'.tr()),
         backgroundColor: context.colorScheme.appBarBackground,
       ),
-      body: LamodaConverterView(
-        file: files.isEmpty ? 'no files' : files[0],
-        onUpload: context.read<LamodaCubit>().onUpload,
-      )
+      body: BlocBuilder<LamodaCubit, LamodaState>(
+        builder: (BuildContext context, LamodaState state) {
+          final LamodaCubit cubit = context.read<LamodaCubit>();
+          return LamodaConverterView(
+            message: state.message,
+            errorMessage: state.errorMessage,
+            downloadButton: state.fileDownloaded ? 'download_result_again'.tr() : 'download_result'.tr(),
+            version: 'version'.tr(args: <String>['1.0.0']),
+            loading: state.inProgress,
+            onUpload: state.inProgress ? null : cubit.onUpload,
+            onDownload: state.resultIsReady ? cubit.onDownload : null,
+          );
+        },
+      ),
     );
   }
 }

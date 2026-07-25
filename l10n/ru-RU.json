@@ -11,7 +11,7 @@
   "file_downloaded": "Pезультат успешно скачан в '{}'",
   "day": "День",
   "night": "Ночь",
-  "from_date": "с {}",
+  "from": "с ",
   "version": "Версия {}",
 
   "@_____________________ERRORS_____________________": {},
@@ -19,6 +19,7 @@
   "errors": "Ошибки:",
   "fail_open_excel_file": "Не удалось открыть Excel файл, ошибка: {}",
   "fail_download_excel_file": "Не удалось сохранить Excel файл, ошибка: {}",
+  "fail_create_excel_spreadsheet": "Не удалось создать Excel таблицу",
   "blank_excel_file": "Пустой Excel файл",
   "no_data": "Нет данных для формирования результата"
 }

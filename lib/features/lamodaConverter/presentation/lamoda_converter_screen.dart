@@ -13,7 +13,6 @@ class LamodaConverterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final List<String> files = context.watch<LamodaCubit>().state.files;
     return Scaffold(
       appBar: AppBar(
         title: Text('lamoda_converter'.tr()),

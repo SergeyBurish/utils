@@ -1,8 +1,8 @@
 import 'typedefs.dart';
 
 class LamodaEntity {
-  LamodaShifts shifts;
-  Set<String> worksSet;
+  final LamodaShifts shifts;
+  final Set<String> worksSet;
 
   LamodaEntity({required this.shifts, required this.worksSet});
 }

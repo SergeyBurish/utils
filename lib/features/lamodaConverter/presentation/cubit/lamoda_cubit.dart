@@ -68,7 +68,9 @@ class LamodaCubit extends Cubit<LamodaState> {
       emit(state.copyWith.status(LamodaStatus.fileHandling));
     }
 
-    emit(state.copyWith.status(LamodaStatus.resultReady));
+    emit(state.copyWith.status(state.lamodaEntity.shifts.isNotEmpty
+      ? LamodaStatus.resultReady
+      : LamodaStatus.error));
   }
 
   void onDownload() async {

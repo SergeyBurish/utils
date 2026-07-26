@@ -69,7 +69,7 @@ class LamodaState {
     LamodaStatus.resultReady => 'result_ready'.tr(),
     LamodaStatus.fileDownloading => 'file_downloading'.tr(),
     LamodaStatus.fileDownloaded => 'file_downloaded'.tr(args: <String>[downloadedFile]),
-    LamodaStatus.error => 'error',
+    LamodaStatus.error => 'all_files_with_errors'.tr(),
   };
 
   String get errorMessage => errors.isEmpty 

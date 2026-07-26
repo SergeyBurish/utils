@@ -14,6 +14,8 @@ import 'package:injectable/injectable.dart' as _i526;
 
 import '../features/lamodaConverter/data/data_sources/local_data_source.dart'
     as _i1016;
+import '../features/lamodaConverter/data/isolate_launcher/isolate_launcher.dart'
+    as _i857;
 import '../features/lamodaConverter/domain/repository/lamoda_repository.dart'
     as _i107;
 import '../features/lamodaConverter/domain/usecase/lamoda_usecase.dart'
@@ -31,8 +33,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1016.LamodaLocalDataSource>(
       () => module.localDataSource(),
     );
+    gh.lazySingleton<_i857.IsolateLauncher>(() => module.isolateLauncher());
     gh.lazySingleton<_i107.LamodaRepository>(
-      () => module.lamodaRepository(gh<_i1016.LamodaLocalDataSource>()),
+      () => module.lamodaRepository(
+        gh<_i1016.LamodaLocalDataSource>(),
+        gh<_i857.IsolateLauncher>(),
+      ),
     );
     gh.lazySingleton<_i595.LamodaUsecase>(
       () => module.lamodaUsecase(gh<_i107.LamodaRepository>()),

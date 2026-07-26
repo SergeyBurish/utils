@@ -15,11 +15,9 @@ import '../../dto/lamoda_entity_dto.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
-String isolCreateOutputFile(
-  String lamodaEntityJson,
-) {
+String isolCreateOutputFile(String createOutputJson) {
 
-  final CreateOutputDto createOutputDto = CreateOutputDto.fromJson(jsonDecode(lamodaEntityJson));
+  final CreateOutputDto createOutputDto = CreateOutputDto.fromJson(jsonDecode(createOutputJson));
 
   final LamodaEntityDto lamodaEntityDto = createOutputDto.lamodaEntityDto;
   final CreateOutputStrings strings = createOutputDto.createOutputStrings;
@@ -38,8 +36,8 @@ String isolCreateOutputFile(
 
   try {
     final Excel excel = Excel.createExcel(); // a new workbook with one default sheet Sheet1
-    excel.rename('Sheet1', fromDate);
-    final Sheet sheet = excel[fromDate];
+    final Sheet sheet = _getFromDateSheet(excel, fromDate);
+
 
     for (int i = 0; i < workNames.length; i++) {
       sheet.updateCell(CellIndex.indexByColumnRow(
@@ -117,13 +115,21 @@ void _formRow(
   }
 }
 
+Sheet _getFromDateSheet(Excel excel, String fromDate) {
+  if (excel.tables.isNotEmpty) {
+    final String sheetName = excel.tables.keys.first;
+    excel.rename(sheetName, fromDate);
+  }
+  return excel[fromDate];
+}
+
 String _outputJson({
   List<int> bytes = const <int>[],
   String fromDate = '',
   String error = '',
   List<String> errorArgs = const <String>[]
 }) {
-  FileOutputDto fileOutput = FileOutputDto(
+  final FileOutputDto fileOutput = FileOutputDto(
     bytes: bytes,
     fromDate: fromDate,
     error: error,

@@ -11,8 +11,9 @@ class FileOutputDto {
 
   FileOutputDto({
     required this.bytes,
+    required this.fromDate,
     required this.error,
-    required this.errorArgs, required this.fromDate,
+    required this.errorArgs,
   });
 
   factory FileOutputDto.fromJson(Map<String, dynamic> json) => _$FileOutputDtoFromJson(json);

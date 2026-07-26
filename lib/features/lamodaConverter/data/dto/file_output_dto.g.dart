@@ -11,11 +11,11 @@ FileOutputDto _$FileOutputDtoFromJson(Map<String, dynamic> json) =>
       bytes: (json['bytes'] as List<dynamic>)
           .map((e) => (e as num).toInt())
           .toList(),
+      fromDate: json['fromDate'] as String,
       error: json['error'] as String,
       errorArgs: (json['errorArgs'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
-      fromDate: json['fromDate'] as String,
     );
 
 Map<String, dynamic> _$FileOutputDtoToJson(FileOutputDto instance) =>

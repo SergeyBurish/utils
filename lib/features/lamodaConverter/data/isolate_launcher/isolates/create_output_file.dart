@@ -7,11 +7,12 @@ import 'package:isolate_manager/isolate_manager.dart';
 import '../../../domain/entity/lamoda_entity.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
-import '../../consts.dart';
 import '../../dto/create_output_dto.dart';
 import '../../dto/create_output_strings.dart';
 import '../../dto/file_output_dto.dart';
 import '../../dto/lamoda_entity_dto.dart';
+import '../../dto/lm_column.dart';
+import '../../tablesData/consts.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
@@ -20,7 +21,9 @@ String isolCreateOutputFile(String createOutputJson) {
   final CreateOutputDto createOutputDto = CreateOutputDto.fromJson(jsonDecode(createOutputJson));
 
   final LamodaEntityDto lamodaEntityDto = createOutputDto.lamodaEntityDto;
+  final Map<int, LmColumn> columns = createOutputDto.columns;
   final CreateOutputStrings strings = createOutputDto.createOutputStrings;
+
   final LamodaEntity lamodaEntity = lamodaEntityDto.toLamodaEntity();
 
   final List<ShiftTime> dates = lamodaEntity.shifts.keys.toList();
@@ -38,7 +41,7 @@ String isolCreateOutputFile(String createOutputJson) {
     final Excel excel = Excel.createExcel(); // a new workbook with one default sheet Sheet1
     final Sheet sheet = _getFromDateSheet(excel, fromDate);
 
-
+    // заголовок: столбцы работ
     for (int i = 0; i < workNames.length; i++) {
       sheet.updateCell(CellIndex.indexByColumnRow(
           columnIndex: i + outStartColumn,
@@ -48,9 +51,28 @@ String isolCreateOutputFile(String createOutputJson) {
       );
     }
 
+    final int startFormulaColumn = outStartColumn + workNames.length;
+
+    // заголовок: столбцы формул
+    for(final MapEntry<int, LmColumn> el in columns.entries){
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: el.key + startFormulaColumn,
+          rowIndex: outHeaderRow), 
+        TextCellValue(el.value.name),
+        cellStyle: CellStyle(
+          rotation: 90,
+          backgroundColorHex: el.value.bgColor != null 
+            ? ExcelColor.fromHexString(el.value.bgColor!) 
+            : ExcelColor.none,
+          bold: true,
+        ),
+      );
+    }
+
     int row = outStartRow;
 
-    for (ShiftTime shiftTime in dates) {
+    // строки: дата, смена, логин, пики
+    for (final ShiftTime shiftTime in dates) {
       final WorkerShifts? workerShifts = lamodaEntity.shifts[shiftTime];
 
       if (workerShifts != null) {
@@ -61,6 +83,26 @@ String isolCreateOutputFile(String createOutputJson) {
           );
         }
       }
+    }
+
+    for (int i = outStartRow; i < row; i++) {
+      final String startIndex = _stringIndex(
+        sheet: sheet,
+        columnIndex: outStartColumn,
+        rowIndex: i,
+      );
+      final String endIndex = _stringIndex(
+        sheet: sheet,
+        columnIndex: startFormulaColumn - 1,
+        rowIndex: i,
+      );
+
+      // формула: Всего количество пиков
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: totalNumberPeeps + startFormulaColumn,
+          rowIndex: i),
+        FormulaCellValue('SUM($startIndex:$endIndex)')
+      );
     }
 
     final List<int>? bytes = excel.encode();
@@ -87,24 +129,26 @@ void _formRow(
 ){
 
   final String dateFormatted = DateFormat('dd/MM/yy').format(shiftTime.date);
+  // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: outDateColumn,
       rowIndex: row), 
     TextCellValue(dateFormatted));
-
+  // смена
   sheet.updateCell(
     CellIndex.indexByColumnRow(
       columnIndex: outDayNightColumn,
       rowIndex: row), 
     TextCellValue(shiftTime.day ? day : night),
   );
-
+  // логин
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: outLoginColumn,
       rowIndex: row), 
     TextCellValue(login));
 
-  for (MapEntry<String, int> work in works.entries) {
+  // пики
+  for (final MapEntry<String, int> work in works.entries) {
     final int workNameInd = workNames.indexOf(work.key);
     if (workNameInd > -1) {
       sheet.updateCell(CellIndex.indexByColumnRow(
@@ -122,6 +166,15 @@ Sheet _getFromDateSheet(Excel excel, String fromDate) {
   }
   return excel[fromDate];
 }
+
+String _stringIndex({
+  required Sheet sheet,
+  required int columnIndex,
+  required int rowIndex,
+}) => sheet.cell(
+  CellIndex.indexByColumnRow(
+    columnIndex: columnIndex, rowIndex: rowIndex)
+  ).cellIndex.cellId;
 
 String _outputJson({
   List<int> bytes = const <int>[],

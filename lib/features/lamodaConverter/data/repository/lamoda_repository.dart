@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 
 import '../../domain/entity/lamoda_entity.dart';
 import '../../domain/repository/lamoda_repository.dart';
-import '../consts.dart';
 import '../data_sources/local_data_source.dart';
 import '../dto/create_output_dto.dart';
 import '../dto/create_output_strings.dart';
@@ -13,6 +12,8 @@ import '../dto/file_output_dto.dart';
 import '../dto/handle_excel_dto.dart';
 import '../dto/lamoda_entity_dto.dart';
 import '../isolate_launcher/isolate_launcher.dart';
+import '../tablesData/consts.dart';
+import '../tablesData/tabbles_data.dart';
 
 class LamodaRepositoryImp implements LamodaRepository {
   final LamodaLocalDataSource localDataSource;
@@ -36,7 +37,8 @@ class LamodaRepositoryImp implements LamodaRepository {
   @override
   Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity) async {
     final CreateOutputDto dto = CreateOutputDto(
-      lamodaEntityDto: lamodaEntity.toDto(), 
+      lamodaEntityDto: lamodaEntity.toDto(),
+      columns: outColumns,
       createOutputStrings: CreateOutputStrings(
         from: 'from'.tr(),
         day: 'day'.tr(),

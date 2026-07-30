@@ -6,10 +6,10 @@ import 'package:isolate_manager/isolate_manager.dart';
 import '../../../domain/entity/lamoda_entity.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
-import '../../consts.dart';
 import '../../dto/handle_excel_dto.dart';
 import '../../dto/handle_excel_output_dto.dart';
 import '../../dto/lamoda_entity_dto.dart';
+import '../../tablesData/consts.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker

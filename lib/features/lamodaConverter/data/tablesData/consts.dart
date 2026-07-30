@@ -12,4 +12,8 @@ const int outStartColumn = 7;
 const int outStartRow = 1;
 const int outHeaderRow = 0;
 
+// offsets after workNames
+const int totalNumberPeeps = 0;
+const int peepsWithoutNtt = 1;
+
 const String fileNamePrefix = 'picksLamoda';

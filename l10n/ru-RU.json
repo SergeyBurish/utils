@@ -13,10 +13,15 @@
 
   "@_____________________TABLE_TEXTS_____________________": {},
   "from": "с ",
+  "bid": "Ставка",
   "day": "День",
   "night": "Ночь",
   "total_number_of_peeps": "Всего количество пиков",
   "peeps_without_ntt": "Пики без NTT",
+  "accrued_per_shift_based_on_number_of_peeps": "Начислено за смену по количеству пиков (руб)",
+  "basic_tariffs": "Базовые тарифы",
+  "process_eng": "Process. ENG",
+  "tariff_for_wages": "Тариф для расчета ЗП",
 
   "@_____________________ERRORS_____________________": {},
   "no_errors": "Ошибок нет",

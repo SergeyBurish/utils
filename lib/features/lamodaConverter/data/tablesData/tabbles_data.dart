@@ -6,10 +6,14 @@ import 'consts.dart';
 final Map<int, LmColumn> outColumns = <int, LmColumn>{
   totalNumberPeeps: LmColumn(
     name: 'total_number_of_peeps'.tr(),
-    bgColor: '#FFD500',
+    bgColor: yellow,
   ),
   peepsWithoutNtt: LmColumn(
     name: 'peeps_without_ntt'.tr(),
-    bgColor: '#FFD500',
+    bgColor: yellow,
+  ),
+  accruedPerShiftBasedOnNumberOfPeeps: LmColumn(
+    name: 'accrued_per_shift_based_on_number_of_peeps'.tr(),
+    bgColor: pink,
   ),
 };

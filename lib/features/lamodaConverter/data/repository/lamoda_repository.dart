@@ -41,8 +41,12 @@ class LamodaRepositoryImp implements LamodaRepository {
       columns: outColumns,
       createOutputStrings: CreateOutputStrings(
         from: 'from'.tr(),
+        bid: 'bid'.tr(),
         day: 'day'.tr(),
         night: 'night'.tr(),
+        basicTariffs: 'basic_tariffs'.tr(),
+        processEng: 'process_eng'.tr(),
+        tariffForWages: 'tariff_for_wages'.tr(),
       ),
     );
 

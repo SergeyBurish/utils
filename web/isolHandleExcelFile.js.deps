@@ -604,7 +604,6 @@ file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/xml-7.0.1/lib/xml_events.da
 file:///Users/sergeyburish/fvm/versions/3.44.2/bin/cache/dart-sdk/lib/_internal/dart2js_platform.dill
 file:///Users/sergeyburish/fvm/versions/3.44.2/bin/cache/dart-sdk/lib/libraries.json
 file:///Users/sergeyburish/projects/utils/.dart_tool/package_config.json
-file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/consts.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_output_dto.dart
@@ -613,8 +612,9 @@ file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/lamoda_entity_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/shift_time_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/shift_time_dto.g.dart
-file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleExcelFile.942144592.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleExcelFile.7081051.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/handle_excel_file.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/tablesData/consts.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/lamoda_entity.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/shift_time.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/typedefs.dart

@@ -9,12 +9,14 @@ part 'create_output_dto.g.dart';
 @JsonSerializable()
 class CreateOutputDto {
   final LamodaEntityDto lamodaEntityDto;
-  final Map<int, LmColumn> columns;
+  final Map<int, LmColumn> columns1;
+  final Map<int, LmColumn> columns2;
   final CreateOutputStrings createOutputStrings;
 
   CreateOutputDto({
     required this.lamodaEntityDto,
-    required this.columns,
+    required this.columns1,
+    required this.columns2,
     required this.createOutputStrings,
   });
 

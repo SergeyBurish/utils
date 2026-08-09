@@ -21,7 +21,8 @@ String isolCreateOutputFile(String createOutputJson) {
   final CreateOutputDto createOutputDto = CreateOutputDto.fromJson(jsonDecode(createOutputJson));
 
   final LamodaEntityDto lamodaEntityDto = createOutputDto.lamodaEntityDto;
-  final Map<int, LmColumn> columns = createOutputDto.columns;
+  final Map<int, LmColumn> columns1 = createOutputDto.columns1;
+  final Map<int, LmColumn> columns2 = createOutputDto.columns2;
   final CreateOutputStrings strings = createOutputDto.createOutputStrings;
 
   final LamodaEntity lamodaEntity = lamodaEntityDto.toLamodaEntity();
@@ -43,7 +44,8 @@ String isolCreateOutputFile(String createOutputJson) {
     final Sheet sheetFD = excel[fromDate];
 
     _fillOutSheetBasicTariffs(sheetBT, workNames, strings);
-    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, dates, strings, columns);
+    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, dates, 
+        strings, columns1, columns2);
 
     final List<int>? bytes = excel.encode();
 
@@ -64,16 +66,16 @@ void _fillOutSheetBasicTariffs(
 ){
   // заголовок: Process. ENG
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: outBtProcessesColumn,
-      rowIndex: outBtHeaderRow), 
+      columnIndex: btProcessesColumn,
+      rowIndex: btHeaderRow), 
     TextCellValue(strings.processEng),
     cellStyle: CellStyle(bold: true),
   );
 
   // заголовок: Тариф для расчета ЗП
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: outBtTtariffForWagesColumn,
-      rowIndex: outBtHeaderRow), 
+      columnIndex: btTtariffForWagesColumn,
+      rowIndex: btHeaderRow), 
     TextCellValue(strings.tariffForWages),
     cellStyle: CellStyle(bold: true),
   );
@@ -81,14 +83,14 @@ void _fillOutSheetBasicTariffs(
   // столбец работ
   for (int i = 0; i < workNames.length; i++) {
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: outBtProcessesColumn,
-        rowIndex: i + outBtStartRow), 
+        columnIndex: btProcessesColumn,
+        rowIndex: i + btStartRow), 
       TextCellValue(workNames[i]),
     );
   }
 
-  sheet.setColumnAutoFit(outBtProcessesColumn);
-  sheet.setColumnAutoFit(outBtTtariffForWagesColumn);
+  sheet.setColumnAutoFit(btProcessesColumn);
+  sheet.setColumnAutoFit(btTtariffForWagesColumn);
 }
 
 void _fillOutSheetFromDate(
@@ -97,59 +99,80 @@ void _fillOutSheetFromDate(
   List<String> workNames,
   List<ShiftTime> dates,
   CreateOutputStrings strings,
-  Map<int, LmColumn> columns,
+  Map<int, LmColumn> columns1,
+  Map<int, LmColumn> columns2,
 ){
-  sheet.setRowHeight(outHeaderRow, 130.0); // примерно
+  sheet.setRowHeight(headerRow, 130.0); // примерно
+  // заголовок: столбцы до работ
+  for(final MapEntry<int, LmColumn> el in columns1.entries){
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: el.key,
+        rowIndex: headerRow), 
+      TextCellValue(el.value.name),
+      cellStyle: CellStyle(
+        rotation: el.value.rotation,
+        backgroundColorHex: el.value.bgColor != null 
+          ? ExcelColor.fromHexString(el.value.bgColor!) 
+          : ExcelColor.none,
+        bold: true,
+        rightBorder: Border(borderStyle: BorderStyle.Thin),
+        textWrapping: TextWrapping.WrapText,
+      ),
+    );
+  }
   for (int i = 0; i < workNames.length; i++) {
     // заголовок: столбцы работ
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: i + outStartColumn,
-        rowIndex: outHeaderRow), 
+        columnIndex: i + startWorksColumn,
+        rowIndex: headerRow), 
       TextCellValue(workNames[i]),
-      cellStyle: CellStyle(rotation: 90),
+      cellStyle: CellStyle(
+        rotation: 90,
+        textWrapping: TextWrapping.WrapText,
+      ),
     );
 
     // подзаголовок: Ставка (числа)
     final String bidIndexOnBasicTariffs = _stringIndex(
-      colInd: outBtTtariffForWagesColumn, 
-      rowInd: i + outBtStartRow);
+      colInd: btTtariffForWagesColumn, 
+      rowInd: i + btStartRow);
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: i + outStartColumn,
-        rowIndex: outBidRow),
+        columnIndex: i + startWorksColumn,
+        rowIndex: bidRow),
       FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
       cellStyle: CellStyle(
-        backgroundColorHex: ExcelColor.fromHexString(blue)
+        backgroundColorHex: ExcelColor.fromHexString(blue02)
       ),
     );
   }
   // подзаголовок: Ставка (текст)
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: outDateColumn,
-      rowIndex: outBidRow), 
+      columnIndex: dateColumn,
+      rowIndex: bidRow), 
     TextCellValue(strings.bid),
   );
 
   // голубой бг для строки ставки
   final CellStyle blueCellStyle = CellStyle(
-    backgroundColorHex: ExcelColor.fromHexString(blue)
+    backgroundColorHex: ExcelColor.fromHexString(blue02)
   );
-  for (int i = outDateColumn; i < outStartColumn; i++) {
+  for (int i = dateColumn; i < startWorksColumn; i++) {
     sheet.cell(CellIndex.indexByColumnRow(
       columnIndex: i, 
-      rowIndex: outBidRow,
+      rowIndex: bidRow,
     )).cellStyle = blueCellStyle;
   }
 
-  final int startFormulaColumn = outStartColumn + workNames.length;
+  final int startFormulaColumn = startWorksColumn + workNames.length;
 
-  // заголовок: столбцы формул
-  for(final MapEntry<int, LmColumn> el in columns.entries){
+  // заголовок: столбцы после работ
+  for(final MapEntry<int, LmColumn> el in columns2.entries){
     sheet.updateCell(CellIndex.indexByColumnRow(
         columnIndex: el.key + startFormulaColumn,
-        rowIndex: outHeaderRow), 
+        rowIndex: headerRow), 
       TextCellValue(el.value.name),
       cellStyle: CellStyle(
-        rotation: 90,
+        rotation: el.value.rotation,
         backgroundColorHex: el.value.bgColor != null 
           ? ExcelColor.fromHexString(el.value.bgColor!) 
           : ExcelColor.none,
@@ -176,7 +199,7 @@ void _fillOutSheetFromDate(
   }
 
   for (int i = outStartRow; i < row; i++) {
-    final String startIndex = _stringIndex(colInd: outStartColumn, rowInd: i);
+    final String startIndex = _stringIndex(colInd: startWorksColumn, rowInd: i);
     final String endIndex = _stringIndex(
       colInd: startFormulaColumn - 1,
       rowInd: i,
@@ -197,6 +220,9 @@ void _fillOutSheetFromDate(
       FormulaCellValue(formula),
     );
   }
+
+  sheet.setColumnAutoFit(outLoginColumn);
+  sheet.freezePanes(rows: bidRow + 1, columns: increasedRateColumn + 1);
 }
 
 void _formRow(
@@ -213,13 +239,13 @@ void _formRow(
   final String dateFormatted = DateFormat('dd/MM/yy').format(shiftTime.date);
   // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: outDateColumn,
+      columnIndex: dateColumn,
       rowIndex: row), 
     TextCellValue(dateFormatted));
   // смена
   sheet.updateCell(
     CellIndex.indexByColumnRow(
-      columnIndex: outDayNightColumn,
+      columnIndex: shiftColumn,
       rowIndex: row), 
     TextCellValue(shiftTime.day ? day : night),
   );
@@ -234,7 +260,7 @@ void _formRow(
     final int workNameInd = workNames.indexOf(work.key);
     if (workNameInd > -1) {
       sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: workNameInd + outStartColumn,
+        columnIndex: workNameInd + startWorksColumn,
         rowIndex: row), 
       IntCellValue(work.value));
     }
@@ -256,9 +282,9 @@ String _accruedPerShiftFormula(
 ){
   final List<String> list = <String>[];
 
-  for (int col = outStartColumn; col < startFormulaColumn; col++) {
+  for (int col = startWorksColumn; col < startFormulaColumn; col++) {
     final String work = _stringIndex(colInd: col, rowInd: row);
-    final String bid = _stringIndexFixed(colInd: col, rowInd: outBidRow);
+    final String bid = _stringIndexFixed(colInd: col, rowInd: bidRow);
     list.add('$bid*$work');
   }
   return list.join('+');

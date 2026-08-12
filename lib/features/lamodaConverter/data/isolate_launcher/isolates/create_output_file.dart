@@ -279,6 +279,12 @@ void _formRow(
       rowIndex: row),
     FormulaCellValue(formula),
   );
+  // формула: Начислено БРИГАДИРСКИЕ
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: accruedForeman + startFormulaColumn,
+      rowIndex: row),
+    FormulaCellValue('IF($statusDataIndex="бригадир",5000,0)'),
+  );
 }
 
 Sheet _getFirstNamedSheet(Excel excel, String name) {

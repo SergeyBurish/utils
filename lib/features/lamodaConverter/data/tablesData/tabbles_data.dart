@@ -21,7 +21,7 @@ final Map<int, LmColumn> outColumns1 = <int, LmColumn>{
     name: '',
     bgColor: blue03,
   ),
-  startDateColumn: LmColumn(
+  statusStartDateColumn: LmColumn(
     name: 'status_start_date_of_work'.tr(),
     rotation: 90,
   ),
@@ -48,6 +48,11 @@ final Map<int, LmColumn> outColumns2 = <int, LmColumn>{
     name: 'peeps_without_ntt'.tr(),
     rotation: 90,
     bgColor: yellow02,
+  ),
+  accruedForTraining: LmColumn(
+    name: 'accrued_for_training'.tr(),
+    rotation: 90,
+    bgColor: blue01,
   ),
   accruedPerShiftBasedOnNumberOfPeeps: LmColumn(
     name: 'accrued_per_shift_based_on_number_of_peeps'.tr(),

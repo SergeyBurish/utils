@@ -163,12 +163,10 @@ void _fillOutSheetFromDate(
     )).cellStyle = blueCellStyle;
   }
 
-  final int startFormulaColumn = startWorksColumn + workNames.length;
-
   // заголовок: столбцы после работ
   for(final MapEntry<int, LmColumn> el in columns2.entries){
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: el.key + startFormulaColumn,
+        columnIndex: el.key + startWorksColumn + workNames.length,
         rowIndex: headerRow), 
       TextCellValue(el.value.name),
       cellStyle: CellStyle(
@@ -177,6 +175,7 @@ void _fillOutSheetFromDate(
           ? ExcelColor.fromHexString(el.value.bgColor!) 
           : ExcelColor.none,
         bold: true,
+        rightBorder: Border(borderStyle: BorderStyle.Thin),
         textWrapping: TextWrapping.WrapText,
       ),
     );
@@ -184,7 +183,7 @@ void _fillOutSheetFromDate(
 
   int row = outStartRow;
 
-  // строки: дата, смена, логин, пики
+  // строки: дата, смена, логин, пики, формулы, итд
   for (final ShiftTime shiftTime in dates) {
     final WorkerShifts? workerShifts = lamodaEntity.shifts[shiftTime];
 
@@ -196,29 +195,6 @@ void _fillOutSheetFromDate(
         );
       }
     }
-  }
-
-  for (int i = outStartRow; i < row; i++) {
-    final String startIndex = _stringIndex(colInd: startWorksColumn, rowInd: i);
-    final String endIndex = _stringIndex(
-      colInd: startFormulaColumn - 1,
-      rowInd: i,
-    );
-
-    // формула: Всего количество пиков
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: totalNumberPeeps + startFormulaColumn,
-        rowIndex: i),
-      FormulaCellValue('SUM($startIndex:$endIndex)'),
-    );
-
-    // формула: Начислено за смену по количеству пиков
-    final String formula = _accruedPerShiftFormula(sheet, i, startFormulaColumn);
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: accruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn,
-        rowIndex: i),
-      FormulaCellValue(formula),
-    );
   }
 
   sheet.setColumnAutoFit(outLoginColumn);
@@ -235,13 +211,13 @@ void _formRow(
   String day,
   String night,
 ){
-
-  final String dateFormatted = DateFormat('dd/MM/yy').format(shiftTime.date);
   // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: dateColumn,
       rowIndex: row), 
-    TextCellValue(dateFormatted));
+    DateCellValue.fromDateTime(shiftTime.date),
+    cellStyle: CellStyle(numberFormat: NumFormat.custom(formatCode: dateFormat)),
+  );
   // смена
   sheet.updateCell(
     CellIndex.indexByColumnRow(
@@ -253,7 +229,18 @@ void _formRow(
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: outLoginColumn,
       rowIndex: row), 
-    TextCellValue(login));
+    TextCellValue(login)
+  );
+
+  final String statusDataIndex = _stringIndex(colInd: statusStartDateColumn, rowInd: row);
+
+  // фикс 4000 до
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: fixed4000UntilColumn,
+      rowIndex: row), 
+    FormulaCellValue('$statusDataIndex+5'),
+    cellStyle: CellStyle(numberFormat: NumFormat.custom(formatCode: dateFormat)),
+  );
 
   // пики
   for (final MapEntry<String, int> work in works.entries) {
@@ -265,6 +252,33 @@ void _formRow(
       IntCellValue(work.value));
     }
   }
+
+  final int startFormulaColumn = startWorksColumn + workNames.length;
+
+  // формула: Всего количество пиков
+  final String startIndex = _stringIndex(colInd: startWorksColumn, rowInd: row);
+  final String endIndex = _stringIndex(
+    colInd: startFormulaColumn - 1,
+    rowInd: row
+  );
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: totalNumberPeeps + startFormulaColumn,
+      rowIndex: row),
+    FormulaCellValue('SUM($startIndex:$endIndex)'),
+  );
+  // формула: Начислено за обучение
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: accruedForTraining + startFormulaColumn,
+      rowIndex: row),
+    FormulaCellValue('IF($statusDataIndex="ученик",4000,0)'),
+  );
+  // формула: Начислено за смену по количеству пиков
+  final String formula = _accruedPerShiftFormula(sheet, row, startFormulaColumn);
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: accruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn,
+      rowIndex: row),
+    FormulaCellValue(formula),
+  );
 }
 
 Sheet _getFirstNamedSheet(Excel excel, String name) {

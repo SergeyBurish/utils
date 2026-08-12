@@ -12,7 +12,7 @@ const int dateColumn = 0;
 const int shiftColumn = 1;
 const int fullNameColumn = 2;
 const int outLoginColumn = 3;
-const int startDateColumn = 4;
+const int statusStartDateColumn = 4;
 const int fixed4000UntilColumn = 5;
 const int increasedRateColumn = 6;
 const int startWorksColumn = 7;
@@ -28,7 +28,10 @@ const int btTtariffForWagesColumn = 2;
 // offsets after workNames
 const int totalNumberPeeps = 0;
 const int peepsWithoutNtt = 1;
-const int accruedPerShiftBasedOnNumberOfPeeps = 2;
+const int accruedForTraining = 2;
+const int accruedPerShiftBasedOnNumberOfPeeps = 3;
+
+const String dateFormat = 'dd/mm/yy';
 
 // colors
 const String blue01 = '#E1F8FC';

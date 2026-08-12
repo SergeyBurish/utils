@@ -38,7 +38,8 @@ class LamodaRepositoryImp implements LamodaRepository {
   Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity) async {
     final CreateOutputDto dto = CreateOutputDto(
       lamodaEntityDto: lamodaEntity.toDto(),
-      columns: outColumns,
+      columns1: outColumns1,
+      columns2: outColumns2,
       createOutputStrings: CreateOutputStrings(
         from: 'from'.tr(),
         bid: 'bid'.tr(),

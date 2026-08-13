@@ -31,6 +31,8 @@
   "amount_of_additional_payment": "Сумма доплаты за чел допом от заявки",
   "percentage_of_productivity_per_shift": "% производительности в смену",
   "bonus_payment_for_production": "Доплата за выработку",
+  "fixed_at_4000_5_days": "фикс 4000 - 5 дней",
+  "total_accrued": "Начислено всего",
   "basic_tariffs": "Базовые тарифы",
   "process_eng": "Process. ENG",
   "tariff_for_wages": "Тариф для расчета ЗП",

@@ -84,4 +84,14 @@ final Map<int, LmColumn> outColumns2 = <int, LmColumn>{
     rotation: 90,
     bgColor: lilac,
   ),
+  fixed4000For5Days: LmColumn(
+    name: 'fixed_at_4000_5_days'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  totalAccrued: LmColumn(
+    name: 'total_accrued'.tr(),
+    rotation: 90,
+    bgColor: blue03,
+  ),
 };

@@ -35,6 +35,8 @@ const int numberOfPeopleAdditionally = 5;
 const int amountOfAdditionalPayment = 6;
 const int percentageOfProductivity = 7;
 const int bonusPayment = 8;
+const int fixed4000For5Days = 9;
+const int totalAccrued = 10;
 
 const String dateFormat = 'dd/mm/yy';
 

@@ -255,12 +255,31 @@ void _formRow(
 
   final int startFormulaColumn = startWorksColumn + workNames.length;
 
-  // формула: Всего количество пиков
   final String startIndex = _stringIndex(colInd: startWorksColumn, rowInd: row);
   final String endIndex = _stringIndex(
     colInd: startFormulaColumn - 1,
-    rowInd: row
+    rowInd: row,
   );
+  final String dataIndex = _stringIndex(colInd: dateColumn, rowInd: row);
+  final String fixed4000UntilIndex = _stringIndex(colInd: fixed4000UntilColumn, rowInd: row);
+  final String fixed4000For5DaysIndex = _stringIndex(
+    colInd: fixed4000For5Days + startFormulaColumn, 
+    rowInd: row,
+  );
+  final String basedOnPeepsIndex = _stringIndex(
+    colInd: accruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn, 
+    rowInd: row,
+  );
+  final String forTrainingIndex = _stringIndex(
+    colInd: accruedForTraining + startFormulaColumn, 
+    rowInd: row,
+  );
+  final String foremanIndex = _stringIndex(
+    colInd: accruedForeman + startFormulaColumn, 
+    rowInd: row,
+  );
+
+  // формула: Всего количество пиков
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: totalNumberPeeps + startFormulaColumn,
       rowIndex: row),
@@ -284,6 +303,19 @@ void _formRow(
       columnIndex: accruedForeman + startFormulaColumn,
       rowIndex: row),
     FormulaCellValue('IF($statusDataIndex="бригадир",5000,0)'),
+  );
+  // формула: фикс 4000 - 5 дней
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: fixed4000For5Days + startFormulaColumn,
+      rowIndex: row),
+    FormulaCellValue('IF($dataIndex<=$fixed4000UntilIndex,4000,0)'),
+  );
+  // формула: Начислено всего 
+  // ("фикс 4000 - 5 дней" или "за смену по количеству пиков") + "за обучение" + "БРИГАДИРСКИЕ"
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: totalAccrued + startFormulaColumn,
+      rowIndex: row),
+    FormulaCellValue('IF($fixed4000For5DaysIndex>$basedOnPeepsIndex,$fixed4000For5DaysIndex,$basedOnPeepsIndex)+$forTrainingIndex+$foremanIndex'),
   );
 }
 

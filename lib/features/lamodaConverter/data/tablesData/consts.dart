@@ -30,6 +30,13 @@ const int totalNumberPeeps = 0;
 const int peepsWithoutNtt = 1;
 const int accruedForTraining = 2;
 const int accruedPerShiftBasedOnNumberOfPeeps = 3;
+const int accruedForeman = 4;
+const int numberOfPeopleAdditionally = 5;
+const int amountOfAdditionalPayment = 6;
+const int percentageOfProductivity = 7;
+const int bonusPayment = 8;
+const int fixed4000For5Days = 9;
+const int totalAccrued = 10;
 
 const String dateFormat = 'dd/mm/yy';
 
@@ -40,5 +47,6 @@ const String blue03 = '#006AFF';
 const String pink = '#FEA7BF';
 const String yellow01 = '#F9DF9B';
 const String yellow02 = '#FFDB61';
+const String lilac = '#DCD6EB';
 
 const String fileNamePrefix = 'picksLamoda';

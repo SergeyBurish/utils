@@ -59,4 +59,39 @@ final Map<int, LmColumn> outColumns2 = <int, LmColumn>{
     rotation: 90,
     bgColor: pink,
   ),
+  accruedForeman: LmColumn(
+    name: 'accrued_foreman'.tr(),
+    rotation: 90,
+    bgColor: lilac,
+  ),
+  numberOfPeopleAdditionally: LmColumn(
+    name: 'number_of_people_additionally'.tr(),
+    rotation: 90,
+    bgColor: lilac,
+  ),
+  amountOfAdditionalPayment: LmColumn(
+    name: 'amount_of_additional_payment'.tr(),
+    rotation: 90,
+    bgColor: lilac,
+  ),
+  percentageOfProductivity: LmColumn(
+    name: 'percentage_of_productivity_per_shift'.tr(),
+    rotation: 90,
+    bgColor: lilac,
+  ),
+  bonusPayment: LmColumn(
+    name: 'bonus_payment_for_production'.tr(),
+    rotation: 90,
+    bgColor: lilac,
+  ),
+  fixed4000For5Days: LmColumn(
+    name: 'fixed_at_4000_5_days'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  totalAccrued: LmColumn(
+    name: 'total_accrued'.tr(),
+    rotation: 90,
+    bgColor: blue03,
+  ),
 };

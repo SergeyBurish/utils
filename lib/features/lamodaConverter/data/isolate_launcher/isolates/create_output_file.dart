@@ -48,7 +48,7 @@ String isolCreateOutputFile(String createOutputJson) {
     final Sheet sheetED = excel[strings.employeeDetails];
 
     _fillOutSheetBasicTariffs(sheetBT, workNames, strings);
-    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, dates, 
+    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, logins, dates, 
         strings, columnsFD1, columnsFD2);
 
     _fillOutSheetEmployeeDetails(sheetED, logins, columnsED);
@@ -103,6 +103,7 @@ void _fillOutSheetFromDate(
   Sheet sheet,
   LamodaEntity lamodaEntity,
   List<String> workNames,
+  List<String> logins,
   List<ShiftTime> dates,
   CreateOutputStrings strings,
   Map<int, LmColumn> columns1,
@@ -138,10 +139,10 @@ void _fillOutSheetFromDate(
       ),
     );
 
-    // подзаголовок: Ставка (числа)
     final String bidIndexOnBasicTariffs = _stringIndex(
       colInd: btTtariffForWages, 
       rowInd: i + btStartRow);
+    // подзаголовок: Ставка (формула)
     sheet.updateCell(CellIndex.indexByColumnRow(
         columnIndex: i + fStartWorks,
         rowIndex: fBidRow),
@@ -195,9 +196,19 @@ void _fillOutSheetFromDate(
 
     if (workerShifts != null) {
       for (final MapEntry<String, Works> workerShift in workerShifts.entries) {
+        final String login = workerShift.key;
+        final int indexOflogin = logins.indexOf(login);
         _formRow(
-          sheet, row++, shiftTime, workerShift.key, workerShift.value, workNames,
-          strings.day, strings.night,
+          sheet: sheet,
+          row: row++,
+          shiftTime: shiftTime,
+          login: login,
+          works: workerShift.value,
+          workNames: workNames,
+          day: strings.day,
+          night: strings.night,
+          employeeDetails: strings.employeeDetails,
+          indexOflogin: indexOflogin,
         );
       }
     }
@@ -241,16 +252,18 @@ void _fillOutSheetEmployeeDetails(
   sheet.setColumnAutoFit(edLogin);
 }
 
-void _formRow(
-  Sheet sheet,
-  int row,
-  ShiftTime shiftTime,
-  String login,
-  Works works,
-  List<String> workNames,
-  String day,
-  String night,
-){
+void _formRow({
+  required Sheet sheet,
+  required int row,
+  required ShiftTime shiftTime,
+  required String login,
+  required Works works,
+  required List<String> workNames,
+  required String day,
+  required String night,
+  required String employeeDetails,
+  required int indexOflogin,
+}){
   // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: fDate,
@@ -268,13 +281,46 @@ void _formRow(
   // логин
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: fLogin,
-      rowIndex: row), 
-    TextCellValue(login)
+      rowIndex: row),
+    TextCellValue(login),
   );
+  if (indexOflogin > -1) {
+    final String fullNameIndexOnEmployeeDetails = _stringIndex(
+      colInd: edFullName, 
+      rowInd: indexOflogin + edStartRow);
+
+    final String statusIndexOnEmployeeDetails = _stringIndex(
+      colInd: edStatus, 
+      rowInd: indexOflogin + edStartRow);
+
+    final String startDateOfWorkIndexOnEmployeeDetails = _stringIndex(
+      colInd: edStartDateOfWork, 
+      rowInd: indexOflogin + edStartRow);
+
+    // формула: Ф.И.О.
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fFullName,
+        rowIndex: row),
+        FormulaCellValue('\'$employeeDetails\'!$fullNameIndexOnEmployeeDetails'),
+    );
+    // формула: статус.
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fStatus,
+        rowIndex: row),
+        FormulaCellValue('\'$employeeDetails\'!$statusIndexOnEmployeeDetails'),
+    );
+    // формула: дата начала работы.
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fStartDateColumn,
+        rowIndex: row),
+        FormulaCellValue('\'$employeeDetails\'!$startDateOfWorkIndexOnEmployeeDetails'),
+        cellStyle: CellStyle(numberFormat: NumFormat.custom(formatCode: dateFormat)),
+    );
+  }  
 
   final String startDateIndex = _stringIndex(colInd: fStartDateColumn, rowInd: row);
 
-  // фикс 4000 до
+  // формула: фикс 4000 до
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: fFixed4000Until,
       rowIndex: row), 

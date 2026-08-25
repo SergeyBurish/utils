@@ -11,6 +11,7 @@ class CreateOutputStrings {
   final String basicTariffs;
   final String processEng;
   final String tariffForWages;
+  final String employeeDetails;
 
   CreateOutputStrings({
     required this.from,
@@ -20,6 +21,7 @@ class CreateOutputStrings {
     required this.basicTariffs,
     required this.processEng,
     required this.tariffForWages,
+    required this.employeeDetails,
   });
 
   factory CreateOutputStrings.fromJson(Map<String, dynamic> json) => _$CreateOutputStringsFromJson(json);

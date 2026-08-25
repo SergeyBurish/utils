@@ -33,7 +33,12 @@ String isolHandleExcelFile(String createOutputJson) {
 LamodaEntity _handleSalarySheet(Excel excel) {
   final LamodaShifts lamodaShifts = <ShiftTime, WorkerShifts>{};
   final Set<String> worksSet = <String>{};
-  final LamodaEntity lamodaEntity = LamodaEntity(shifts: lamodaShifts, worksSet: worksSet);
+  final Set<String> loginsSet = <String>{};
+  final LamodaEntity lamodaEntity = LamodaEntity(
+    shifts: lamodaShifts,
+    worksSet: worksSet,
+    loginsSet: loginsSet,
+  );
 
   if (excel.tables.keys.contains(salarySheet)) {
     for (int column = startColumn; ; column++) {
@@ -44,7 +49,7 @@ LamodaEntity _handleSalarySheet(Excel excel) {
         final DateTime dateTime = dateTimeCellValue.asDateTimeUtc();
         final ShiftTime shiftTime = ShiftTime(date: dateTime, day: dateTime.hour == 8);
 
-        final WorkerShifts workerShifts = _handleDateColumn(sheet, column, worksSet);
+        final WorkerShifts workerShifts = _handleDateColumn(sheet, column, worksSet, loginsSet);
         lamodaShifts[shiftTime] = workerShifts;
       } else {
         break;
@@ -55,12 +60,13 @@ LamodaEntity _handleSalarySheet(Excel excel) {
   return lamodaEntity;
 }
 
-WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet,) {
+WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, Set<String> loginsSet,) {
   final WorkerShifts workerShifts = <String, Works>{};
 
   for (int row = startRow; ; row++) {
     final String? login = _getTextCellValue(sheet, loginColumn, row);
     if (login != null && login.isNotEmpty) {
+      loginsSet.add(login);
       if (!workerShifts.keys.contains(login)) {
         workerShifts[login] = <String, int>{};
       }

@@ -15,6 +15,7 @@ CreateOutputStrings _$CreateOutputStringsFromJson(Map<String, dynamic> json) =>
       basicTariffs: json['basicTariffs'] as String,
       processEng: json['processEng'] as String,
       tariffForWages: json['tariffForWages'] as String,
+      employeeDetails: json['employeeDetails'] as String,
     );
 
 Map<String, dynamic> _$CreateOutputStringsToJson(
@@ -27,4 +28,5 @@ Map<String, dynamic> _$CreateOutputStringsToJson(
   'basicTariffs': instance.basicTariffs,
   'processEng': instance.processEng,
   'tariffForWages': instance.tariffForWages,
+  'employeeDetails': instance.employeeDetails,
 };

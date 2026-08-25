@@ -61,6 +61,7 @@ class LamodaCubit extends Cubit<LamodaState> {
         ifRight: (LamodaEntity lamodaEntity) {
           state.lamodaEntity.shifts.addAll(lamodaEntity.shifts);
           state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
+          state.lamodaEntity.loginsSet.addAll(lamodaEntity.loginsSet);
           emit(state.copyWith.status(LamodaStatus.fileHandling));
         },
       );

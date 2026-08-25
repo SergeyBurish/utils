@@ -38,8 +38,9 @@ class LamodaRepositoryImp implements LamodaRepository {
   Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity) async {
     final CreateOutputDto dto = CreateOutputDto(
       lamodaEntityDto: lamodaEntity.toDto(),
-      columns1: outColumns1,
-      columns2: outColumns2,
+      columnsFD1: columnsFD1,
+      columnsFD2: columnsFD2,
+      columnsED: columnsED,
       createOutputStrings: CreateOutputStrings(
         from: 'from'.tr(),
         bid: 'bid'.tr(),
@@ -48,6 +49,7 @@ class LamodaRepositoryImp implements LamodaRepository {
         basicTariffs: 'basic_tariffs'.tr(),
         processEng: 'process_eng'.tr(),
         tariffForWages: 'tariff_for_wages'.tr(),
+        employeeDetails: 'employee_details'.tr(),
       ),
     );
 

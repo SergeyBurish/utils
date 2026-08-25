@@ -12,11 +12,15 @@ CreateOutputDto _$CreateOutputDtoFromJson(
   lamodaEntityDto: LamodaEntityDto.fromJson(
     json['lamodaEntityDto'] as Map<String, dynamic>,
   ),
-  columns1: (json['columns1'] as Map<String, dynamic>).map(
+  columnsFD1: (json['columnsFD1'] as Map<String, dynamic>).map(
     (k, e) =>
         MapEntry(int.parse(k), LmColumn.fromJson(e as Map<String, dynamic>)),
   ),
-  columns2: (json['columns2'] as Map<String, dynamic>).map(
+  columnsFD2: (json['columnsFD2'] as Map<String, dynamic>).map(
+    (k, e) =>
+        MapEntry(int.parse(k), LmColumn.fromJson(e as Map<String, dynamic>)),
+  ),
+  columnsED: (json['columnsED'] as Map<String, dynamic>).map(
     (k, e) =>
         MapEntry(int.parse(k), LmColumn.fromJson(e as Map<String, dynamic>)),
   ),
@@ -25,10 +29,12 @@ CreateOutputDto _$CreateOutputDtoFromJson(
   ),
 );
 
-Map<String, dynamic> _$CreateOutputDtoToJson(CreateOutputDto instance) =>
-    <String, dynamic>{
-      'lamodaEntityDto': instance.lamodaEntityDto,
-      'columns1': instance.columns1.map((k, e) => MapEntry(k.toString(), e)),
-      'columns2': instance.columns2.map((k, e) => MapEntry(k.toString(), e)),
-      'createOutputStrings': instance.createOutputStrings,
-    };
+Map<String, dynamic> _$CreateOutputDtoToJson(
+  CreateOutputDto instance,
+) => <String, dynamic>{
+  'lamodaEntityDto': instance.lamodaEntityDto,
+  'columnsFD1': instance.columnsFD1.map((k, e) => MapEntry(k.toString(), e)),
+  'columnsFD2': instance.columnsFD2.map((k, e) => MapEntry(k.toString(), e)),
+  'columnsED': instance.columnsED.map((k, e) => MapEntry(k.toString(), e)),
+  'createOutputStrings': instance.createOutputStrings,
+};

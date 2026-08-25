@@ -21,20 +21,23 @@ String isolCreateOutputFile(String createOutputJson) {
   final CreateOutputDto createOutputDto = CreateOutputDto.fromJson(jsonDecode(createOutputJson));
 
   final LamodaEntityDto lamodaEntityDto = createOutputDto.lamodaEntityDto;
-  final Map<int, LmColumn> columns1 = createOutputDto.columns1;
-  final Map<int, LmColumn> columns2 = createOutputDto.columns2;
+  final Map<int, LmColumn> columnsFD1 = createOutputDto.columnsFD1;
+  final Map<int, LmColumn> columnsFD2 = createOutputDto.columnsFD2;
+  final Map<int, LmColumn> columnsED = createOutputDto.columnsED;
   final CreateOutputStrings strings = createOutputDto.createOutputStrings;
 
   final LamodaEntity lamodaEntity = lamodaEntityDto.toLamodaEntity();
 
   final List<ShiftTime> dates = lamodaEntity.shifts.keys.toList();
   final List<String> workNames = lamodaEntity.worksSet.toList();
+  final List<String> logins = lamodaEntity.loginsSet.toList();
   if (dates.isEmpty || workNames.isEmpty) {
     return _outputJson(error: 'no_data');
   }
 
   dates.sort();
   workNames.sort();
+  logins.sort();
 
   final String fromDate = strings.from + DateFormat('dd.MM.yy').format(dates[0].date);
 
@@ -42,10 +45,13 @@ String isolCreateOutputFile(String createOutputJson) {
     final Excel excel = Excel.createExcel(); // a new workbook with one default sheet Sheet1
     final Sheet sheetBT = _getFirstNamedSheet(excel, strings.basicTariffs);
     final Sheet sheetFD = excel[fromDate];
+    final Sheet sheetED = excel[strings.employeeDetails];
 
     _fillOutSheetBasicTariffs(sheetBT, workNames, strings);
-    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, dates, 
-        strings, columns1, columns2);
+    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, logins, dates, 
+        strings, columnsFD1, columnsFD2);
+
+    _fillOutSheetEmployeeDetails(sheetED, logins, columnsED);
 
     final List<int>? bytes = excel.encode();
 
@@ -66,7 +72,7 @@ void _fillOutSheetBasicTariffs(
 ){
   // заголовок: Process. ENG
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: btProcessesColumn,
+      columnIndex: btProcesses,
       rowIndex: btHeaderRow), 
     TextCellValue(strings.processEng),
     cellStyle: CellStyle(bold: true),
@@ -74,7 +80,7 @@ void _fillOutSheetBasicTariffs(
 
   // заголовок: Тариф для расчета ЗП
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: btTtariffForWagesColumn,
+      columnIndex: btTtariffForWages,
       rowIndex: btHeaderRow), 
     TextCellValue(strings.tariffForWages),
     cellStyle: CellStyle(bold: true),
@@ -83,31 +89,32 @@ void _fillOutSheetBasicTariffs(
   // столбец работ
   for (int i = 0; i < workNames.length; i++) {
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: btProcessesColumn,
+        columnIndex: btProcesses,
         rowIndex: i + btStartRow), 
       TextCellValue(workNames[i]),
     );
   }
 
-  sheet.setColumnAutoFit(btProcessesColumn);
-  sheet.setColumnAutoFit(btTtariffForWagesColumn);
+  sheet.setColumnAutoFit(btProcesses);
+  sheet.setColumnAutoFit(btTtariffForWages);
 }
 
 void _fillOutSheetFromDate(
   Sheet sheet,
   LamodaEntity lamodaEntity,
   List<String> workNames,
+  List<String> logins,
   List<ShiftTime> dates,
   CreateOutputStrings strings,
   Map<int, LmColumn> columns1,
   Map<int, LmColumn> columns2,
 ){
-  sheet.setRowHeight(headerRow, 130.0); // примерно
+  sheet.setRowHeight(fHeaderRow, 130.0); // примерно
   // заголовок: столбцы до работ
   for(final MapEntry<int, LmColumn> el in columns1.entries){
     sheet.updateCell(CellIndex.indexByColumnRow(
         columnIndex: el.key,
-        rowIndex: headerRow), 
+        rowIndex: fHeaderRow), 
       TextCellValue(el.value.name),
       cellStyle: CellStyle(
         rotation: el.value.rotation,
@@ -123,8 +130,8 @@ void _fillOutSheetFromDate(
   for (int i = 0; i < workNames.length; i++) {
     // заголовок: столбцы работ
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: i + startWorksColumn,
-        rowIndex: headerRow), 
+        columnIndex: i + fStartWorks,
+        rowIndex: fHeaderRow), 
       TextCellValue(workNames[i]),
       cellStyle: CellStyle(
         rotation: 90,
@@ -132,13 +139,13 @@ void _fillOutSheetFromDate(
       ),
     );
 
-    // подзаголовок: Ставка (числа)
     final String bidIndexOnBasicTariffs = _stringIndex(
-      colInd: btTtariffForWagesColumn, 
+      colInd: btTtariffForWages, 
       rowInd: i + btStartRow);
+    // подзаголовок: Ставка (формула)
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: i + startWorksColumn,
-        rowIndex: bidRow),
+        columnIndex: i + fStartWorks,
+        rowIndex: fBidRow),
       FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
       cellStyle: CellStyle(
         backgroundColorHex: ExcelColor.fromHexString(blue02)
@@ -147,8 +154,8 @@ void _fillOutSheetFromDate(
   }
   // подзаголовок: Ставка (текст)
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: dateColumn,
-      rowIndex: bidRow), 
+      columnIndex: fDate,
+      rowIndex: fBidRow), 
     TextCellValue(strings.bid),
   );
 
@@ -156,18 +163,18 @@ void _fillOutSheetFromDate(
   final CellStyle blueCellStyle = CellStyle(
     backgroundColorHex: ExcelColor.fromHexString(blue02)
   );
-  for (int i = dateColumn; i < startWorksColumn; i++) {
+  for (int i = fDate; i < fStartWorks; i++) {
     sheet.cell(CellIndex.indexByColumnRow(
       columnIndex: i, 
-      rowIndex: bidRow,
+      rowIndex: fBidRow,
     )).cellStyle = blueCellStyle;
   }
 
   // заголовок: столбцы после работ
   for(final MapEntry<int, LmColumn> el in columns2.entries){
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: el.key + startWorksColumn + workNames.length,
-        rowIndex: headerRow), 
+        columnIndex: el.key + fStartWorks + workNames.length,
+        rowIndex: fHeaderRow), 
       TextCellValue(el.value.name),
       cellStyle: CellStyle(
         rotation: el.value.rotation,
@@ -181,7 +188,7 @@ void _fillOutSheetFromDate(
     );
   }
 
-  int row = outStartRow;
+  int row = fStartRow;
 
   // строки: дата, смена, логин, пики, формулы, итд
   for (final ShiftTime shiftTime in dates) {
@@ -189,31 +196,77 @@ void _fillOutSheetFromDate(
 
     if (workerShifts != null) {
       for (final MapEntry<String, Works> workerShift in workerShifts.entries) {
+        final String login = workerShift.key;
+        final int indexOflogin = logins.indexOf(login);
         _formRow(
-          sheet, row++, shiftTime, workerShift.key, workerShift.value, workNames,
-          strings.day, strings.night,
+          sheet: sheet,
+          row: row++,
+          shiftTime: shiftTime,
+          login: login,
+          works: workerShift.value,
+          workNames: workNames,
+          day: strings.day,
+          night: strings.night,
+          employeeDetails: strings.employeeDetails,
+          indexOflogin: indexOflogin,
         );
       }
     }
   }
 
-  sheet.setColumnAutoFit(outLoginColumn);
-  sheet.freezePanes(rows: bidRow + 1, columns: increasedRateColumn + 1);
+  sheet.setColumnAutoFit(fLogin);
+  sheet.freezePanes(rows: fBidRow + 1, columns: fIncreasedRate + 1);
 }
 
-void _formRow(
+void _fillOutSheetEmployeeDetails(
   Sheet sheet,
-  int row,
-  ShiftTime shiftTime,
-  String login,
-  Works works,
-  List<String> workNames,
-  String day,
-  String night,
+  List<String> logins,
+  Map<int, LmColumn> columns,
 ){
+  // заголовок
+  for(final MapEntry<int, LmColumn> el in columns.entries){
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: el.key,
+        rowIndex: edHeaderRow), 
+      TextCellValue(el.value.name),
+      cellStyle: CellStyle(
+        rotation: el.value.rotation,
+        backgroundColorHex: el.value.bgColor != null 
+          ? ExcelColor.fromHexString(el.value.bgColor!) 
+          : ExcelColor.none,
+        bold: true,
+        rightBorder: Border(borderStyle: BorderStyle.Thin),
+        textWrapping: TextWrapping.WrapText,
+      ),
+    );
+
+    // колонка логинов
+    for (int i = 0; i < logins.length; i++) {
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: edLogin,
+          rowIndex: i + edStartRow), 
+        TextCellValue(logins[i]),
+      );
+    }
+  }
+  sheet.setColumnAutoFit(edLogin);
+}
+
+void _formRow({
+  required Sheet sheet,
+  required int row,
+  required ShiftTime shiftTime,
+  required String login,
+  required Works works,
+  required List<String> workNames,
+  required String day,
+  required String night,
+  required String employeeDetails,
+  required int indexOflogin,
+}){
   // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: dateColumn,
+      columnIndex: fDate,
       rowIndex: row), 
     DateCellValue.fromDateTime(shiftTime.date),
     cellStyle: CellStyle(numberFormat: NumFormat.custom(formatCode: dateFormat)),
@@ -221,24 +274,57 @@ void _formRow(
   // смена
   sheet.updateCell(
     CellIndex.indexByColumnRow(
-      columnIndex: shiftColumn,
+      columnIndex: fShift,
       rowIndex: row), 
     TextCellValue(shiftTime.day ? day : night),
   );
   // логин
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: outLoginColumn,
-      rowIndex: row), 
-    TextCellValue(login)
+      columnIndex: fLogin,
+      rowIndex: row),
+    TextCellValue(login),
   );
+  if (indexOflogin > -1) {
+    final String fullNameIndexOnEmployeeDetails = _stringIndex(
+      colInd: edFullName, 
+      rowInd: indexOflogin + edStartRow);
 
-  final String statusDataIndex = _stringIndex(colInd: statusStartDateColumn, rowInd: row);
+    final String statusIndexOnEmployeeDetails = _stringIndex(
+      colInd: edStatus, 
+      rowInd: indexOflogin + edStartRow);
 
-  // фикс 4000 до
+    final String startDateOfWorkIndexOnEmployeeDetails = _stringIndex(
+      colInd: edStartDateOfWork, 
+      rowInd: indexOflogin + edStartRow);
+
+    // формула: Ф.И.О.
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fFullName,
+        rowIndex: row),
+        FormulaCellValue('\'$employeeDetails\'!$fullNameIndexOnEmployeeDetails'),
+    );
+    // формула: статус.
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fStatus,
+        rowIndex: row),
+        FormulaCellValue('\'$employeeDetails\'!$statusIndexOnEmployeeDetails'),
+    );
+    // формула: дата начала работы.
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fStartDateColumn,
+        rowIndex: row),
+        FormulaCellValue('\'$employeeDetails\'!$startDateOfWorkIndexOnEmployeeDetails'),
+        cellStyle: CellStyle(numberFormat: NumFormat.custom(formatCode: dateFormat)),
+    );
+  }  
+
+  final String startDateIndex = _stringIndex(colInd: fStartDateColumn, rowInd: row);
+
+  // формула: фикс 4000 до
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: fixed4000UntilColumn,
+      columnIndex: fFixed4000Until,
       rowIndex: row), 
-    FormulaCellValue('$statusDataIndex+5'),
+    FormulaCellValue('$startDateIndex+5'),
     cellStyle: CellStyle(numberFormat: NumFormat.custom(formatCode: dateFormat)),
   );
 
@@ -247,73 +333,76 @@ void _formRow(
     final int workNameInd = workNames.indexOf(work.key);
     if (workNameInd > -1) {
       sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: workNameInd + startWorksColumn,
+        columnIndex: workNameInd + fStartWorks,
         rowIndex: row), 
       IntCellValue(work.value));
     }
   }
 
-  final int startFormulaColumn = startWorksColumn + workNames.length;
+  final int startFormulaColumn = fStartWorks + workNames.length;
 
-  final String startIndex = _stringIndex(colInd: startWorksColumn, rowInd: row);
+  final String startIndex = _stringIndex(colInd: fStartWorks, rowInd: row);
   final String endIndex = _stringIndex(
     colInd: startFormulaColumn - 1,
     rowInd: row,
   );
-  final String dataIndex = _stringIndex(colInd: dateColumn, rowInd: row);
-  final String fixed4000UntilIndex = _stringIndex(colInd: fixed4000UntilColumn, rowInd: row);
+  final String dataIndex = _stringIndex(colInd: fDate, rowInd: row);
+  final String fixed4000UntilIndex = _stringIndex(colInd: fFixed4000Until, rowInd: row);
   final String fixed4000For5DaysIndex = _stringIndex(
-    colInd: fixed4000For5Days + startFormulaColumn, 
+    colInd: fFixed4000For5Days + startFormulaColumn, 
     rowInd: row,
   );
   final String basedOnPeepsIndex = _stringIndex(
-    colInd: accruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn, 
+    colInd: fAccruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn, 
     rowInd: row,
   );
   final String forTrainingIndex = _stringIndex(
-    colInd: accruedForTraining + startFormulaColumn, 
+    colInd: fAccruedForTraining + startFormulaColumn, 
     rowInd: row,
   );
   final String foremanIndex = _stringIndex(
-    colInd: accruedForeman + startFormulaColumn, 
+    colInd: fAccruedForeman + startFormulaColumn, 
     rowInd: row,
   );
 
   // формула: Всего количество пиков
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: totalNumberPeeps + startFormulaColumn,
+      columnIndex: fTotalNumberPeeps + startFormulaColumn,
       rowIndex: row),
     FormulaCellValue('SUM($startIndex:$endIndex)'),
   );
+
+  final String statusIndex = _stringIndex(colInd: fStatus, rowInd: row);
+
   // формула: Начислено за обучение
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: accruedForTraining + startFormulaColumn,
+      columnIndex: fAccruedForTraining + startFormulaColumn,
       rowIndex: row),
-    FormulaCellValue('IF($statusDataIndex="ученик",4000,0)'),
+    FormulaCellValue('IF($statusIndex="ученик",4000,0)'),
   );
   // формула: Начислено за смену по количеству пиков
   final String formula = _accruedPerShiftFormula(sheet, row, startFormulaColumn);
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: accruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn,
+      columnIndex: fAccruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn,
       rowIndex: row),
     FormulaCellValue(formula),
   );
   // формула: Начислено БРИГАДИРСКИЕ
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: accruedForeman + startFormulaColumn,
+      columnIndex: fAccruedForeman + startFormulaColumn,
       rowIndex: row),
-    FormulaCellValue('IF($statusDataIndex="бригадир",5000,0)'),
+    FormulaCellValue('IF($statusIndex="бригадир",5000,0)'),
   );
   // формула: фикс 4000 - 5 дней
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: fixed4000For5Days + startFormulaColumn,
+      columnIndex: fFixed4000For5Days + startFormulaColumn,
       rowIndex: row),
     FormulaCellValue('IF($dataIndex<=$fixed4000UntilIndex,4000,0)'),
   );
   // формула: Начислено всего 
   // ("фикс 4000 - 5 дней" или "за смену по количеству пиков") + "за обучение" + "БРИГАДИРСКИЕ"
   sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: totalAccrued + startFormulaColumn,
+      columnIndex: fTotalAccrued + startFormulaColumn,
       rowIndex: row),
     FormulaCellValue('IF($fixed4000For5DaysIndex>$basedOnPeepsIndex,$fixed4000For5DaysIndex,$basedOnPeepsIndex)+$forTrainingIndex+$foremanIndex'),
   );
@@ -334,9 +423,9 @@ String _accruedPerShiftFormula(
 ){
   final List<String> list = <String>[];
 
-  for (int col = startWorksColumn; col < startFormulaColumn; col++) {
+  for (int col = fStartWorks; col < startFormulaColumn; col++) {
     final String work = _stringIndex(colInd: col, rowInd: row);
-    final String bid = _stringIndexFixed(colInd: col, rowInd: bidRow);
+    final String bid = _stringIndexFixed(colInd: col, rowInd: fBidRow);
     list.add('$bid*$work');
   }
   return list.join('+');

@@ -50,7 +50,9 @@ class LamodaState {
     errors = <String>[],
     lamodaEntity = LamodaEntity(
       shifts: <ShiftTime, WorkerShifts>{},
-      worksSet: <String>{});
+      worksSet: <String>{},
+      loginsSet: <String>{},
+    );
 
   bool get inProgress => 
     status == LamodaStatus.sourceFilesLoading ||

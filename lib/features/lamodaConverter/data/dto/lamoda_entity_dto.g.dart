@@ -19,10 +19,14 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(Map<String, dynamic> json) =>
       worksSet: (json['worksSet'] as List<dynamic>)
           .map((e) => e as String)
           .toSet(),
+      loginsSet: (json['loginsSet'] as List<dynamic>)
+          .map((e) => e as String)
+          .toSet(),
     );
 
 Map<String, dynamic> _$LamodaEntityDtoToJson(LamodaEntityDto instance) =>
     <String, dynamic>{
       'shifts': instance.shifts,
       'worksSet': instance.worksSet.toList(),
+      'loginsSet': instance.loginsSet.toList(),
     };

@@ -1,4 +1,4 @@
-// input file
+// --- input file
 const String salarySheet = 'Salary';
 const int processColumn = 0;
 const int loginColumn = 1;
@@ -6,37 +6,56 @@ const int startColumn = 3;
 const int startRow = 1;
 const String fc2Prefix = 'FC2_';
 
-// output file
-// from sheet
-const int dateColumn = 0;
-const int shiftColumn = 1;
-const int fullNameColumn = 2;
-const int outLoginColumn = 3;
-const int statusStartDateColumn = 4;
-const int fixed4000UntilColumn = 5;
-const int increasedRateColumn = 6;
-const int startWorksColumn = 7;
-const int bidRow = 1;
-const int outStartRow = 2;
-const int headerRow = 0;
-// basic tariffs sheet
+
+// --- output file
+// -- from sheet
+// - columns
+const int fDate = 0;
+const int fShift = 1;
+const int fFullName = 2;
+const int fLogin = 3;
+const int fStatus = 4;
+const int fStartDateColumn = 5;
+const int fFixed4000Until = 6;
+const int fIncreasedRate = 7;
+const int fStartWorks = 8;
+// offsets after workNames
+const int fTotalNumberPeeps = 0;
+const int fPeepsWithoutNtt = 1;
+const int fAccruedForTraining = 2;
+const int fAccruedPerShiftBasedOnNumberOfPeeps = 3;
+const int fAccruedForeman = 4;
+const int fNumberOfPeopleAdditionally = 5;
+const int fAmountOfAdditionalPayment = 6;
+const int fPercentageOfProductivity = 7;
+const int fBonusPayment = 8;
+const int fFixed4000For5Days = 9;
+const int fTotalAccrued = 10;
+// - rows
+const int fHeaderRow = 0;
+const int fBidRow = 1;
+const int fStartRow = 2;
+
+
+// -- basic tariffs sheet
+// - columns
+const int btProcesses = 1;
+const int btTtariffForWages = 2;
+// - rows
 const int btHeaderRow = 0;
 const int btStartRow = 1;
-const int btProcessesColumn = 1;
-const int btTtariffForWagesColumn = 2;
 
-// offsets after workNames
-const int totalNumberPeeps = 0;
-const int peepsWithoutNtt = 1;
-const int accruedForTraining = 2;
-const int accruedPerShiftBasedOnNumberOfPeeps = 3;
-const int accruedForeman = 4;
-const int numberOfPeopleAdditionally = 5;
-const int amountOfAdditionalPayment = 6;
-const int percentageOfProductivity = 7;
-const int bonusPayment = 8;
-const int fixed4000For5Days = 9;
-const int totalAccrued = 10;
+
+// -- employee details sheet
+// - columns
+const int edLogin = 0;
+const int edFullName = 1;
+const int edStatus = 2;
+const int edStartDateOfWork = 3;
+// - rows
+const int edHeaderRow = 0;
+const int edStartRow = 1;
+
 
 const String dateFormat = 'dd/mm/yy';
 

@@ -13,7 +13,12 @@ part 'lamoda_entity_dto.g.dart';
 class LamodaEntityDto {
   final Map<String, WorkerShifts> shifts;
   final Set<String> worksSet;
-  LamodaEntityDto({required this.shifts, required this.worksSet});
+  final Set<String> loginsSet;
+  LamodaEntityDto({
+    required this.shifts,
+    required this.worksSet,
+    required this.loginsSet,
+  });
 
   factory LamodaEntityDto.fromJson(Map<String, dynamic> json) => _$LamodaEntityDtoFromJson(json);
   Map<String, dynamic> toJson() => _$LamodaEntityDtoToJson(this);
@@ -28,6 +33,7 @@ extension LamodaEntityDtoMapper on LamodaEntityDto {
       );
     }),
     worksSet: worksSet,
+    loginsSet: loginsSet,
   );
 }
 
@@ -37,5 +43,6 @@ extension LamodaEntityMapper on LamodaEntity {
     MapEntry<String, WorkerShifts>(
       jsonEncode(shiftTime.toDto().toJson()), shifts)),
       worksSet: worksSet,
+      loginsSet: loginsSet,
   );
 }

@@ -8,6 +8,8 @@ enum LamodaStatus {
   resultReady,
   fileDownloading,
   fileDownloaded,
+  tariffsDownloaded,
+  allFilesErrors,
   error,
 }
 
@@ -20,6 +22,7 @@ class LamodaState {
   final String downloadedFile;
   final List<String> errors;
   final LamodaEntity lamodaEntity;
+  final LamodaTariffs lamodaTariffs;
 
   LamodaState({
     required this.status,
@@ -29,6 +32,7 @@ class LamodaState {
     required this.downloadedFile,
     required this.errors,
     required this.lamodaEntity,
+    required this.lamodaTariffs,
   });
 
   LamodaState._({
@@ -39,6 +43,7 @@ class LamodaState {
     required this.downloadedFile,
     required this.errors,
     required this.lamodaEntity,
+    required this.lamodaTariffs,
   });
 
   LamodaState.initial() :
@@ -52,7 +57,8 @@ class LamodaState {
       shifts: <ShiftTime, WorkerShifts>{},
       worksSet: <String>{},
       loginsSet: <String>{},
-    );
+    ),
+    lamodaTariffs = <DateTime, Tariffs>{};
 
   bool get inProgress => 
     status == LamodaStatus.sourceFilesLoading ||
@@ -71,7 +77,9 @@ class LamodaState {
     LamodaStatus.resultReady => 'result_ready'.tr(),
     LamodaStatus.fileDownloading => 'file_downloading'.tr(),
     LamodaStatus.fileDownloaded => 'file_downloaded'.tr(args: <String>[downloadedFile]),
-    LamodaStatus.error => 'all_files_with_errors'.tr(),
+    LamodaStatus.tariffsDownloaded => 'tariffs_downloaded'.tr(args: <String>[downloadedFile]),
+    LamodaStatus.allFilesErrors => 'all_files_with_errors'.tr(),
+    LamodaStatus.error => 'error_occurred'.tr(),
   };
 
   String get errorMessage => errors.isEmpty 

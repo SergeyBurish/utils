@@ -57,15 +57,32 @@ const int edHeaderRow = 0;
 const int edStartRow = 1;
 
 
+// --- tariffs file
+// - columns
+const int trCoeffName = 0;
+const int trCoeffVal = 1;
+const int trWorks = 0;
+const int trStartColumn = 1;
+// - rows
+const int trCoeffWages = 0;
+const int trCoeffWages2months = 1;
+const int trDateRow = 2;
+const int trHeaderRow = 3;
+const int trStartRow = 4;
+
+
 const String dateFormat = 'dd/mm/yy';
 
 // colors
-const String blue01 = '#E1F8FC';
-const String blue02 = '#C2F2FB';
-const String blue03 = '#006AFF';
-const String pink = '#FEA7BF';
+const String blue01 =   '#E1F8FC';
+const String blue02 =   '#C2F2FB';
+const String blue03 =   '#006AFF';
+const String green01 =  '#BAD8AE';
+const String lilac =    '#DCD6EB';
+const String pink =     '#FEA7BF';
 const String yellow01 = '#F9DF9B';
 const String yellow02 = '#FFDB61';
-const String lilac = '#DCD6EB';
+const String yellow03 = '#FFFB00';
 
-const String fileNamePrefix = 'picksLamoda';
+const String picksFilePrefix = 'picksLamoda';
+const String tariffsFilePrefix = 'tariffsLamoda';

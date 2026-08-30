@@ -11,6 +11,8 @@ class LamodaConverterView extends StatelessWidget {
   final String version;
   final bool loading;
   final void Function()? onUpload;
+  final void Function()? onUploadTariffs;
+  final void Function()? onDownloadTariffs;
   final void Function()? onDownload;
   const LamodaConverterView({
     super.key,
@@ -20,6 +22,8 @@ class LamodaConverterView extends StatelessWidget {
     required this.version,
     required this.loading,
     this.onUpload,
+    this.onUploadTariffs,
+    this.onDownloadTariffs,
     this.onDownload,
   });
 
@@ -48,6 +52,14 @@ class LamodaConverterView extends StatelessWidget {
                   ElevatedButton(
                     onPressed: onUpload,
                     child: Text('upload_source_files'.tr()),
+                  ),
+                  ElevatedButton(
+                    onPressed: onUploadTariffs,
+                    child: Text('upload_tariffs'.tr()),
+                  ),
+                  ElevatedButton(
+                    onPressed: onDownloadTariffs,
+                    child: Text('download_tariffs'.tr()),
                   ),
                   ElevatedButton(
                     onPressed: onDownload,

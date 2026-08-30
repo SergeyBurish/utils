@@ -9,10 +9,10 @@ import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
 import '../../dto/create_output_dto.dart';
 import '../../dto/create_output_strings.dart';
-import '../../dto/file_output_dto.dart';
 import '../../dto/lamoda_entity_dto.dart';
 import '../../dto/lm_column.dart';
 import '../../tablesData/consts.dart';
+import '../common/isol_utils.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
@@ -32,7 +32,7 @@ String isolCreateOutputFile(String createOutputJson) {
   final List<String> workNames = lamodaEntity.worksSet.toList();
   final List<String> logins = lamodaEntity.loginsSet.toList();
   if (dates.isEmpty || workNames.isEmpty) {
-    return _outputJson(error: 'no_data');
+    return outputJson(error: 'no_data');
   }
 
   dates.sort();
@@ -43,7 +43,7 @@ String isolCreateOutputFile(String createOutputJson) {
 
   try {
     final Excel excel = Excel.createExcel(); // a new workbook with one default sheet Sheet1
-    final Sheet sheetBT = _getFirstNamedSheet(excel, strings.basicTariffs);
+    final Sheet sheetBT = getFirstNamedSheet(excel, strings.basicTariffs);
     final Sheet sheetFD = excel[fromDate];
     final Sheet sheetED = excel[strings.employeeDetails];
 
@@ -56,12 +56,12 @@ String isolCreateOutputFile(String createOutputJson) {
     final List<int>? bytes = excel.encode();
 
     if (bytes != null) {
-      return _outputJson(bytes: bytes, fromDate: fromDate);
+      return outputJson(bytes: bytes, fromDate: fromDate);
     } else {
-      return _outputJson(error: 'fail_create_excel_spreadsheet');
+      return outputJson(error: 'fail_create_excel_spreadsheet');
     }
   } on Exception catch (e) {
-    return _outputJson(error: 'fail_download_excel_file', errorArgs: <String>['$e']);
+    return outputJson(error: 'fail_download_excel_file', errorArgs: <String>['$e']);
   }
 }
 
@@ -139,7 +139,7 @@ void _fillOutSheetFromDate(
       ),
     );
 
-    final String bidIndexOnBasicTariffs = _stringIndex(
+    final String bidIndexOnBasicTariffs = stringIndex(
       colInd: btTtariffForWages, 
       rowInd: i + btStartRow);
     // подзаголовок: Ставка (формула)
@@ -285,15 +285,15 @@ void _formRow({
     TextCellValue(login),
   );
   if (indexOflogin > -1) {
-    final String fullNameIndexOnEmployeeDetails = _stringIndex(
+    final String fullNameIndexOnEmployeeDetails = stringIndex(
       colInd: edFullName, 
       rowInd: indexOflogin + edStartRow);
 
-    final String statusIndexOnEmployeeDetails = _stringIndex(
+    final String statusIndexOnEmployeeDetails = stringIndex(
       colInd: edStatus, 
       rowInd: indexOflogin + edStartRow);
 
-    final String startDateOfWorkIndexOnEmployeeDetails = _stringIndex(
+    final String startDateOfWorkIndexOnEmployeeDetails = stringIndex(
       colInd: edStartDateOfWork, 
       rowInd: indexOflogin + edStartRow);
 
@@ -318,7 +318,7 @@ void _formRow({
     );
   }  
 
-  final String startDateIndex = _stringIndex(colInd: fStartDateColumn, rowInd: row);
+  final String startDateIndex = stringIndex(colInd: fStartDateColumn, rowInd: row);
 
   // формула: фикс 4000 до
   sheet.updateCell(CellIndex.indexByColumnRow(
@@ -341,26 +341,26 @@ void _formRow({
 
   final int startFormulaColumn = fStartWorks + workNames.length;
 
-  final String startIndex = _stringIndex(colInd: fStartWorks, rowInd: row);
-  final String endIndex = _stringIndex(
+  final String startIndex = stringIndex(colInd: fStartWorks, rowInd: row);
+  final String endIndex = stringIndex(
     colInd: startFormulaColumn - 1,
     rowInd: row,
   );
-  final String dataIndex = _stringIndex(colInd: fDate, rowInd: row);
-  final String fixed4000UntilIndex = _stringIndex(colInd: fFixed4000Until, rowInd: row);
-  final String fixed4000For5DaysIndex = _stringIndex(
+  final String dataIndex = stringIndex(colInd: fDate, rowInd: row);
+  final String fixed4000UntilIndex = stringIndex(colInd: fFixed4000Until, rowInd: row);
+  final String fixed4000For5DaysIndex = stringIndex(
     colInd: fFixed4000For5Days + startFormulaColumn, 
     rowInd: row,
   );
-  final String basedOnPeepsIndex = _stringIndex(
+  final String basedOnPeepsIndex = stringIndex(
     colInd: fAccruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn, 
     rowInd: row,
   );
-  final String forTrainingIndex = _stringIndex(
+  final String forTrainingIndex = stringIndex(
     colInd: fAccruedForTraining + startFormulaColumn, 
     rowInd: row,
   );
-  final String foremanIndex = _stringIndex(
+  final String foremanIndex = stringIndex(
     colInd: fAccruedForeman + startFormulaColumn, 
     rowInd: row,
   );
@@ -372,7 +372,7 @@ void _formRow({
     FormulaCellValue('SUM($startIndex:$endIndex)'),
   );
 
-  final String statusIndex = _stringIndex(colInd: fStatus, rowInd: row);
+  final String statusIndex = stringIndex(colInd: fStatus, rowInd: row);
 
   // формула: Начислено за обучение
   sheet.updateCell(CellIndex.indexByColumnRow(
@@ -408,14 +408,6 @@ void _formRow({
   );
 }
 
-Sheet _getFirstNamedSheet(Excel excel, String name) {
-  if (excel.tables.isNotEmpty) {
-    final String sheetName = excel.tables.keys.first;
-    excel.rename(sheetName, name);
-  }
-  return excel[name];
-}
-
 String _accruedPerShiftFormula(
   Sheet sheet,
   int row,
@@ -424,41 +416,9 @@ String _accruedPerShiftFormula(
   final List<String> list = <String>[];
 
   for (int col = fStartWorks; col < startFormulaColumn; col++) {
-    final String work = _stringIndex(colInd: col, rowInd: row);
-    final String bid = _stringIndexFixed(colInd: col, rowInd: fBidRow);
+    final String work = stringIndex(colInd: col, rowInd: row);
+    final String bid = stringIndexFixed(colInd: col, rowInd: fBidRow);
     list.add('$bid*$work');
   }
   return list.join('+');
-}
-
-String _stringIndex({required int colInd, required int rowInd,}) => 
-  CellIndex.indexByColumnRow(columnIndex: colInd, rowIndex: rowInd).cellId;
-
-String _stringIndexFixed({required int colInd, required int rowInd,}) {
-  final String ci = _stringIndex(colInd: colInd, rowInd: rowInd);
-  int index = ci.length-1;
-  for (; index > 0; index--) {
-    final String lt = ci[index];
-    if (!RegExp(r'^\d$').hasMatch(lt)) { // RegExp of one digit
-      break;
-    }
-  }
-
-  index++; // коррекция: на последней итерации уже не цифра
-  
-  return '\$${ci.substring(0, index)}\$${ci.substring(index)}';
-}
-
-String _outputJson({
-  List<int> bytes = const <int>[],
-  String fromDate = '',
-  String error = '',
-  List<String> errorArgs = const <String>[]
-}) {
-  final FileOutputDto fileOutput = FileOutputDto(
-    bytes: bytes,
-    fromDate: fromDate,
-    error: error,
-    errorArgs: errorArgs);
-  return jsonEncode(fileOutput.toJson());
 }

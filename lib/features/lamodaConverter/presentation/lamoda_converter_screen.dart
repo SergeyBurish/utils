@@ -28,6 +28,8 @@ class LamodaConverterScreen extends StatelessWidget {
             version: 'version'.tr(args: <String>['1.4.0']),
             loading: state.inProgress,
             onUpload: state.inProgress ? null : cubit.onUpload,
+            onUploadTariffs: cubit.onUploadTariffs,
+            onDownloadTariffs: cubit.onDownloadTariffs,
             onDownload: state.resultIsReady ? cubit.onDownload : null,
           );
         },

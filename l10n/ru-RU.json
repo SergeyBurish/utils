@@ -1,6 +1,8 @@
 {
   "lamoda_converter": "Lamoda конвертер",
   "upload_source_files": "Загрузить исходные файлы",
+  "upload_tariffs": "Загрузить тарифы",
+  "download_tariffs": "Сохранить тарифы",
   "download_result": "Скачать результат",
   "download_result_again": "Скачать результат ещё раз",
   "waiting_for_source_files": "Ожидание загрузки исходных файлов",
@@ -9,6 +11,7 @@
   "result_ready": "Все файлы обработаны, результат готов к скачиванию",
   "file_downloading": "Скачивание результата",
   "file_downloaded": "Pезультат успешно скачан в '{}'",
+  "tariffs_downloaded": "Тарифы успешно скачаны в '{}'",
   "version": "Версия {}",
 
   "@_____________________FROM_SHEET_____________________": {},
@@ -38,11 +41,21 @@
   "@_____________________BASIC_TARIFFS_SHEET_____________________": {},
   "basic_tariffs": "Базовые тарифы",
   "process_eng": "Process. ENG",
+  "cost_of_1_service": "Стоимость 1 услуги",
   "tariff_for_wages": "Тариф для расчета ЗП",
+  "tariff_for_wages_2_months": "Тариф для расчёта ЗП <2х месяцев",
   "@_____________________EMPLOYEE_DETAILS_SHEET_____________________": {},
   "employee_details": "Данные работника",
 
+  "@_____________________TARIFFS_SHEET_____________________": {},
+  "tariffs": "Тарифы",
+  "coeff_wages": "Коэффициент для ЗП",
+  "coeff_wages_2_months": "Коэффициент для ЗП <2х месяцев",
+  "tariff_start_date": "Дата начала действия тарифа (в формате 31/12/99)",
+  "should_be_date_here": "Здесь должна быть дата",
+
   "@_____________________ERRORS_____________________": {},
+  "error_occurred": "Произошла ошибка",
   "no_errors": "Ошибок нет",
   "errors": "Ошибки:",
   "fail_open_excel_file": "Не удалось открыть Excel файл, ошибка: {}",

@@ -71,7 +71,7 @@ class LamodaCubit extends Cubit<LamodaState> {
 
     emit(state.copyWith.status(state.lamodaEntity.shifts.isNotEmpty
       ? LamodaStatus.resultReady
-      : LamodaStatus.error));
+      : LamodaStatus.allFilesErrors));
   }
 
   void onDownload() async {
@@ -82,11 +82,37 @@ class LamodaCubit extends Cubit<LamodaState> {
       ifLeft: (String error) {
         state.errors.clear();
         state.errors.add(error);
-        emit(state.copyWith.status(LamodaStatus.fileDownloaded));
+        emit(state.copyWith.status(LamodaStatus.error));
       },
       ifRight: (String downloadedFile) {
         emit(state.copyWith(
           status: LamodaStatus.fileDownloaded,
+          downloadedFile: downloadedFile,
+        ));
+      },
+    );
+  }
+
+  void onUploadTariffs() async {
+  }
+
+  void onDownloadTariffs() async {
+    emit(state.copyWith.status(LamodaStatus.fileDownloading));
+
+    final Either<String, String> output = await lamodaUsecase.downloadTariffsExcelFile(
+      state.lamodaTariffs,
+      state.lamodaEntity.worksSet,
+    );
+
+    output.fold(
+      ifLeft: (String error) {
+        state.errors.clear();
+        state.errors.add(error);
+        emit(state.copyWith.status(LamodaStatus.error));
+      },
+      ifRight: (String downloadedFile) {
+        emit(state.copyWith(
+          status: LamodaStatus.tariffsDownloaded,
           downloadedFile: downloadedFile,
         ));
       },

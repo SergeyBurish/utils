@@ -21,6 +21,8 @@ abstract class _$LamodaStateCWProxy {
 
   LamodaState lamodaEntity(LamodaEntity lamodaEntity);
 
+  LamodaState lamodaTariffs(LamodaTariffs lamodaTariffs);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LamodaState(...).copyWith.fieldName(value)`.
   ///
@@ -36,6 +38,7 @@ abstract class _$LamodaStateCWProxy {
     String downloadedFile,
     List<String> errors,
     LamodaEntity lamodaEntity,
+    LamodaTariffs lamodaTariffs,
   });
 }
 
@@ -71,6 +74,10 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
       call(lamodaEntity: lamodaEntity);
 
   @override
+  LamodaState lamodaTariffs(LamodaTariffs lamodaTariffs) =>
+      call(lamodaTariffs: lamodaTariffs);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LamodaState(...).copyWith.fieldName(value)`.
   ///
@@ -86,6 +93,7 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
     Object? downloadedFile = const $CopyWithPlaceholder(),
     Object? errors = const $CopyWithPlaceholder(),
     Object? lamodaEntity = const $CopyWithPlaceholder(),
+    Object? lamodaTariffs = const $CopyWithPlaceholder(),
   }) {
     return LamodaState._(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -123,6 +131,11 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
           ? _value.lamodaEntity
           // ignore: cast_nullable_to_non_nullable
           : lamodaEntity as LamodaEntity,
+      lamodaTariffs:
+          lamodaTariffs == const $CopyWithPlaceholder() || lamodaTariffs == null
+          ? _value.lamodaTariffs
+          // ignore: cast_nullable_to_non_nullable
+          : lamodaTariffs as LamodaTariffs,
     );
   }
 }

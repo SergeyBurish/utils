@@ -4,8 +4,10 @@ enum LamodaStatus {
   idle,
   inProgress,
   sourceFilesLoading,
+  tariffsLoading,
   fileHandling,
   resultReady,
+  tariffsLoaded,
   fileDownloading,
   fileDownloaded,
   tariffsDownloaded,
@@ -62,6 +64,7 @@ class LamodaState {
 
   bool get inProgress => 
     status == LamodaStatus.sourceFilesLoading ||
+    status == LamodaStatus.tariffsLoading ||
     status == LamodaStatus.fileHandling || 
     status == LamodaStatus.fileDownloading;
 
@@ -72,15 +75,21 @@ class LamodaState {
     LamodaStatus.idle => 'waiting_for_source_files'.tr(),
     LamodaStatus.inProgress => 'inProgress',
     LamodaStatus.sourceFilesLoading => 'source_files_loading'.tr(),
+    LamodaStatus.tariffsLoading => 'tariffs_loading'.tr(),
     LamodaStatus.fileHandling => 'file_handling'.tr(args: <String>[
       '${currentFileInd + 1}', '$filesLength', currentFile]),
     LamodaStatus.resultReady => 'result_ready'.tr(),
+    LamodaStatus.tariffsLoaded => 'tariffs_added'.tr(),
     LamodaStatus.fileDownloading => 'file_downloading'.tr(),
     LamodaStatus.fileDownloaded => 'file_downloaded'.tr(args: <String>[downloadedFile]),
     LamodaStatus.tariffsDownloaded => 'tariffs_downloaded'.tr(args: <String>[downloadedFile]),
     LamodaStatus.allFilesErrors => 'all_files_with_errors'.tr(),
     LamodaStatus.error => 'error_occurred'.tr(),
   };
+
+  String get tariffsMessage => lamodaTariffs.isEmpty
+    ? 'tariffs_not_added'.tr()
+    : 'tariffs_added_for_dates'.tr(args: <String>[lamodaTariffs.keys.map((DateTime date) => DateFormat('dd-MM-yy').format(date)).join(', ')]);
 
   String get errorMessage => errors.isEmpty 
     ? 'no_errors'.tr() 

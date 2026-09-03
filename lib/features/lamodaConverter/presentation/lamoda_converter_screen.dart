@@ -23,6 +23,7 @@ class LamodaConverterScreen extends StatelessWidget {
           final LamodaCubit cubit = context.read<LamodaCubit>();
           return LamodaConverterView(
             message: state.message,
+            tariffsMessage: state.tariffsMessage,
             errorMessage: state.errorMessage,
             downloadButton: state.fileDownloaded ? 'download_result_again'.tr() : 'download_result'.tr(),
             version: 'version'.tr(args: <String>['1.4.0']),

@@ -10,4 +10,6 @@ class LamodaEntity {
     required this.worksSet,
     required this.loginsSet,
   });
+
+  bool get isEmpty => shifts.isEmpty && worksSet.isEmpty && loginsSet.isEmpty ;
 }

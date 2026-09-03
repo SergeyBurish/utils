@@ -9,6 +9,7 @@ import '../repository/lamoda_repository.dart';
 abstract interface class LamodaUsecase{
     Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes);
     Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity);
+    Future<Either<String, LamodaTariffs>> handleTariffsFile(Uint8List bytes);
     Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet);
 }
 class LamodaUsecaseImp implements LamodaUsecase{
@@ -24,6 +25,11 @@ class LamodaUsecaseImp implements LamodaUsecase{
   @override
   Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity) async {
     return await repository.downloadExcelFile(lamodaEntity);
+  }
+
+  @override
+  Future<Either<String, LamodaTariffs>> handleTariffsFile(Uint8List bytes) async {
+    return await repository.handleTariffsFile(bytes);
   }
 
   @override

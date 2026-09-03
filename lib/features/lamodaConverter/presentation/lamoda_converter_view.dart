@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 
 class LamodaConverterView extends StatelessWidget {
   final String message;
+  final String tariffsMessage;
   final String errorMessage;
   final String downloadButton;
   final String version;
@@ -17,6 +18,7 @@ class LamodaConverterView extends StatelessWidget {
   const LamodaConverterView({
     super.key,
     required this.message,
+    required this.tariffsMessage,
     required this.errorMessage,
     required this.downloadButton,
     required this.version,
@@ -35,12 +37,6 @@ class LamodaConverterView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: Dm.s10,
         children: <Widget>[
-          // Row(
-          //   mainAxisSize: MainAxisSize.min,
-          //   children: [
-          //     Expanded(child: const LinearProgressIndicator()),
-          //   ],
-          // ),
           Wrap(
             spacing: Dm.s10,
             runSpacing: Dm.s10,
@@ -76,6 +72,10 @@ class LamodaConverterView extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     message,
+                    style: context.textStyles.middleText,
+                  ),
+                  Text(
+                    tariffsMessage,
                     style: context.textStyles.middleText,
                   ),
                   Text(

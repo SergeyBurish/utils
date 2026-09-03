@@ -13,17 +13,20 @@ import '../../tablesData/consts.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
-String isolHandleExcelFile(String createOutputJson) {
-  final HandleExcelDto handleExcelDto = HandleExcelDto.fromJson(jsonDecode(createOutputJson));
+String isolHandleExcelFile(String handleExcelJson) {
+  final HandleExcelDto handleExcelDto = HandleExcelDto.fromJson(jsonDecode(handleExcelJson));
 
   try {
     final Excel excel = Excel.decodeBytes(handleExcelDto.bytes);
 
     if (excel.tables.keys.isNotEmpty) {
       final LamodaEntity lamodaEntity = _handleSalarySheet(excel);
+      if (lamodaEntity.isEmpty) {
+        return _outputJson(error: 'no_data_found');
+      }
       return _outputJson(lamodaEntityDto: lamodaEntity.toDto());
     } else {
-      return _outputJson(error: 'blank_excel_file');
+      return _outputJson(error: 'no_data_found');
     }
   } on Exception catch (e) {
     return _outputJson(error: 'fail_open_excel_file', errorArgs: <String>['$e']);

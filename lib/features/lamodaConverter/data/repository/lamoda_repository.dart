@@ -68,6 +68,12 @@ class LamodaRepositoryImp implements LamodaRepository {
   }
 
   @override
+  Future<Either<String, LamodaTariffs>> handleTariffsFile(Uint8List bytes) async {
+    final HandleExcelDto dto = HandleExcelDto(bytes: bytes);
+    return  await isolateLauncher.handleTariffsFile(dto);
+  }
+
+  @override
   Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet) async {
     final CreateTariffsDto dto = CreateTariffsDto(
       lamodaTariffs: lamodaTariffs,

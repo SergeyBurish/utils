@@ -50,21 +50,26 @@ class LamodaCubit extends Cubit<LamodaState> {
         currentFileInd: i,
       ));
 
-      final Uint8List bytes = await files[i].readAsBytes();
-      final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes);
-
-      output.fold(
-        ifLeft: (String error) {
-          state.errors.add('${files[i].name}: $error');
-          emit(state.copyWith.status(LamodaStatus.fileHandling));
-        },
-        ifRight: (LamodaEntity lamodaEntity) {
-          state.lamodaEntity.shifts.addAll(lamodaEntity.shifts);
-          state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
-          state.lamodaEntity.loginsSet.addAll(lamodaEntity.loginsSet);
-          emit(state.copyWith.status(LamodaStatus.fileHandling));
-        },
-      );
+      try {
+        final Uint8List bytes = await files[i].readAsBytes();
+        final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes);
+        
+        output.fold(
+          ifLeft: (String error) {
+            state.errors.add('${files[i].name}: $error');
+            emit(state.copyWith.status(LamodaStatus.fileHandling));
+          },
+          ifRight: (LamodaEntity lamodaEntity) {
+            state.lamodaEntity.shifts.addAll(lamodaEntity.shifts);
+            state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
+            state.lamodaEntity.loginsSet.addAll(lamodaEntity.loginsSet);
+            emit(state.copyWith.status(LamodaStatus.fileHandling));
+          },
+        );
+      } on Exception catch (e) {
+        state.errors.add('${files[i].name}: $e');
+        emit(state.copyWith.status(LamodaStatus.fileHandling));
+      }
 
       emit(state.copyWith.status(LamodaStatus.fileHandling));
     }
@@ -94,6 +99,41 @@ class LamodaCubit extends Cubit<LamodaState> {
   }
 
   void onUploadTariffs() async {
+    emit(state.copyWith.status(LamodaStatus.tariffsLoading));
+
+    const XTypeGroup excelTypeGroup = XTypeGroup(
+      label: 'Excel',
+      extensions: <String>['xls', 'xlsx'],
+      uniformTypeIdentifiers: <String>['public.xlsx'],
+    );
+
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[excelTypeGroup],
+    );
+
+    if (file == null) {
+      emit(state.copyWith.status(LamodaStatus.idle));
+      return;
+    }
+
+    try {
+      final Uint8List bytes = await file.readAsBytes();
+      final Either<String, LamodaTariffs> output = await lamodaUsecase.handleTariffsFile(bytes);
+      output.fold(
+        ifLeft: (String error) {
+          state.errors.add('${file.name}: $error');
+          emit(state.copyWith.status(LamodaStatus.error));
+        },
+        ifRight: (LamodaTariffs lamodaTariffs) {
+          state.lamodaTariffs.addAll(lamodaTariffs);
+          emit(state.copyWith.status(LamodaStatus.tariffsLoaded));
+        },
+      );
+    } on Exception catch (e) {
+      state.errors.clear();
+      state.errors.add('${file.name}: $e');
+      emit(state.copyWith.status(LamodaStatus.error));
+    }
   }
 
   void onDownloadTariffs() async {

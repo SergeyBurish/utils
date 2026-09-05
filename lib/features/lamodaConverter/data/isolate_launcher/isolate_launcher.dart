@@ -4,7 +4,7 @@ import 'package:dart_either/dart_either.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
-import '../../domain/entity/typedefs.dart';
+import '../../domain/entity/tariffs_entity.dart';
 import '../dto/create_output_dto.dart';
 import '../dto/create_tariffs_dto.dart';
 import '../dto/file_output_dto.dart';
@@ -20,7 +20,7 @@ import 'isolates/handle_tariffs_file.dart';
 abstract interface class IsolateLauncher {
   Future<Either<String, LamodaEntityDto>> handleExcelFile(HandleExcelDto dto);
   Future<Either<String, FileOutputDto>> createOutputFile(CreateOutputDto dto);
-  Future<Either<String, LamodaTariffs>> handleTariffsFile(HandleExcelDto dto);
+  Future<Either<String, TariffsEntity>> handleTariffsFile(HandleExcelDto dto);
   Future<Either<String, FileOutputDto>> createTariffsFile(CreateTariffsDto dto);
 }
 
@@ -62,7 +62,7 @@ class IsolateLauncherImp implements IsolateLauncher{
   }
 
   @override
-  Future<Either<String, LamodaTariffs>> handleTariffsFile(HandleExcelDto dto) async {
+  Future<Either<String, TariffsEntity>> handleTariffsFile(HandleExcelDto dto) async {
     final IsolateManager<String, String> isolate = 
       IsolateManager<String, String>.create(
         isolHandleTariffsFile,
@@ -71,10 +71,10 @@ class IsolateLauncherImp implements IsolateLauncher{
 
     final String isolResult = await isolate.compute(jsonEncode(dto.toJson()));
     final HandleTariffsOutputDto tariffsOutput = HandleTariffsOutputDto.fromJson(jsonDecode(isolResult));
-    if (tariffsOutput.lamodaTariffs != null) {
-      return Right<String, LamodaTariffs>(tariffsOutput.lamodaTariffs!);
+    if (tariffsOutput.tariffsEntityDto != null) {
+      return Right<String, TariffsEntity>(tariffsOutput.tariffsEntityDto!);
     } else {
-      return Left<String, LamodaTariffs>(tariffsOutput.error.tr(args: tariffsOutput.errorArgs));
+      return Left<String, TariffsEntity>(tariffsOutput.error.tr(args: tariffsOutput.errorArgs));
     }
   }
 

@@ -9,14 +9,11 @@ part of 'handle_tariffs_output_dto.dart';
 HandleTariffsOutputDto _$HandleTariffsOutputDtoFromJson(
   Map<String, dynamic> json,
 ) => HandleTariffsOutputDto(
-  lamodaTariffs: (json['lamodaTariffs'] as Map<String, dynamic>?)?.map(
-    (k, e) => MapEntry(
-      DateTime.parse(k),
-      (e as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, (e as num).toDouble()),
-      ),
-    ),
-  ),
+  tariffsEntityDto: json['tariffsEntityDto'] == null
+      ? null
+      : TariffsEntityDto.fromJson(
+          json['tariffsEntityDto'] as Map<String, dynamic>,
+        ),
   error: json['error'] as String,
   errorArgs: (json['errorArgs'] as List<dynamic>)
       .map((e) => e as String)
@@ -26,9 +23,7 @@ HandleTariffsOutputDto _$HandleTariffsOutputDtoFromJson(
 Map<String, dynamic> _$HandleTariffsOutputDtoToJson(
   HandleTariffsOutputDto instance,
 ) => <String, dynamic>{
-  'lamodaTariffs': instance.lamodaTariffs?.map(
-    (k, e) => MapEntry(k.toIso8601String(), e),
-  ),
+  'tariffsEntityDto': instance.tariffsEntityDto,
   'error': instance.error,
   'errorArgs': instance.errorArgs,
 };

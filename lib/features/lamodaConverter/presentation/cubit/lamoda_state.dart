@@ -6,7 +6,7 @@ enum LamodaStatus {
   sourceFilesLoading,
   tariffsLoading,
   fileHandling,
-  resultReady,
+  filesHandled,
   tariffsLoaded,
   fileDownloading,
   fileDownloaded,
@@ -68,7 +68,7 @@ class LamodaState {
     status == LamodaStatus.fileHandling || 
     status == LamodaStatus.fileDownloading;
 
-  bool get resultIsReady => status == LamodaStatus.resultReady || status == LamodaStatus.fileDownloaded;
+  bool get resultIsReady => !lamodaEntity.isEmpty;
   bool get fileDownloaded => status == LamodaStatus.fileDownloaded;
 
   String get message => switch (status) {
@@ -78,7 +78,7 @@ class LamodaState {
     LamodaStatus.tariffsLoading => 'tariffs_loading'.tr(),
     LamodaStatus.fileHandling => 'file_handling'.tr(args: <String>[
       '${currentFileInd + 1}', '$filesLength', currentFile]),
-    LamodaStatus.resultReady => 'result_ready'.tr(),
+    LamodaStatus.filesHandled => 'files_handled'.tr(),
     LamodaStatus.tariffsLoaded => 'tariffs_added'.tr(),
     LamodaStatus.fileDownloading => 'file_downloading'.tr(),
     LamodaStatus.fileDownloaded => 'file_downloaded'.tr(args: <String>[downloadedFile]),

@@ -4,6 +4,7 @@ import 'package:dart_either/dart_either.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../domain/entity/lamoda_entity.dart';
+import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
 import '../../domain/repository/lamoda_repository.dart';
 import '../data_sources/local_data_source.dart';
@@ -38,9 +39,10 @@ class LamodaRepositoryImp implements LamodaRepository {
   }
 
   @override
-  Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity) async {
+  Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity, LamodaTariffs lamodaTariffs) async {
     final CreateOutputDto dto = CreateOutputDto(
       lamodaEntityDto: lamodaEntity.toDto(),
+      lamodaTariffs: lamodaTariffs,
       columnsFD1: columnsFD1,
       columnsFD2: columnsFD2,
       columnsED: columnsED,
@@ -50,9 +52,16 @@ class LamodaRepositoryImp implements LamodaRepository {
         day: 'day'.tr(),
         night: 'night'.tr(),
         basicTariffs: 'basic_tariffs'.tr(),
-        processEng: 'process_eng'.tr(),
-        tariffForWages: 'tariff_for_wages'.tr(),
         employeeDetails: 'employee_details'.tr(),
+        tariffs: 'tariffs'.tr(),
+        coeffWages: 'coeff_wages'.tr(),
+        coeffWages2months: 'coeff_wages_2_months'.tr(),
+        tariffStartDate: 'tariff_start_date'.tr(),
+        processEng: 'process_eng'.tr(),
+        cost1service: 'cost_of_1_service'.tr(),
+        tariffWages: 'tariff_for_wages'.tr(),
+        tariffWages2months: 'tariff_for_wages_2_months'.tr(),
+        shouldBeDateHere: 'should_be_date_here'.tr(),
       ),
     );
 
@@ -68,7 +77,7 @@ class LamodaRepositoryImp implements LamodaRepository {
   }
 
   @override
-  Future<Either<String, LamodaTariffs>> handleTariffsFile(Uint8List bytes) async {
+  Future<Either<String, TariffsEntity>> handleTariffsFile(Uint8List bytes) async {
     final HandleExcelDto dto = HandleExcelDto(bytes: bytes);
     return  await isolateLauncher.handleTariffsFile(dto);
   }

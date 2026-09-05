@@ -608,10 +608,13 @@ file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_tariffs_output_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_tariffs_output_dto.g.dart
-file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleTariffsFile.883339338.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/tariffs_entity_dto.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/tariffs_entity_dto.g.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleTariffsFile.1016383517.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/handle_tariffs_file.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/tablesData/consts.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/shift_time.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/tariffs_entity.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/typedefs.dart
 org-dartlang-sdk:///lib/_http/crypto.dart
 org-dartlang-sdk:///lib/_http/embedder_config.dart

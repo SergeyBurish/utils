@@ -57,7 +57,7 @@ const int edHeaderRow = 0;
 const int edStartRow = 1;
 
 
-// --- tariffs file
+// --- tariffs file && basic tariffs sheet
 // - columns
 const int trCoeffName = 0;
 const int trCoeffVal = 1;
@@ -71,14 +71,17 @@ const int trHeaderRow = 3;
 const int trStartRow = 4;
 
 
-const String dateFormat = 'dd/mm/yy';
+const String dateFormat = 'dd/MM/yy';
+const String dateFormat2 = 'dd.MM.yyyy';
 
 // colors
 const String blue01 =   '#E1F8FC';
 const String blue02 =   '#C2F2FB';
 const String blue03 =   '#006AFF';
 const String green01 =  '#BAD8AE';
+const String green02 =  '#DCEBD6';
 const String lilac =    '#DCD6EB';
+const String orange =   '#FFC200';
 const String pink =     '#FEA7BF';
 const String yellow01 = '#F9DF9B';
 const String yellow02 = '#FFDB61';

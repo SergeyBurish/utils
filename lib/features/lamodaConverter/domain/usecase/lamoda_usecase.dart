@@ -3,13 +3,14 @@ import 'dart:typed_data';
 import 'package:dart_either/dart_either.dart';
 
 import '../entity/lamoda_entity.dart';
+import '../entity/tariffs_entity.dart';
 import '../entity/typedefs.dart';
 import '../repository/lamoda_repository.dart';
 
 abstract interface class LamodaUsecase{
     Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes);
-    Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity);
-    Future<Either<String, LamodaTariffs>> handleTariffsFile(Uint8List bytes);
+    Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity, LamodaTariffs lamodaTariffs);
+    Future<Either<String, TariffsEntity>> handleTariffsFile(Uint8List bytes);
     Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet);
 }
 class LamodaUsecaseImp implements LamodaUsecase{
@@ -23,12 +24,12 @@ class LamodaUsecaseImp implements LamodaUsecase{
   }
 
   @override
-  Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity) async {
-    return await repository.downloadExcelFile(lamodaEntity);
+  Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity, LamodaTariffs lamodaTariffs) async {
+    return await repository.downloadExcelFile(lamodaEntity, lamodaTariffs);
   }
 
   @override
-  Future<Either<String, LamodaTariffs>> handleTariffsFile(Uint8List bytes) async {
+  Future<Either<String, TariffsEntity>> handleTariffsFile(Uint8List bytes) async {
     return await repository.handleTariffsFile(bytes);
   }
 

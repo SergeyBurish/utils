@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entity/lamoda_entity.dart';
 import '../../domain/entity/shift_time.dart';
+import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
 import '../../domain/usecase/lamoda_usecase.dart';
 
@@ -75,14 +76,14 @@ class LamodaCubit extends Cubit<LamodaState> {
     }
 
     emit(state.copyWith.status(state.lamodaEntity.shifts.isNotEmpty
-      ? LamodaStatus.resultReady
+      ? LamodaStatus.filesHandled
       : LamodaStatus.allFilesErrors));
   }
 
   void onDownload() async {
     emit(state.copyWith.status(LamodaStatus.fileDownloading));
 
-    final Either<String, String> output = await lamodaUsecase.downloadExcelFile(state.lamodaEntity);
+    final Either<String, String> output = await lamodaUsecase.downloadExcelFile(state.lamodaEntity, state.lamodaTariffs);
     output.fold(
       ifLeft: (String error) {
         state.errors.clear();
@@ -118,14 +119,15 @@ class LamodaCubit extends Cubit<LamodaState> {
 
     try {
       final Uint8List bytes = await file.readAsBytes();
-      final Either<String, LamodaTariffs> output = await lamodaUsecase.handleTariffsFile(bytes);
+      final Either<String, TariffsEntity> output = await lamodaUsecase.handleTariffsFile(bytes);
       output.fold(
         ifLeft: (String error) {
           state.errors.add('${file.name}: $error');
           emit(state.copyWith.status(LamodaStatus.error));
         },
-        ifRight: (LamodaTariffs lamodaTariffs) {
-          state.lamodaTariffs.addAll(lamodaTariffs);
+        ifRight: (TariffsEntity tariffsEntity) {
+          state.lamodaTariffs.addAll(tariffsEntity.lamodaTariffs);
+          state.lamodaEntity.worksSet.addAll(tariffsEntity.worksSet);
           emit(state.copyWith.status(LamodaStatus.tariffsLoaded));
         },
       );

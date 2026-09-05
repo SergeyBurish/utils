@@ -637,6 +637,8 @@ file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/create_output_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/create_output_strings.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/create_output_strings.g.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/create_tariffs_strings.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/create_tariffs_strings.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/file_output_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/file_output_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/lamoda_entity_dto.dart
@@ -646,7 +648,7 @@ file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/shift_time_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/shift_time_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/common/isol_utils.dart
-file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolCreateOutputFile.95954787.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolCreateOutputFile.179957343.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/create_output_file.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/tablesData/consts.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/lamoda_entity.dart

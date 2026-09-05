@@ -21,6 +21,7 @@ String isolCreateOutputFile(String createOutputJson) {
   final CreateOutputDto createOutputDto = CreateOutputDto.fromJson(jsonDecode(createOutputJson));
 
   final LamodaEntityDto lamodaEntityDto = createOutputDto.lamodaEntityDto;
+  final LamodaTariffs lamodaTariffs = createOutputDto.lamodaTariffs;
   final Map<int, LmColumn> columnsFD1 = createOutputDto.columnsFD1;
   final Map<int, LmColumn> columnsFD2 = createOutputDto.columnsFD2;
   final Map<int, LmColumn> columnsED = createOutputDto.columnsED;
@@ -47,7 +48,12 @@ String isolCreateOutputFile(String createOutputJson) {
     final Sheet sheetFD = excel[fromDate];
     final Sheet sheetED = excel[strings.employeeDetails];
 
-    _fillOutSheetBasicTariffs(sheetBT, workNames, strings);
+    fillOutTariffsSheet(
+      sheet: sheetBT,
+      lamodaTariffs: lamodaTariffs,
+      works: workNames,
+      strings: strings,
+    );
     _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, logins, dates, 
         strings, columnsFD1, columnsFD2);
 
@@ -63,40 +69,6 @@ String isolCreateOutputFile(String createOutputJson) {
   } on Exception catch (e) {
     return outputJson(error: 'fail_download_excel_file', errorArgs: <String>['$e']);
   }
-}
-
-void _fillOutSheetBasicTariffs(
-  Sheet sheet,
-  List<String> workNames,
-  CreateOutputStrings strings,
-){
-  // заголовок: Process. ENG
-  sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: btProcesses,
-      rowIndex: btHeaderRow), 
-    TextCellValue(strings.processEng),
-    cellStyle: CellStyle(bold: true),
-  );
-
-  // заголовок: Тариф для расчета ЗП
-  sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: btTtariffForWages,
-      rowIndex: btHeaderRow), 
-    TextCellValue(strings.tariffForWages),
-    cellStyle: CellStyle(bold: true),
-  );
-
-  // столбец работ
-  for (int i = 0; i < workNames.length; i++) {
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: btProcesses,
-        rowIndex: i + btStartRow), 
-      TextCellValue(workNames[i]),
-    );
-  }
-
-  sheet.setColumnAutoFit(btProcesses);
-  sheet.setColumnAutoFit(btTtariffForWages);
 }
 
 void _fillOutSheetFromDate(

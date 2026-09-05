@@ -1,17 +1,17 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../../domain/entity/typedefs.dart';
+import 'tariffs_entity_dto.dart';
 
 part 'handle_tariffs_output_dto.g.dart';
 
 @JsonSerializable()
 class HandleTariffsOutputDto {
-  final LamodaTariffs? lamodaTariffs;
+  final TariffsEntityDto? tariffsEntityDto;
   final String error;
   final List<String> errorArgs;
 
   HandleTariffsOutputDto({
-    required this.lamodaTariffs,
+    required this.tariffsEntityDto,
     required this.error,
     required this.errorArgs,
   });

@@ -26,7 +26,7 @@ class LamodaConverterScreen extends StatelessWidget {
             tariffsMessage: state.tariffsMessage,
             errorMessage: state.errorMessage,
             downloadButton: state.fileDownloaded ? 'download_result_again'.tr() : 'download_result'.tr(),
-            version: 'version'.tr(args: <String>['1.5.0']),
+            version: 'version'.tr(args: <String>['1.5.1']),
             loading: state.inProgress,
             onUpload: state.inProgress ? null : cubit.onUpload,
             onUploadTariffs: cubit.onUploadTariffs,

@@ -20,6 +20,7 @@ String isolHandleTariffsFile(String handleExcelJson) {
     final Excel excel = Excel.decodeBytes(handleExcelDto.bytes);
     final String? firstSheetName = excel.tables.keys.firstOrNull;
     if (firstSheetName == null) {
+      print('zzz firstSheetName == null');
       return _outputJson(error: 'no_data_found');
     }
     final Sheet sheet = excel[firstSheetName];
@@ -47,12 +48,21 @@ String isolHandleTariffsFile(String handleExcelJson) {
 }
 
 DateTime? _tryParseDateTimeFromCell(CellValue? value){
-  if (value == null) return null;
+  if (value == null) {
+    print('zzz _tryParseDateTimeFromCell value == null');
+    return null;
+  }
+
+  print('zzz _tryParseDateTimeFromCell value ${value.toString()}');
 
   final List<String> dateParts = value.toString().split('.');
+  print('zzz _tryParseDateTimeFromCell dateParts.length ${dateParts.length}');
   if (dateParts.length < 3) return null;
 
   final String formattedString = dateParts.reversed.join('-');
+
+  print('zzz _tryParseDateTimeFromCell formattedString $formattedString');
+
   return DateTime.tryParse(formattedString);
 }
 

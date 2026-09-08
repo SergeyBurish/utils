@@ -89,7 +89,7 @@ class LamodaState {
 
   String get tariffsMessage => lamodaTariffs.isEmpty
     ? 'tariffs_not_added'.tr()
-    : 'tariffs_added_for_dates'.tr(args: <String>[lamodaTariffs.keys.map((DateTime date) => DateFormat('dd-MM-yy').format(date)).join(', ')]);
+    : 'tariffs_added_for_dates'.tr(args: <String>[(lamodaTariffs.keys.toList()..sort()).map((DateTime date) => DateFormat('dd-MM-yy').format(date)).join(', ')]);
 
   String get errorMessage => errors.isEmpty 
     ? 'no_errors'.tr() 

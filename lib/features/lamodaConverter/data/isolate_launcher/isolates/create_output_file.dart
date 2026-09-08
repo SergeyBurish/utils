@@ -32,6 +32,7 @@ String isolCreateOutputFile(String createOutputJson) {
   final List<ShiftTime> dates = lamodaEntity.shifts.keys.toList();
   final List<String> workNames = lamodaEntity.worksSet.toList();
   final List<String> logins = lamodaEntity.loginsSet.toList();
+  final List<DateTime> tariffsDates = lamodaTariffs.keys.toList();
   if (dates.isEmpty || workNames.isEmpty) {
     return outputJson(error: 'no_data');
   }
@@ -39,6 +40,11 @@ String isolCreateOutputFile(String createOutputJson) {
   dates.sort();
   workNames.sort();
   logins.sort();
+  tariffsDates.sort();
+
+  if (tariffsDates.isEmpty) {
+    tariffsDates.add(DateTime(0));
+  }
 
   final String fromDate = strings.from + DateFormat('dd.MM.yy').format(dates[0].date);
 
@@ -54,8 +60,17 @@ String isolCreateOutputFile(String createOutputJson) {
       works: workNames,
       strings: strings,
     );
-    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, logins, dates, 
-        strings, columnsFD1, columnsFD2);
+    _fillOutSheetFromDate(
+      sheet: sheetFD,
+      lamodaEntity: lamodaEntity,
+      workNames: workNames,
+      logins: logins,
+      dates: dates,
+      tariffsDates: tariffsDates,
+      strings: strings,
+      columns1: columnsFD1,
+      columns2: columnsFD2,
+    );
 
     _fillOutSheetEmployeeDetails(sheetED, logins, columnsED);
 
@@ -71,16 +86,17 @@ String isolCreateOutputFile(String createOutputJson) {
   }
 }
 
-void _fillOutSheetFromDate(
-  Sheet sheet,
-  LamodaEntity lamodaEntity,
-  List<String> workNames,
-  List<String> logins,
-  List<ShiftTime> dates,
-  CreateOutputStrings strings,
-  Map<int, LmColumn> columns1,
-  Map<int, LmColumn> columns2,
-){
+void _fillOutSheetFromDate({
+  required Sheet sheet,
+  required LamodaEntity lamodaEntity,
+  required List<String> workNames,
+  required List<String> logins,
+  required List<ShiftTime> dates,
+  required List<DateTime> tariffsDates,
+  required CreateOutputStrings strings,
+  required Map<int, LmColumn> columns1,
+  required Map<int, LmColumn> columns2,
+}){
   sheet.setRowHeight(fHeaderRow, 130.0); // примерно
   // заголовок: столбцы до работ
   for(final MapEntry<int, LmColumn> el in columns1.entries){
@@ -110,36 +126,6 @@ void _fillOutSheetFromDate(
         textWrapping: TextWrapping.WrapText,
       ),
     );
-
-    final String bidIndexOnBasicTariffs = stringIndex(
-      colInd: btTtariffForWages, 
-      rowInd: i + btStartRow);
-    // подзаголовок: Ставка (формула)
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: i + fStartWorks,
-        rowIndex: fBidRow),
-      FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
-      cellStyle: CellStyle(
-        backgroundColorHex: ExcelColor.fromHexString(blue02)
-      ),
-    );
-  }
-  // подзаголовок: Ставка (текст)
-  sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: fDate,
-      rowIndex: fBidRow), 
-    TextCellValue(strings.bid),
-  );
-
-  // голубой бг для строки ставки
-  final CellStyle blueCellStyle = CellStyle(
-    backgroundColorHex: ExcelColor.fromHexString(blue02)
-  );
-  for (int i = fDate; i < fStartWorks; i++) {
-    sheet.cell(CellIndex.indexByColumnRow(
-      columnIndex: i, 
-      rowIndex: fBidRow,
-    )).cellStyle = blueCellStyle;
   }
 
   // заголовок: столбцы после работ
@@ -160,7 +146,50 @@ void _fillOutSheetFromDate(
     );
   }
 
-  int row = fStartRow;
+  // ставки
+  for (int dateInd = 0; dateInd < tariffsDates.length; dateInd++) {
+    final int row = fStartBidRow + dateInd;
+
+    // "Ставка"
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fDate,
+        rowIndex: row), 
+      TextCellValue(strings.bid),
+      cellStyle: CellStyle(
+        backgroundColorHex: ExcelColor.fromHexString(blue02),
+      ),
+    );
+
+    // с "дата"
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fShift,
+        rowIndex: row), 
+      TextCellValue(strings.from + DateFormat('dd.MM.yy').format(tariffsDates[dateInd])),
+      cellStyle: CellStyle(
+        backgroundColorHex: ExcelColor.fromHexString(blue02),
+      ),
+    );
+
+    // ряд ставок - ссылки на лист "Базовые тарифы"
+    for (int workInd = 0; workInd < workNames.length; workInd++) {
+
+      final String bidIndexOnBasicTariffs = stringIndex(
+        colInd: trStartColumn + dateInd * 3 + 1, // 1 - смещение "Тариф для расчета ЗП" от "Стоимость 1 услуги"
+        rowInd: trStartRow + workInd);
+
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: workInd + fStartWorks,
+          rowIndex: row), 
+        FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
+        cellStyle: CellStyle(
+          backgroundColorHex: ExcelColor.fromHexString(blue02),
+        ),
+      );
+    }
+  }
+
+  final int startPeepsRow = fStartBidRow + tariffsDates.length;
+  int row = startPeepsRow;
 
   // строки: дата, смена, логин, пики, формулы, итд
   for (final ShiftTime shiftTime in dates) {
@@ -181,13 +210,14 @@ void _fillOutSheetFromDate(
           night: strings.night,
           employeeDetails: strings.employeeDetails,
           indexOflogin: indexOflogin,
+          tariffsDates: tariffsDates,
         );
       }
     }
   }
 
   sheet.setColumnAutoFit(fLogin);
-  sheet.freezePanes(rows: fBidRow + 1, columns: fIncreasedRate + 1);
+  sheet.freezePanes(rows: startPeepsRow, columns: fIncreasedRate + 1);
 }
 
 void _fillOutSheetEmployeeDetails(
@@ -235,6 +265,7 @@ void _formRow({
   required String night,
   required String employeeDetails,
   required int indexOflogin,
+  required List<DateTime> tariffsDates,
 }){
   // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
@@ -353,7 +384,13 @@ void _formRow({
     FormulaCellValue('IF($statusIndex="ученик",4000,0)'),
   );
   // формула: Начислено за смену по количеству пиков
-  final String formula = _accruedPerShiftFormula(sheet, row, startFormulaColumn);
+  final String formula = _accruedPerShiftFormula(
+    sheet: sheet, 
+    row: row, 
+    startFormulaColumn: startFormulaColumn, 
+    shiftDate: shiftTime.date,
+    tariffsDates: tariffsDates,
+  );
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: fAccruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn,
       rowIndex: row),
@@ -380,17 +417,31 @@ void _formRow({
   );
 }
 
-String _accruedPerShiftFormula(
-  Sheet sheet,
-  int row,
-  int startFormulaColumn,
-){
+String _accruedPerShiftFormula({
+  required Sheet sheet,
+  required int row,
+  required int startFormulaColumn,
+  required DateTime shiftDate,
+  required List<DateTime> tariffsDates,
+}){
   final List<String> list = <String>[];
 
   for (int col = fStartWorks; col < startFormulaColumn; col++) {
+    int bidInd = tariffsDates.length -1;
+    for (int i = bidInd; i >= 0; i--) {
+      final DateTime tariffsDate = tariffsDates[i];
+      if (shiftDate.isAfter(tariffsDate) || _isSameDay(shiftDate, tariffsDate)) {
+        break;
+      }
+      bidInd--;
+    }
+    final int bidRow = fStartBidRow + bidInd;
     final String work = stringIndex(colInd: col, rowInd: row);
-    final String bid = stringIndexFixed(colInd: col, rowInd: fBidRow);
+    final String bid = stringIndexFixed(colInd: col, rowInd: bidRow);
     list.add('$bid*$work');
   }
   return list.join('+');
 }
+
+bool _isSameDay(DateTime a, DateTime b) => 
+  a.year == b.year && a.month == b.month && a.day == b.day;

@@ -33,17 +33,7 @@ const int fFixed4000For5Days = 9;
 const int fTotalAccrued = 10;
 // - rows
 const int fHeaderRow = 0;
-const int fBidRow = 1;
-const int fStartRow = 2;
-
-
-// -- basic tariffs sheet
-// - columns
-const int btProcesses = 1;
-const int btTtariffForWages = 2;
-// - rows
-const int btHeaderRow = 0;
-const int btStartRow = 1;
+const int fStartBidRow = 1;
 
 
 // -- employee details sheet

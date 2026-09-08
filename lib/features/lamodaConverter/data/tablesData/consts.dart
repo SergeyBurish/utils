@@ -33,17 +33,7 @@ const int fFixed4000For5Days = 9;
 const int fTotalAccrued = 10;
 // - rows
 const int fHeaderRow = 0;
-const int fBidRow = 1;
-const int fStartRow = 2;
-
-
-// -- basic tariffs sheet
-// - columns
-const int btProcesses = 1;
-const int btTtariffForWages = 2;
-// - rows
-const int btHeaderRow = 0;
-const int btStartRow = 1;
+const int fStartBidRow = 1;
 
 
 // -- employee details sheet
@@ -57,15 +47,35 @@ const int edHeaderRow = 0;
 const int edStartRow = 1;
 
 
-const String dateFormat = 'dd/mm/yy';
+// --- tariffs file && basic tariffs sheet
+// - columns
+const int trCoeffName = 0;
+const int trCoeffVal = 1;
+const int trWorks = 0;
+const int trStartColumn = 1;
+// - rows
+const int trCoeffWages = 0;
+const int trCoeffWages2months = 1;
+const int trDateRow = 2;
+const int trHeaderRow = 3;
+const int trStartRow = 4;
+
+
+const String dateFormat = 'dd/MM/yy';
+const String dateFormat2 = 'dd.MM.yyyy';
 
 // colors
-const String blue01 = '#E1F8FC';
-const String blue02 = '#C2F2FB';
-const String blue03 = '#006AFF';
-const String pink = '#FEA7BF';
+const String blue01 =   '#E1F8FC';
+const String blue02 =   '#C2F2FB';
+const String blue03 =   '#006AFF';
+const String green01 =  '#BAD8AE';
+const String green02 =  '#DCEBD6';
+const String lilac =    '#DCD6EB';
+const String orange =   '#FFC200';
+const String pink =     '#FEA7BF';
 const String yellow01 = '#F9DF9B';
 const String yellow02 = '#FFDB61';
-const String lilac = '#DCD6EB';
+const String yellow03 = '#FFFB00';
 
-const String fileNamePrefix = 'picksLamoda';
+const String picksFilePrefix = 'picksLamoda';
+const String tariffsFilePrefix = 'tariffsLamoda';

@@ -9,10 +9,10 @@ import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
 import '../../dto/create_output_dto.dart';
 import '../../dto/create_output_strings.dart';
-import '../../dto/file_output_dto.dart';
 import '../../dto/lamoda_entity_dto.dart';
 import '../../dto/lm_column.dart';
 import '../../tablesData/consts.dart';
+import '../common/isol_utils.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
@@ -21,6 +21,7 @@ String isolCreateOutputFile(String createOutputJson) {
   final CreateOutputDto createOutputDto = CreateOutputDto.fromJson(jsonDecode(createOutputJson));
 
   final LamodaEntityDto lamodaEntityDto = createOutputDto.lamodaEntityDto;
+  final LamodaTariffs lamodaTariffs = createOutputDto.lamodaTariffs;
   final Map<int, LmColumn> columnsFD1 = createOutputDto.columnsFD1;
   final Map<int, LmColumn> columnsFD2 = createOutputDto.columnsFD2;
   final Map<int, LmColumn> columnsED = createOutputDto.columnsED;
@@ -31,84 +32,71 @@ String isolCreateOutputFile(String createOutputJson) {
   final List<ShiftTime> dates = lamodaEntity.shifts.keys.toList();
   final List<String> workNames = lamodaEntity.worksSet.toList();
   final List<String> logins = lamodaEntity.loginsSet.toList();
+  final List<DateTime> tariffsDates = lamodaTariffs.keys.toList();
   if (dates.isEmpty || workNames.isEmpty) {
-    return _outputJson(error: 'no_data');
+    return outputJson(error: 'no_data');
   }
 
   dates.sort();
   workNames.sort();
   logins.sort();
+  tariffsDates.sort();
+
+  if (tariffsDates.isEmpty) {
+    tariffsDates.add(DateTime(0));
+  }
 
   final String fromDate = strings.from + DateFormat('dd.MM.yy').format(dates[0].date);
 
   try {
     final Excel excel = Excel.createExcel(); // a new workbook with one default sheet Sheet1
-    final Sheet sheetBT = _getFirstNamedSheet(excel, strings.basicTariffs);
+    final Sheet sheetBT = getFirstNamedSheet(excel, strings.basicTariffs);
     final Sheet sheetFD = excel[fromDate];
     final Sheet sheetED = excel[strings.employeeDetails];
 
-    _fillOutSheetBasicTariffs(sheetBT, workNames, strings);
-    _fillOutSheetFromDate(sheetFD, lamodaEntity, workNames, logins, dates, 
-        strings, columnsFD1, columnsFD2);
+    fillOutTariffsSheet(
+      sheet: sheetBT,
+      lamodaTariffs: lamodaTariffs,
+      works: workNames,
+      strings: strings,
+    );
+    _fillOutSheetFromDate(
+      sheet: sheetFD,
+      lamodaEntity: lamodaEntity,
+      workNames: workNames,
+      logins: logins,
+      dates: dates,
+      tariffsDates: tariffsDates,
+      strings: strings,
+      columns1: columnsFD1,
+      columns2: columnsFD2,
+    );
 
     _fillOutSheetEmployeeDetails(sheetED, logins, columnsED);
 
     final List<int>? bytes = excel.encode();
 
     if (bytes != null) {
-      return _outputJson(bytes: bytes, fromDate: fromDate);
+      return outputJson(bytes: bytes, fromDate: fromDate);
     } else {
-      return _outputJson(error: 'fail_create_excel_spreadsheet');
+      return outputJson(error: 'fail_create_excel_spreadsheet');
     }
   } on Exception catch (e) {
-    return _outputJson(error: 'fail_download_excel_file', errorArgs: <String>['$e']);
+    return outputJson(error: 'fail_download_excel_file', errorArgs: <String>['$e']);
   }
 }
 
-void _fillOutSheetBasicTariffs(
-  Sheet sheet,
-  List<String> workNames,
-  CreateOutputStrings strings,
-){
-  // заголовок: Process. ENG
-  sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: btProcesses,
-      rowIndex: btHeaderRow), 
-    TextCellValue(strings.processEng),
-    cellStyle: CellStyle(bold: true),
-  );
-
-  // заголовок: Тариф для расчета ЗП
-  sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: btTtariffForWages,
-      rowIndex: btHeaderRow), 
-    TextCellValue(strings.tariffForWages),
-    cellStyle: CellStyle(bold: true),
-  );
-
-  // столбец работ
-  for (int i = 0; i < workNames.length; i++) {
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: btProcesses,
-        rowIndex: i + btStartRow), 
-      TextCellValue(workNames[i]),
-    );
-  }
-
-  sheet.setColumnAutoFit(btProcesses);
-  sheet.setColumnAutoFit(btTtariffForWages);
-}
-
-void _fillOutSheetFromDate(
-  Sheet sheet,
-  LamodaEntity lamodaEntity,
-  List<String> workNames,
-  List<String> logins,
-  List<ShiftTime> dates,
-  CreateOutputStrings strings,
-  Map<int, LmColumn> columns1,
-  Map<int, LmColumn> columns2,
-){
+void _fillOutSheetFromDate({
+  required Sheet sheet,
+  required LamodaEntity lamodaEntity,
+  required List<String> workNames,
+  required List<String> logins,
+  required List<ShiftTime> dates,
+  required List<DateTime> tariffsDates,
+  required CreateOutputStrings strings,
+  required Map<int, LmColumn> columns1,
+  required Map<int, LmColumn> columns2,
+}){
   sheet.setRowHeight(fHeaderRow, 130.0); // примерно
   // заголовок: столбцы до работ
   for(final MapEntry<int, LmColumn> el in columns1.entries){
@@ -138,36 +126,6 @@ void _fillOutSheetFromDate(
         textWrapping: TextWrapping.WrapText,
       ),
     );
-
-    final String bidIndexOnBasicTariffs = _stringIndex(
-      colInd: btTtariffForWages, 
-      rowInd: i + btStartRow);
-    // подзаголовок: Ставка (формула)
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: i + fStartWorks,
-        rowIndex: fBidRow),
-      FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
-      cellStyle: CellStyle(
-        backgroundColorHex: ExcelColor.fromHexString(blue02)
-      ),
-    );
-  }
-  // подзаголовок: Ставка (текст)
-  sheet.updateCell(CellIndex.indexByColumnRow(
-      columnIndex: fDate,
-      rowIndex: fBidRow), 
-    TextCellValue(strings.bid),
-  );
-
-  // голубой бг для строки ставки
-  final CellStyle blueCellStyle = CellStyle(
-    backgroundColorHex: ExcelColor.fromHexString(blue02)
-  );
-  for (int i = fDate; i < fStartWorks; i++) {
-    sheet.cell(CellIndex.indexByColumnRow(
-      columnIndex: i, 
-      rowIndex: fBidRow,
-    )).cellStyle = blueCellStyle;
   }
 
   // заголовок: столбцы после работ
@@ -188,7 +146,50 @@ void _fillOutSheetFromDate(
     );
   }
 
-  int row = fStartRow;
+  final CellStyle bidStyle = CellStyle(
+    backgroundColorHex: ExcelColor.fromHexString(blue02),
+    rightBorder: Border(borderStyle: BorderStyle.Thin),
+    topBorder: Border(borderStyle: BorderStyle.Thin),
+  );
+
+  // ставки
+  for (int dateInd = 0; dateInd < tariffsDates.length; dateInd++) {
+    final int row = fStartBidRow + dateInd;
+
+    // "Ставка"
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fDate,
+        rowIndex: row), 
+      TextCellValue(strings.bid),
+      cellStyle: bidStyle,
+    );
+
+    // с "дата"
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fShift,
+        rowIndex: row), 
+      TextCellValue(strings.from + DateFormat('dd.MM.yy').format(tariffsDates[dateInd])),
+      cellStyle: bidStyle,
+    );
+
+    // ряд ставок - ссылки на лист "Базовые тарифы"
+    for (int workInd = 0; workInd < workNames.length; workInd++) {
+
+      final String bidIndexOnBasicTariffs = stringIndex(
+        colInd: trStartColumn + dateInd * 3 + 1, // 1 - смещение "Тариф для расчета ЗП" от "Стоимость 1 услуги"
+        rowInd: trStartRow + workInd);
+
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: workInd + fStartWorks,
+          rowIndex: row), 
+        FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
+        cellStyle: bidStyle,
+      );
+    }
+  }
+
+  final int startPeepsRow = fStartBidRow + tariffsDates.length;
+  int row = startPeepsRow;
 
   // строки: дата, смена, логин, пики, формулы, итд
   for (final ShiftTime shiftTime in dates) {
@@ -209,13 +210,14 @@ void _fillOutSheetFromDate(
           night: strings.night,
           employeeDetails: strings.employeeDetails,
           indexOflogin: indexOflogin,
+          tariffsDates: tariffsDates,
         );
       }
     }
   }
 
   sheet.setColumnAutoFit(fLogin);
-  sheet.freezePanes(rows: fBidRow + 1, columns: fIncreasedRate + 1);
+  sheet.freezePanes(rows: startPeepsRow, columns: fIncreasedRate + 1);
 }
 
 void _fillOutSheetEmployeeDetails(
@@ -263,6 +265,7 @@ void _formRow({
   required String night,
   required String employeeDetails,
   required int indexOflogin,
+  required List<DateTime> tariffsDates,
 }){
   // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
@@ -285,15 +288,15 @@ void _formRow({
     TextCellValue(login),
   );
   if (indexOflogin > -1) {
-    final String fullNameIndexOnEmployeeDetails = _stringIndex(
+    final String fullNameIndexOnEmployeeDetails = stringIndex(
       colInd: edFullName, 
       rowInd: indexOflogin + edStartRow);
 
-    final String statusIndexOnEmployeeDetails = _stringIndex(
+    final String statusIndexOnEmployeeDetails = stringIndex(
       colInd: edStatus, 
       rowInd: indexOflogin + edStartRow);
 
-    final String startDateOfWorkIndexOnEmployeeDetails = _stringIndex(
+    final String startDateOfWorkIndexOnEmployeeDetails = stringIndex(
       colInd: edStartDateOfWork, 
       rowInd: indexOflogin + edStartRow);
 
@@ -318,7 +321,7 @@ void _formRow({
     );
   }  
 
-  final String startDateIndex = _stringIndex(colInd: fStartDateColumn, rowInd: row);
+  final String startDateIndex = stringIndex(colInd: fStartDateColumn, rowInd: row);
 
   // формула: фикс 4000 до
   sheet.updateCell(CellIndex.indexByColumnRow(
@@ -341,26 +344,26 @@ void _formRow({
 
   final int startFormulaColumn = fStartWorks + workNames.length;
 
-  final String startIndex = _stringIndex(colInd: fStartWorks, rowInd: row);
-  final String endIndex = _stringIndex(
+  final String startIndex = stringIndex(colInd: fStartWorks, rowInd: row);
+  final String endIndex = stringIndex(
     colInd: startFormulaColumn - 1,
     rowInd: row,
   );
-  final String dataIndex = _stringIndex(colInd: fDate, rowInd: row);
-  final String fixed4000UntilIndex = _stringIndex(colInd: fFixed4000Until, rowInd: row);
-  final String fixed4000For5DaysIndex = _stringIndex(
+  final String dataIndex = stringIndex(colInd: fDate, rowInd: row);
+  final String fixed4000UntilIndex = stringIndex(colInd: fFixed4000Until, rowInd: row);
+  final String fixed4000For5DaysIndex = stringIndex(
     colInd: fFixed4000For5Days + startFormulaColumn, 
     rowInd: row,
   );
-  final String basedOnPeepsIndex = _stringIndex(
+  final String basedOnPeepsIndex = stringIndex(
     colInd: fAccruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn, 
     rowInd: row,
   );
-  final String forTrainingIndex = _stringIndex(
+  final String forTrainingIndex = stringIndex(
     colInd: fAccruedForTraining + startFormulaColumn, 
     rowInd: row,
   );
-  final String foremanIndex = _stringIndex(
+  final String foremanIndex = stringIndex(
     colInd: fAccruedForeman + startFormulaColumn, 
     rowInd: row,
   );
@@ -372,7 +375,7 @@ void _formRow({
     FormulaCellValue('SUM($startIndex:$endIndex)'),
   );
 
-  final String statusIndex = _stringIndex(colInd: fStatus, rowInd: row);
+  final String statusIndex = stringIndex(colInd: fStatus, rowInd: row);
 
   // формула: Начислено за обучение
   sheet.updateCell(CellIndex.indexByColumnRow(
@@ -381,7 +384,13 @@ void _formRow({
     FormulaCellValue('IF($statusIndex="ученик",4000,0)'),
   );
   // формула: Начислено за смену по количеству пиков
-  final String formula = _accruedPerShiftFormula(sheet, row, startFormulaColumn);
+  final String formula = _accruedPerShiftFormula(
+    sheet: sheet, 
+    row: row, 
+    startFormulaColumn: startFormulaColumn, 
+    shiftDate: shiftTime.date,
+    tariffsDates: tariffsDates,
+  );
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: fAccruedPerShiftBasedOnNumberOfPeeps + startFormulaColumn,
       rowIndex: row),
@@ -408,57 +417,31 @@ void _formRow({
   );
 }
 
-Sheet _getFirstNamedSheet(Excel excel, String name) {
-  if (excel.tables.isNotEmpty) {
-    final String sheetName = excel.tables.keys.first;
-    excel.rename(sheetName, name);
-  }
-  return excel[name];
-}
-
-String _accruedPerShiftFormula(
-  Sheet sheet,
-  int row,
-  int startFormulaColumn,
-){
+String _accruedPerShiftFormula({
+  required Sheet sheet,
+  required int row,
+  required int startFormulaColumn,
+  required DateTime shiftDate,
+  required List<DateTime> tariffsDates,
+}){
   final List<String> list = <String>[];
 
   for (int col = fStartWorks; col < startFormulaColumn; col++) {
-    final String work = _stringIndex(colInd: col, rowInd: row);
-    final String bid = _stringIndexFixed(colInd: col, rowInd: fBidRow);
+    int bidInd = tariffsDates.length -1;
+    for (int i = bidInd; i >= 0; i--) {
+      final DateTime tariffsDate = tariffsDates[i];
+      if (shiftDate.isAfter(tariffsDate) || _isSameDay(shiftDate, tariffsDate)) {
+        break;
+      }
+      bidInd--;
+    }
+    final int bidRow = fStartBidRow + bidInd;
+    final String work = stringIndex(colInd: col, rowInd: row);
+    final String bid = stringIndexFixed(colInd: col, rowInd: bidRow);
     list.add('$bid*$work');
   }
   return list.join('+');
 }
 
-String _stringIndex({required int colInd, required int rowInd,}) => 
-  CellIndex.indexByColumnRow(columnIndex: colInd, rowIndex: rowInd).cellId;
-
-String _stringIndexFixed({required int colInd, required int rowInd,}) {
-  final String ci = _stringIndex(colInd: colInd, rowInd: rowInd);
-  int index = ci.length-1;
-  for (; index > 0; index--) {
-    final String lt = ci[index];
-    if (!RegExp(r'^\d$').hasMatch(lt)) { // RegExp of one digit
-      break;
-    }
-  }
-
-  index++; // коррекция: на последней итерации уже не цифра
-  
-  return '\$${ci.substring(0, index)}\$${ci.substring(index)}';
-}
-
-String _outputJson({
-  List<int> bytes = const <int>[],
-  String fromDate = '',
-  String error = '',
-  List<String> errorArgs = const <String>[]
-}) {
-  final FileOutputDto fileOutput = FileOutputDto(
-    bytes: bytes,
-    fromDate: fromDate,
-    error: error,
-    errorArgs: errorArgs);
-  return jsonEncode(fileOutput.toJson());
-}
+bool _isSameDay(DateTime a, DateTime b) => 
+  a.year == b.year && a.month == b.month && a.day == b.day;

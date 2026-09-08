@@ -68,7 +68,7 @@ class LamodaState {
     status == LamodaStatus.fileHandling || 
     status == LamodaStatus.fileDownloading;
 
-  bool get resultIsReady => !lamodaEntity.isEmpty;
+  bool get resultIsReady => lamodaEntity.shifts.isNotEmpty;
   bool get fileDownloaded => status == LamodaStatus.fileDownloaded;
 
   String get message => switch (status) {

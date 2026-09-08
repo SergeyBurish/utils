@@ -146,6 +146,12 @@ void _fillOutSheetFromDate({
     );
   }
 
+  final CellStyle bidStyle = CellStyle(
+    backgroundColorHex: ExcelColor.fromHexString(blue02),
+    rightBorder: Border(borderStyle: BorderStyle.Thin),
+    topBorder: Border(borderStyle: BorderStyle.Thin),
+  );
+
   // ставки
   for (int dateInd = 0; dateInd < tariffsDates.length; dateInd++) {
     final int row = fStartBidRow + dateInd;
@@ -155,9 +161,7 @@ void _fillOutSheetFromDate({
         columnIndex: fDate,
         rowIndex: row), 
       TextCellValue(strings.bid),
-      cellStyle: CellStyle(
-        backgroundColorHex: ExcelColor.fromHexString(blue02),
-      ),
+      cellStyle: bidStyle,
     );
 
     // с "дата"
@@ -165,9 +169,7 @@ void _fillOutSheetFromDate({
         columnIndex: fShift,
         rowIndex: row), 
       TextCellValue(strings.from + DateFormat('dd.MM.yy').format(tariffsDates[dateInd])),
-      cellStyle: CellStyle(
-        backgroundColorHex: ExcelColor.fromHexString(blue02),
-      ),
+      cellStyle: bidStyle,
     );
 
     // ряд ставок - ссылки на лист "Базовые тарифы"
@@ -181,9 +183,7 @@ void _fillOutSheetFromDate({
           columnIndex: workInd + fStartWorks,
           rowIndex: row), 
         FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
-        cellStyle: CellStyle(
-          backgroundColorHex: ExcelColor.fromHexString(blue02),
-        ),
+        cellStyle: bidStyle,
       );
     }
   }

@@ -118,7 +118,7 @@ void fillOutTariffsSheet({
   if (dates.isEmpty) {
     _fillOutDate(
       sheet: sheet,
-      date: strings.shouldBeDateHere,
+      date: DateTime(0), // strings.shouldBeDateHere,
       cost1serviceCol: trStartColumn,
       works: works,
       coeffWagesIndex: coeffWagesIndex,
@@ -133,7 +133,7 @@ void fillOutTariffsSheet({
     final DateTime date = dates[i];
     _fillOutDate(
       sheet: sheet,
-      date: DateFormat(dateFormat2).format(date),
+      date: date, // DateFormat(dateFormat2).format(date),
       cost1serviceCol: trStartColumn + i * 3,
       works: works,
       coeffWagesIndex: coeffWagesIndex,
@@ -160,7 +160,8 @@ void _fillOutWorks(List<String> works, Sheet sheet) {
 
 void _fillOutDate({
   required Sheet sheet,
-  required String date,
+  // required String date,
+  required DateTime date,
   required int cost1serviceCol,
   required List<String> works,
   required String coeffWagesIndex,
@@ -179,7 +180,8 @@ void _fillOutDate({
     CellIndex.indexByColumnRow(
       columnIndex: tariffWages2mCol,
       rowIndex: trDateRow),
-    customValue: TextCellValue(date),
+    //customValue: TextCellValue(date),
+    customValue: DateCellValue.fromDateTime(date)
   );
 
   sheet.cell(CellIndex.indexByColumnRow(
@@ -188,6 +190,7 @@ void _fillOutDate({
   )).cellStyle = CellStyle(
     horizontalAlign: HorizontalAlign.Center,
     verticalAlign: VerticalAlign.Center,
+    numberFormat: NumFormat.custom(formatCode: dateFormat2),
   );
 
   // 3 подзаголовка под датой

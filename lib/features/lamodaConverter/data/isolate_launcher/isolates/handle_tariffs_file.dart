@@ -55,6 +55,27 @@ DateTime? _tryParseDateTimeFromCell(CellValue? value){
 
   print('zzz _tryParseDateTimeFromCell value ${value.toString()}');
 
+  if (value is DateCellValue) {
+    print('zzz _tryParseDateTimeFromCell value is DateCellValue');
+    return value.asDateTimeLocal();
+  }
+
+  if (value is IntCellValue && value.value > 0) {
+    print('zzz _tryParseDateTimeFromCell value is IntCellValue ${value.value}');
+    return _intToDateTime(value.value);
+  }
+
+  if (value is DoubleCellValue && value.value >= 0.5) {
+    print('zzz _tryParseDateTimeFromCell value is DoubleCellValue ${value.value}');
+    return _intToDateTime(value.value.round());
+  }
+
+  final DateTime? date = DateTime.tryParse(value.toString());
+  if (date != null) {
+    print('zzz _tryParseDateTimeFromCell date != null; date.day ${date.day}');
+    return date;
+  }
+
   final List<String> dateParts = value.toString().split('.');
   print('zzz _tryParseDateTimeFromCell dateParts.length ${dateParts.length}');
   if (dateParts.length < 3) return null;
@@ -65,6 +86,9 @@ DateTime? _tryParseDateTimeFromCell(CellValue? value){
 
   return DateTime.tryParse(formattedString);
 }
+
+// Excel's base epoch date (December 30, 1899)
+DateTime? _intToDateTime(int days) => DateTime(1899, 12, 30).add(Duration(days: days));
 
 Tariffs _getTariffs(Sheet sheet, int column, ){
   final Tariffs tariffs = <String, double>{};

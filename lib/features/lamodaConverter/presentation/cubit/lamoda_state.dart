@@ -11,6 +11,7 @@ enum LamodaStatus {
   fileDownloading,
   fileDownloaded,
   tariffsDownloaded,
+  employeesDownloaded,
   allFilesErrors,
   error,
 }
@@ -57,8 +58,8 @@ class LamodaState {
     errors = <String>[],
     lamodaEntity = LamodaEntity(
       shifts: <ShiftTime, WorkerShifts>{},
+      lamodaEmployees: <String, EmployeeDetails>{},
       worksSet: <String>{},
-      loginsSet: <String>{},
     ),
     lamodaTariffs = <DateTime, Tariffs>{};
 
@@ -83,6 +84,7 @@ class LamodaState {
     LamodaStatus.fileDownloading => 'file_downloading'.tr(),
     LamodaStatus.fileDownloaded => 'file_downloaded'.tr(args: <String>[downloadedFile]),
     LamodaStatus.tariffsDownloaded => 'tariffs_downloaded'.tr(args: <String>[downloadedFile]),
+    LamodaStatus.employeesDownloaded => 'employeesDownloaded'.tr(args: <String>[downloadedFile]),
     LamodaStatus.allFilesErrors => 'all_files_with_errors'.tr(),
     LamodaStatus.error => 'error_occurred'.tr(),
   };
@@ -90,6 +92,10 @@ class LamodaState {
   String get tariffsMessage => lamodaTariffs.isEmpty
     ? 'tariffs_not_added'.tr()
     : 'tariffs_added_for_dates'.tr(args: <String>[(lamodaTariffs.keys.toList()..sort()).map((DateTime date) => DateFormat('dd-MM-yy').format(date)).join(', ')]);
+
+  String get employeesMessage => lamodaTariffs.isEmpty
+    ? 'employees_not_added'.tr()
+    : 'employees_added'.tr(args: <String>['0']);
 
   String get errorMessage => errors.isEmpty 
     ? 'no_errors'.tr() 

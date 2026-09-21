@@ -13,6 +13,8 @@ import '../../dto/lamoda_entity_dto.dart';
 import '../../dto/lm_column.dart';
 import '../../tablesData/consts.dart';
 import '../common/isol_utils.dart';
+import '../common/sheet_employee_details.dart';
+import '../common/sheet_tariffs.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
@@ -31,7 +33,8 @@ String isolCreateOutputFile(String createOutputJson) {
 
   final List<ShiftTime> dates = lamodaEntity.shifts.keys.toList();
   final List<String> workNames = lamodaEntity.worksSet.toList();
-  final List<String> logins = lamodaEntity.loginsSet.toList();
+  final LamodaEmployees lamodaEmployees = lamodaEntity.lamodaEmployees;
+  final List<String> logins = lamodaEmployees.keys.toList();
   final List<DateTime> tariffsDates = lamodaTariffs.keys.toList();
   if (dates.isEmpty || workNames.isEmpty) {
     return outputJson(error: 'no_data');
@@ -72,7 +75,7 @@ String isolCreateOutputFile(String createOutputJson) {
       columns2: columnsFD2,
     );
 
-    _fillOutSheetEmployeeDetails(sheetED, logins, columnsED);
+    fillOutSheetEmployeeDetails(sheetED, lamodaEmployees, columnsED);
 
     final List<int>? bytes = excel.encode();
 
@@ -218,40 +221,6 @@ void _fillOutSheetFromDate({
 
   sheet.setColumnAutoFit(fLogin);
   sheet.freezePanes(rows: startPeepsRow, columns: fIncreasedRate + 1);
-}
-
-void _fillOutSheetEmployeeDetails(
-  Sheet sheet,
-  List<String> logins,
-  Map<int, LmColumn> columns,
-){
-  // заголовок
-  for(final MapEntry<int, LmColumn> el in columns.entries){
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: el.key,
-        rowIndex: edHeaderRow), 
-      TextCellValue(el.value.name),
-      cellStyle: CellStyle(
-        rotation: el.value.rotation,
-        backgroundColorHex: el.value.bgColor != null 
-          ? ExcelColor.fromHexString(el.value.bgColor!) 
-          : ExcelColor.none,
-        bold: true,
-        rightBorder: Border(borderStyle: BorderStyle.Thin),
-        textWrapping: TextWrapping.WrapText,
-      ),
-    );
-
-    // колонка логинов
-    for (int i = 0; i < logins.length; i++) {
-      sheet.updateCell(CellIndex.indexByColumnRow(
-          columnIndex: edLogin,
-          rowIndex: i + edStartRow), 
-        TextCellValue(logins[i]),
-      );
-    }
-  }
-  sheet.setColumnAutoFit(edLogin);
 }
 
 void _formRow({

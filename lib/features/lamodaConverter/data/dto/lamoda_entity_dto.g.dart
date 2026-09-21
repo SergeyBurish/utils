@@ -16,10 +16,11 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(Map<String, dynamic> json) =>
           ),
         ),
       ),
+      lamodaEmployees: (json['lamodaEmployees'] as Map<String, dynamic>).map(
+        (k, e) =>
+            MapEntry(k, EmployeeDetailsDto.fromJson(e as Map<String, dynamic>)),
+      ),
       worksSet: (json['worksSet'] as List<dynamic>)
-          .map((e) => e as String)
-          .toSet(),
-      loginsSet: (json['loginsSet'] as List<dynamic>)
           .map((e) => e as String)
           .toSet(),
     );
@@ -27,6 +28,6 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$LamodaEntityDtoToJson(LamodaEntityDto instance) =>
     <String, dynamic>{
       'shifts': instance.shifts,
+      'lamodaEmployees': instance.lamodaEmployees,
       'worksSet': instance.worksSet.toList(),
-      'loginsSet': instance.loginsSet.toList(),
     };

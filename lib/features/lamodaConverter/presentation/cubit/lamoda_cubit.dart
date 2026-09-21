@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
 import '../../domain/entity/shift_time.dart';
 import '../../domain/entity/tariffs_entity.dart';
@@ -62,8 +63,8 @@ class LamodaCubit extends Cubit<LamodaState> {
           },
           ifRight: (LamodaEntity lamodaEntity) {
             state.lamodaEntity.shifts.addAll(lamodaEntity.shifts);
+            state.lamodaEntity.lamodaEmployees.addAll(lamodaEntity.lamodaEmployees);
             state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
-            state.lamodaEntity.loginsSet.addAll(lamodaEntity.loginsSet);
             emit(state.copyWith.status(LamodaStatus.fileHandling));
           },
         );
@@ -155,6 +156,30 @@ class LamodaCubit extends Cubit<LamodaState> {
       ifRight: (String downloadedFile) {
         emit(state.copyWith(
           status: LamodaStatus.tariffsDownloaded,
+          downloadedFile: downloadedFile,
+        ));
+      },
+    );
+  }
+
+  void onUploadEmployees() async {}
+
+  void onDownloadEmployees() async {
+    emit(state.copyWith.status(LamodaStatus.fileDownloading));
+
+    final Either<String, String> output = await lamodaUsecase.downloadEmployeesExcelFile(
+      state.lamodaEntity.lamodaEmployees,
+    );
+
+    output.fold(
+      ifLeft: (String error) {
+        state.errors.clear();
+        state.errors.add(error);
+        emit(state.copyWith.status(LamodaStatus.error));
+      },
+      ifRight: (String downloadedFile) {
+        emit(state.copyWith(
+          status: LamodaStatus.employeesDownloaded,
           downloadedFile: downloadedFile,
         ));
       },

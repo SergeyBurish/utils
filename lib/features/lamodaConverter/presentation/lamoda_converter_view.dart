@@ -7,6 +7,7 @@ import '../../../core/theme/app_theme.dart';
 class LamodaConverterView extends StatelessWidget {
   final String message;
   final String tariffsMessage;
+  final String employeesMessage;
   final String errorMessage;
   final String downloadButton;
   final String version;
@@ -14,11 +15,14 @@ class LamodaConverterView extends StatelessWidget {
   final void Function()? onUpload;
   final void Function()? onUploadTariffs;
   final void Function()? onDownloadTariffs;
+  final void Function()? onUploadEmployees;
+  final void Function()? onDownloadEmployees;
   final void Function()? onDownload;
   const LamodaConverterView({
     super.key,
     required this.message,
     required this.tariffsMessage,
+    required this.employeesMessage,
     required this.errorMessage,
     required this.downloadButton,
     required this.version,
@@ -26,6 +30,8 @@ class LamodaConverterView extends StatelessWidget {
     this.onUpload,
     this.onUploadTariffs,
     this.onDownloadTariffs,
+    this.onUploadEmployees,
+    this.onDownloadEmployees,
     this.onDownload,
   });
 
@@ -58,6 +64,14 @@ class LamodaConverterView extends StatelessWidget {
                     child: Text('download_tariffs'.tr()),
                   ),
                   ElevatedButton(
+                    onPressed: onUploadEmployees,
+                    child: Text('upload_employees'.tr()),
+                  ),
+                  ElevatedButton(
+                    onPressed: onDownloadEmployees,
+                    child: Text('download_employees'.tr()),
+                  ),
+                  ElevatedButton(
                     onPressed: onDownload,
                     child: Text(downloadButton),
                   ),
@@ -76,6 +90,10 @@ class LamodaConverterView extends StatelessWidget {
                   ),
                   Text(
                     tariffsMessage,
+                    style: context.textStyles.middleText,
+                  ),
+                  Text(
+                    employeesMessage,
                     style: context.textStyles.middleText,
                   ),
                   Text(

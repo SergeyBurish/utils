@@ -2,14 +2,14 @@ import 'typedefs.dart';
 
 class LamodaEntity {
   final LamodaShifts shifts;
+  final LamodaEmployees lamodaEmployees;
   final Set<String> worksSet;
-  final Set<String> loginsSet;
 
   LamodaEntity({
     required this.shifts, 
+    required this.lamodaEmployees,
     required this.worksSet,
-    required this.loginsSet,
   });
 
-  bool get isEmpty => shifts.isEmpty && worksSet.isEmpty && loginsSet.isEmpty ;
+  bool get isEmpty => shifts.isEmpty && worksSet.isEmpty && lamodaEmployees.isEmpty ;
 }

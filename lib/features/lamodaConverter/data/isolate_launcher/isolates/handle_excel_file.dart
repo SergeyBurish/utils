@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:excel_plus/excel_plus.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
+import '../../../domain/entity/employee_details.dart';
 import '../../../domain/entity/lamoda_entity.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
@@ -35,12 +36,12 @@ String isolHandleExcelFile(String handleExcelJson) {
 
 LamodaEntity _handleSalarySheet(Excel excel) {
   final LamodaShifts lamodaShifts = <ShiftTime, WorkerShifts>{};
+  final LamodaEmployees lamodaEmployees = <String, EmployeeDetails>{};
   final Set<String> worksSet = <String>{};
-  final Set<String> loginsSet = <String>{};
   final LamodaEntity lamodaEntity = LamodaEntity(
     shifts: lamodaShifts,
+    lamodaEmployees: lamodaEmployees,
     worksSet: worksSet,
-    loginsSet: loginsSet,
   );
 
   if (excel.tables.keys.contains(salarySheet)) {
@@ -52,7 +53,7 @@ LamodaEntity _handleSalarySheet(Excel excel) {
         final DateTime dateTime = dateTimeCellValue.asDateTimeUtc();
         final ShiftTime shiftTime = ShiftTime(date: dateTime, day: dateTime.hour == 8);
 
-        final WorkerShifts workerShifts = _handleDateColumn(sheet, column, worksSet, loginsSet);
+        final WorkerShifts workerShifts = _handleDateColumn(sheet, column, worksSet, lamodaEmployees);
         lamodaShifts[shiftTime] = workerShifts;
       } else {
         break;
@@ -63,13 +64,13 @@ LamodaEntity _handleSalarySheet(Excel excel) {
   return lamodaEntity;
 }
 
-WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, Set<String> loginsSet,) {
+WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, LamodaEmployees lamodaEmployees) {
   final WorkerShifts workerShifts = <String, Works>{};
 
   for (int row = startRow; ; row++) {
     final String? login = _getTextCellValue(sheet, loginColumn, row);
     if (login != null && login.isNotEmpty) {
-      loginsSet.add(login);
+      lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
       if (!workerShifts.keys.contains(login)) {
         workerShifts[login] = <String, int>{};
       }

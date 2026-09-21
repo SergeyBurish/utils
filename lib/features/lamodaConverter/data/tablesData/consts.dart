@@ -79,3 +79,4 @@ const String yellow03 = '#FFFB00';
 
 const String picksFilePrefix = 'picksLamoda';
 const String tariffsFilePrefix = 'tariffsLamoda';
+const String employeesFilePrefix = 'employeesLamoda';

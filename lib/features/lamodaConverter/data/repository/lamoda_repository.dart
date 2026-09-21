@@ -3,15 +3,19 @@ import 'dart:typed_data';
 import 'package:dart_either/dart_either.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
 import '../../domain/repository/lamoda_repository.dart';
 import '../data_sources/local_data_source.dart';
+import '../dto/create_employees_dto.dart';
+import '../dto/create_employees_strings.dart';
 import '../dto/create_output_dto.dart';
 import '../dto/create_output_strings.dart';
 import '../dto/create_tariffs_dto.dart';
 import '../dto/create_tariffs_strings.dart';
+import '../dto/employee_details_dto.dart';
 import '../dto/file_output_dto.dart';
 import '../dto/handle_excel_dto.dart';
 import '../dto/lamoda_entity_dto.dart';
@@ -105,6 +109,29 @@ class LamodaRepositoryImp implements LamodaRepository {
       case Right<String, FileOutputDto>(value: final FileOutputDto dto):
         final String nowFormatted = DateFormat('yyMMddHHmmss').format(DateTime.now()) ;
         final String fileName = '$tariffsFilePrefix$nowFormatted.xlsx';
+        return _downloadExcelFile(dto.bytes, fileName);
+      case Left<String, FileOutputDto>(value: final String error):
+        return Left<String, String>(error);
+    }
+  }
+
+  @override
+  Future<Either<String, String>> downloadEmployeesExcelFile(LamodaEmployees lamodaEmployees) async {
+    final CreateEmployeesDto dto = CreateEmployeesDto(
+      lamodaEmployees: lamodaEmployees.map(
+        (String key, EmployeeDetails value) => MapEntry<String, EmployeeDetailsDto>(key, value.toDto())
+      ),
+      columns: columnsED,
+      createEmployeesStrings: CreateEmployeesStrings(
+        employeeDetails: 'employee_details'.tr(),
+      ),
+    );
+
+    final Either<String, FileOutputDto> output = await isolateLauncher.createEmployeesFile(dto);
+    switch (output) {
+      case Right<String, FileOutputDto>(value: final FileOutputDto dto):
+        final String nowFormatted = DateFormat('yyMMddHHmmss').format(DateTime.now()) ;
+        final String fileName = '$employeesFilePrefix$nowFormatted.xlsx';
         return _downloadExcelFile(dto.bytes, fileName);
       case Left<String, FileOutputDto>(value: final String error):
         return Left<String, String>(error);

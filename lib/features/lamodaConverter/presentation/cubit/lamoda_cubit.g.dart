@@ -9,6 +9,10 @@ part of 'lamoda_cubit.dart';
 abstract class _$LamodaStateCWProxy {
   LamodaState status(LamodaStatus status);
 
+  LamodaState tariffsStatus(TariffsStatus tariffsStatus);
+
+  LamodaState employeesStatus(EmployeesStatus employeesStatus);
+
   LamodaState filesLength(int filesLength);
 
   LamodaState currentFile(String currentFile);
@@ -32,6 +36,8 @@ abstract class _$LamodaStateCWProxy {
   /// ```
   LamodaState call({
     LamodaStatus status,
+    TariffsStatus tariffsStatus,
+    EmployeesStatus employeesStatus,
     int filesLength,
     String currentFile,
     int currentFileInd,
@@ -51,6 +57,14 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
 
   @override
   LamodaState status(LamodaStatus status) => call(status: status);
+
+  @override
+  LamodaState tariffsStatus(TariffsStatus tariffsStatus) =>
+      call(tariffsStatus: tariffsStatus);
+
+  @override
+  LamodaState employeesStatus(EmployeesStatus employeesStatus) =>
+      call(employeesStatus: employeesStatus);
 
   @override
   LamodaState filesLength(int filesLength) => call(filesLength: filesLength);
@@ -87,6 +101,8 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
   /// ```
   LamodaState call({
     Object? status = const $CopyWithPlaceholder(),
+    Object? tariffsStatus = const $CopyWithPlaceholder(),
+    Object? employeesStatus = const $CopyWithPlaceholder(),
     Object? filesLength = const $CopyWithPlaceholder(),
     Object? currentFile = const $CopyWithPlaceholder(),
     Object? currentFileInd = const $CopyWithPlaceholder(),
@@ -100,6 +116,17 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
           ? _value.status
           // ignore: cast_nullable_to_non_nullable
           : status as LamodaStatus,
+      tariffsStatus:
+          tariffsStatus == const $CopyWithPlaceholder() || tariffsStatus == null
+          ? _value.tariffsStatus
+          // ignore: cast_nullable_to_non_nullable
+          : tariffsStatus as TariffsStatus,
+      employeesStatus:
+          employeesStatus == const $CopyWithPlaceholder() ||
+              employeesStatus == null
+          ? _value.employeesStatus
+          // ignore: cast_nullable_to_non_nullable
+          : employeesStatus as EmployeesStatus,
       filesLength:
           filesLength == const $CopyWithPlaceholder() || filesLength == null
           ? _value.filesLength

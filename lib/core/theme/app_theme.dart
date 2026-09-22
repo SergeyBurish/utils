@@ -10,6 +10,7 @@ class AppTheme {
       extensions: <ThemeExtension<dynamic>>[
         const AppColorScheme(
           appBarBackground: Color.fromARGB(107, 214, 231, 244),
+          cardBackground: Color.fromARGB(255, 235, 235, 235),
         ),
         const AppTextStyles(
           middleText: TextStyle(

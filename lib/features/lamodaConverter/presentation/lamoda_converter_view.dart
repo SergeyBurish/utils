@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/dm.dart';
 import '../../../core/theme/app_theme.dart';
+import 'widgets/card_wrap.dart';
 
 class LamodaConverterView extends StatelessWidget {
   final String message;
@@ -43,9 +44,7 @@ class LamodaConverterView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: Dm.s10,
         children: <Widget>[
-          Wrap(
-            spacing: Dm.s10,
-            runSpacing: Dm.s10,
+          CardWrap(
             children: <Widget>[
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,6 +55,24 @@ class LamodaConverterView extends StatelessWidget {
                     child: Text('upload_source_files'.tr()),
                   ),
                   ElevatedButton(
+                    onPressed: onDownload,
+                    child: Text(downloadButton),
+                  ),
+                ],
+              ),
+              Text(
+                message,
+                style: context.textStyles.middleText,
+              ),
+            ],
+          ),
+          CardWrap(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: Dm.s10,
+                children: <Widget>[
+                  ElevatedButton(
                     onPressed: onUploadTariffs,
                     child: Text('upload_tariffs'.tr()),
                   ),
@@ -63,6 +80,20 @@ class LamodaConverterView extends StatelessWidget {
                     onPressed: onDownloadTariffs,
                     child: Text('download_tariffs'.tr()),
                   ),
+                ],
+              ),
+              Text(
+                tariffsMessage,
+                style: context.textStyles.middleText,
+              ),
+            ],
+          ),
+          CardWrap(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: Dm.s10,
+                children: <Widget>[
                   ElevatedButton(
                     onPressed: onUploadEmployees,
                     child: Text('upload_employees'.tr()),
@@ -71,41 +102,24 @@ class LamodaConverterView extends StatelessWidget {
                     onPressed: onDownloadEmployees,
                     child: Text('download_employees'.tr()),
                   ),
-                  ElevatedButton(
-                    onPressed: onDownload,
-                    child: Text(downloadButton),
-                  ),
-                  Text(
-                    version,
-                    style: context.textStyles.smallText,
-                  ),
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    message,
-                    style: context.textStyles.middleText,
-                  ),
-                  Text(
-                    tariffsMessage,
-                    style: context.textStyles.middleText,
-                  ),
-                  Text(
-                    employeesMessage,
-                    style: context.textStyles.middleText,
-                  ),
-                  Text(
-                    errorMessage,
-                    style: context.textStyles.middleText,
-                    maxLines: 50,
-                  ),
-                ],
+              Text(
+                employeesMessage,
+                style: context.textStyles.middleText,
               ),
             ],
           ),
+          Text(
+            errorMessage,
+            style: context.textStyles.middleText,
+            maxLines: 50,
+          ),
           if(loading) const LinearProgressIndicator(),
+          Text(
+            version,
+            style: context.textStyles.smallText,
+          ),
         ],
       ),
     );

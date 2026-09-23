@@ -23,6 +23,7 @@ CreateOutputStrings _$CreateOutputStringsFromJson(Map<String, dynamic> json) =>
       tariffWages: json['tariffWages'] as String,
       tariffWages2months: json['tariffWages2months'] as String,
       shouldBeDateHere: json['shouldBeDateHere'] as String,
+      notFilledIn: json['notFilledIn'] as String,
     );
 
 Map<String, dynamic> _$CreateOutputStringsToJson(
@@ -43,4 +44,5 @@ Map<String, dynamic> _$CreateOutputStringsToJson(
   'night': instance.night,
   'basicTariffs': instance.basicTariffs,
   'employeeDetails': instance.employeeDetails,
+  'notFilledIn': instance.notFilledIn,
 };

@@ -24,7 +24,12 @@ String isolCreateEmployeesFile(String createEmployeesJson) {
     final Excel excel = Excel.createExcel();
     final Sheet sheet = getFirstNamedSheet(excel, strings.employeeDetails);
 
-    fillOutSheetEmployeeDetails(sheet, lamodaEmployees, columns);
+    fillOutSheetEmployeeDetails(
+      sheet,
+      lamodaEmployees,
+      columns,
+      strings.notFilledIn,
+    );
 
     final List<int>? bytes = excel.encode();
 

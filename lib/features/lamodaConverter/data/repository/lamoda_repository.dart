@@ -66,6 +66,7 @@ class LamodaRepositoryImp implements LamodaRepository {
         tariffWages: 'tariff_for_wages'.tr(),
         tariffWages2months: 'tariff_for_wages_2_months'.tr(),
         shouldBeDateHere: 'should_be_date_here'.tr(),
+        notFilledIn: 'not_filled_in'.tr(),
       ),
     );
 
@@ -130,6 +131,7 @@ class LamodaRepositoryImp implements LamodaRepository {
       columns: columnsED,
       createEmployeesStrings: CreateEmployeesStrings(
         employeeDetails: 'employee_details'.tr(),
+        notFilledIn: 'not_filled_in'.tr(),
       ),
     );
 

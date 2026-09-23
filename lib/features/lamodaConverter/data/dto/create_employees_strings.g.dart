@@ -8,8 +8,14 @@ part of 'create_employees_strings.dart';
 
 CreateEmployeesStrings _$CreateEmployeesStringsFromJson(
   Map<String, dynamic> json,
-) => CreateEmployeesStrings(employeeDetails: json['employeeDetails'] as String);
+) => CreateEmployeesStrings(
+  employeeDetails: json['employeeDetails'] as String,
+  notFilledIn: json['notFilledIn'] as String,
+);
 
 Map<String, dynamic> _$CreateEmployeesStringsToJson(
   CreateEmployeesStrings instance,
-) => <String, dynamic>{'employeeDetails': instance.employeeDetails};
+) => <String, dynamic>{
+  'employeeDetails': instance.employeeDetails,
+  'notFilledIn': instance.notFilledIn,
+};

@@ -42,6 +42,7 @@ const int edLogin = 0;
 const int edFullName = 1;
 const int edStatus = 2;
 const int edStartDateOfWork = 3;
+const int edNotFilledIn = 4;
 // - rows
 const int edHeaderRow = 0;
 const int edStartRow = 1;

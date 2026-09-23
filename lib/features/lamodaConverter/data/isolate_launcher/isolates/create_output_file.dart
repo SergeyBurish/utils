@@ -75,7 +75,12 @@ String isolCreateOutputFile(String createOutputJson) {
       columns2: columnsFD2,
     );
 
-    fillOutSheetEmployeeDetails(sheetED, lamodaEmployees, columnsED);
+    fillOutSheetEmployeeDetails(
+      sheetED,
+      lamodaEmployees,
+      columnsED,
+      strings.notFilledIn,
+    );
 
     final List<int>? bytes = excel.encode();
 

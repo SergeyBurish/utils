@@ -23,6 +23,7 @@ enum TariffsStatus {
 enum EmployeesStatus {
   idle,
   employeesLoading,
+  employeesLoaded,
   employeesDownloading,
   employeesDownloaded,
   employeesError,
@@ -92,7 +93,7 @@ class LamodaState {
     employeesStatus == EmployeesStatus.employeesLoading ||
     employeesStatus == EmployeesStatus.employeesDownloading;
 
-  bool get resultIsReady => lamodaEntity.shifts.isNotEmpty;
+  bool get resultIsReady => lamodaEntity.shifts.isNotEmpty && !inProgress;
   bool get fileDownloaded => status == LamodaStatus.fileDownloaded;
 
   String get message => switch (status) {
@@ -119,9 +120,8 @@ class LamodaState {
   };
 
   String get employeesMessage => switch (employeesStatus) {
-    EmployeesStatus.idle => lamodaTariffs.isEmpty
-      ? 'employees_not_added'.tr()
-      : 'employees_added'.tr(args: <String>['0']),
+    EmployeesStatus.idle => 'employees_not_added'.tr(),
+    EmployeesStatus.employeesLoaded => 'employees_added'.tr(args: <String>['${lamodaEntity.lamodaEmployees.length}']),
     EmployeesStatus.employeesLoading => 'employees_loading'.tr(),
     EmployeesStatus.employeesDownloading => 'employees_downloading'.tr(),
     EmployeesStatus.employeesDownloaded => 'employees_downloaded'.tr(args: <String>[downloadedFile]),

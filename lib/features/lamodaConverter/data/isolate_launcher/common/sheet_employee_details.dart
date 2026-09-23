@@ -1,13 +1,16 @@
 import 'package:excel_plus/excel_plus.dart';
 
+import '../../../domain/entity/employee_details.dart';
 import '../../../domain/entity/typedefs.dart';
 import '../../dto/lm_column.dart';
 import '../../tablesData/consts.dart';
+import 'isol_utils.dart';
 
 void fillOutSheetEmployeeDetails(
   Sheet sheet,
   LamodaEmployees lamodaEmployees,
   Map<int, LmColumn> columns,
+  String notFilledIn,
 ){
   final List<String> logins = lamodaEmployees.keys.toList();
   logins.sort();
@@ -28,12 +31,62 @@ void fillOutSheetEmployeeDetails(
       ),
     );
 
-    // колонка логинов
     for (int i = 0; i < logins.length; i++) {
+      final int rowIndex = i + edStartRow;
+      
+      // логин
+      final String login = logins[i];
       sheet.updateCell(CellIndex.indexByColumnRow(
           columnIndex: edLogin,
-          rowIndex: i + edStartRow), 
-        TextCellValue(logins[i]),
+          rowIndex: rowIndex), 
+        TextCellValue(login),
+      );
+
+      final EmployeeDetails? employeeDetails = lamodaEmployees[login];
+
+      // Ф.И.О
+      if (employeeDetails?.fullName.isNotEmpty ?? false) {
+        final String fullName = employeeDetails!.fullName;
+        sheet.updateCell(CellIndex.indexByColumnRow(
+            columnIndex: edFullName,
+            rowIndex: rowIndex), 
+          TextCellValue(fullName),
+        );
+      }
+
+      // статус
+      if (employeeDetails?.status.isNotEmpty ?? false) {
+        final String status = employeeDetails!.status;
+        sheet.updateCell(CellIndex.indexByColumnRow(
+            columnIndex: edStatus,
+            rowIndex: rowIndex), 
+          TextCellValue(status),
+        );
+      }
+
+      // дата начала работы
+      sheet.cell(CellIndex.indexByColumnRow(
+        columnIndex: edStartDateOfWork, 
+        rowIndex: rowIndex,
+      )).cellStyle = CellStyle(numberFormat: NumFormat.custom(formatCode: dateFormat));
+
+      if (employeeDetails?.startDateOfWork != null) {
+        final DateTime startDateOfWork = employeeDetails!.startDateOfWork!;
+        sheet.updateCell(CellIndex.indexByColumnRow(
+            columnIndex: edStartDateOfWork,
+            rowIndex: rowIndex), 
+          DateTimeCellValue.fromDateTime(startDateOfWork),
+        );
+      }
+
+      // формула: Не заполнено.
+      final String fullNameIndex = stringIndex(colInd: edFullName, rowInd: rowIndex);
+      final String statusIndex = stringIndex(colInd: edStatus, rowInd: rowIndex);
+      final String dateIndex = stringIndex(colInd: edStartDateOfWork, rowInd: rowIndex);
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: edNotFilledIn,
+          rowIndex: rowIndex),
+        FormulaCellValue('IF(OR(ISBLANK($fullNameIndex),ISBLANK($statusIndex),ISBLANK($dateIndex)),"$notFilledIn","")'),
       );
     }
   }

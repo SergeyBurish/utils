@@ -191,7 +191,7 @@ class LamodaCubit extends Cubit<LamodaState> {
         },
         ifRight: (LamodaEmployees lamodaEmployees) {
           state.lamodaEntity.lamodaEmployees.addAll(lamodaEmployees);
-          emit(state.copyWith.employeesStatus(EmployeesStatus.idle));
+          emit(state.copyWith.employeesStatus(EmployeesStatus.employeesLoaded));
         },
       );
     } on Exception catch (e) {

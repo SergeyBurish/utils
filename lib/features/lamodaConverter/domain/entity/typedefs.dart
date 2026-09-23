@@ -1,3 +1,4 @@
+import 'employee_details.dart';
 import 'shift_time.dart';
 
 typedef Works = Map<String, int>; // work, number
@@ -6,3 +7,5 @@ typedef LamodaShifts = Map<ShiftTime, WorkerShifts>;
 
 typedef Tariffs = Map<String, double>; // work, price
 typedef LamodaTariffs = Map<DateTime, Tariffs>; // date, tariffs
+
+typedef LamodaEmployees = Map<String, EmployeeDetails>; // login, EmployeeDetails

@@ -7,6 +7,7 @@ import '../../../domain/entity/typedefs.dart';
 import '../../dto/create_tariffs_dto.dart';
 import '../../dto/create_tariffs_strings.dart';
 import '../common/isol_utils.dart';
+import '../common/sheet_tariffs.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker

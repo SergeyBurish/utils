@@ -5,15 +5,20 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
 import '../../domain/entity/tariffs_entity.dart';
+import '../../domain/entity/typedefs.dart';
+import '../dto/create_employees_dto.dart';
 import '../dto/create_output_dto.dart';
 import '../dto/create_tariffs_dto.dart';
 import '../dto/file_output_dto.dart';
+import '../dto/handle_employees_output_dto.dart';
 import '../dto/handle_excel_dto.dart';
 import '../dto/handle_excel_output_dto.dart';
 import '../dto/handle_tariffs_output_dto.dart';
 import '../dto/lamoda_entity_dto.dart';
+import 'isolates/create_employees_file.dart';
 import 'isolates/create_output_file.dart';
 import 'isolates/create_tariffs_file.dart';
+import 'isolates/handle_employees_file.dart';
 import 'isolates/handle_excel_file.dart';
 import 'isolates/handle_tariffs_file.dart';
 
@@ -22,6 +27,8 @@ abstract interface class IsolateLauncher {
   Future<Either<String, FileOutputDto>> createOutputFile(CreateOutputDto dto);
   Future<Either<String, TariffsEntity>> handleTariffsFile(HandleExcelDto dto);
   Future<Either<String, FileOutputDto>> createTariffsFile(CreateTariffsDto dto);
+  Future<Either<String, LamodaEmployees>> handleEmployeesFile(HandleExcelDto dto);
+  Future<Either<String, FileOutputDto>> createEmployeesFile(CreateEmployeesDto dto);
 }
 
 class IsolateLauncherImp implements IsolateLauncher{
@@ -84,6 +91,41 @@ class IsolateLauncherImp implements IsolateLauncher{
       IsolateManager<String, String>.create(
         isolCreateTariffsFile,
         workerName: 'isolCreateTariffsFile',
+      );
+
+    final String isolResult = await isolate.compute(jsonEncode(dto.toJson()));
+    final FileOutputDto fileOutput = FileOutputDto.fromJson(jsonDecode(isolResult));
+
+    if (fileOutput.bytes.isNotEmpty) {
+      return Right<String, FileOutputDto>(fileOutput);
+    } else {
+      return Left<String, FileOutputDto>(fileOutput.error.tr(args: fileOutput.errorArgs));
+    }
+  }
+
+  @override
+  Future<Either<String, LamodaEmployees>> handleEmployeesFile(HandleExcelDto dto) async {
+    final IsolateManager<String, String> isolate = 
+      IsolateManager<String, String>.create(
+        isolHandleEmployeesFile,
+        workerName: 'isolHandleEmployeesFile',
+      );
+
+    final String isolResult = await isolate.compute(jsonEncode(dto.toJson()));
+    final HandleEmployeesOutputDto employeesOutput = HandleEmployeesOutputDto.fromJson(jsonDecode(isolResult));
+    if (employeesOutput.lamodaEmployees != null) {
+      return Right<String, LamodaEmployees>(employeesOutput.lamodaEmployees!);
+    } else {
+      return Left<String, LamodaEmployees>(employeesOutput.error.tr(args: employeesOutput.errorArgs));
+    }
+  }
+
+  @override
+  Future<Either<String, FileOutputDto>> createEmployeesFile(CreateEmployeesDto dto) async {
+    final IsolateManager<String, String> isolate = 
+      IsolateManager<String, String>.create(
+        isolCreateEmployeesFile,
+        workerName: 'isolCreateEmployeesFile',
       );
 
     final String isolResult = await isolate.compute(jsonEncode(dto.toJson()));

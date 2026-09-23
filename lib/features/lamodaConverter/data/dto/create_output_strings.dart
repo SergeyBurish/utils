@@ -12,6 +12,7 @@ class CreateOutputStrings extends CreateTariffsStrings {
   final String night;
   final String basicTariffs;
   final String employeeDetails;
+  final String notFilledIn;
 
   CreateOutputStrings({
     required this.from,
@@ -29,6 +30,7 @@ class CreateOutputStrings extends CreateTariffsStrings {
     required String tariffWages,
     required String tariffWages2months,
     required String shouldBeDateHere,
+    required this.notFilledIn,
   }) : super(
     tariffs: tariffs,
     coeffWages: coeffWages,

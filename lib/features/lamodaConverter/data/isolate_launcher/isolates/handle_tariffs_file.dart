@@ -9,6 +9,7 @@ import '../../dto/handle_excel_dto.dart';
 import '../../dto/handle_tariffs_output_dto.dart';
 import '../../dto/tariffs_entity_dto.dart';
 import '../../tablesData/consts.dart';
+import '../common/isol_utils.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
@@ -29,7 +30,7 @@ String isolHandleTariffsFile(String handleExcelJson) {
     );
     for (int column = trStartColumn; ; column += 3) {
       final Data cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: column, rowIndex: trDateRow));
-      final DateTime? dateTime = _tryParseDateTimeFromCell(cell.value);
+      final DateTime? dateTime = tryParseDateTimeFromCell(cell.value);
       if (dateTime == null) {
         break;
       }
@@ -45,39 +46,6 @@ String isolHandleTariffsFile(String handleExcelJson) {
     return _outputJson(error: 'fail_open_excel_file', errorArgs: <String>['$e']);
   }
 }
-
-DateTime? _tryParseDateTimeFromCell(CellValue? value){
-  if (value == null) {
-    return null;
-  }
-
-  if (value is DateCellValue) {
-    return value.asDateTimeLocal();
-  }
-
-  if (value is IntCellValue && value.value > 0) {
-    return _intToDateTime(value.value);
-  }
-
-  if (value is DoubleCellValue && value.value >= 0.5) {
-    return _intToDateTime(value.value.round());
-  }
-
-  final DateTime? date = DateTime.tryParse(value.toString());
-  if (date != null) {
-    return date;
-  }
-
-  final List<String> dateParts = value.toString().split('.');
-  if (dateParts.length < 3) return null;
-
-  final String formattedString = dateParts.reversed.join('-');
-  return DateTime.tryParse(formattedString);
-}
-
-// Excel's base epoch date (December 30, 1899)
-DateTime? _intToDateTime(int days) => DateTime(1899, 12, 30).add(Duration(days: days));
-
 
 Tariffs _getTariffs(Sheet sheet, int column, ){
   final Tariffs tariffs = <String, double>{};

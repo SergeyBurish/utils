@@ -162,15 +162,52 @@ class LamodaCubit extends Cubit<LamodaState> {
     );
   }
 
-  void onUploadEmployees() async {}
+  void onUploadEmployees() async {
+    emit(state.copyWith.employeesStatus(EmployeesStatus.employeesLoading));
+
+    const XTypeGroup excelTypeGroup = XTypeGroup(
+      label: 'Excel',
+      extensions: <String>['xls', 'xlsx'],
+      uniformTypeIdentifiers: <String>['public.xlsx'],
+    );
+
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[excelTypeGroup],
+    );
+
+    if (file == null) {
+      emit(state.copyWith.employeesStatus(EmployeesStatus.idle));
+      return;
+    }
+
+    try {
+      final Uint8List bytes = await file.readAsBytes();
+      final Either<String, LamodaEmployees> output = await lamodaUsecase.handleEmployeesFile(bytes);
+      state.errors.clear();
+      output.fold(
+        ifLeft: (String error) {
+          state.errors.add('${file.name}: $error');
+          emit(state.copyWith.employeesStatus(EmployeesStatus.employeesError));
+        },
+        ifRight: (LamodaEmployees lamodaEmployees) {
+          state.lamodaEntity.lamodaEmployees.addAll(lamodaEmployees);
+          emit(state.copyWith.employeesStatus(EmployeesStatus.idle));
+        },
+      );
+    } on Exception catch (e) {
+      state.errors.add('${file.name}: $e');
+      emit(state.copyWith.employeesStatus(EmployeesStatus.employeesError));
+    }
+  }
 
   void onDownloadEmployees() async {
-    emit(state.copyWith.status(LamodaStatus.fileDownloading));
+    emit(state.copyWith.employeesStatus(EmployeesStatus.employeesDownloading));
 
     final Either<String, String> output = await lamodaUsecase.downloadEmployeesExcelFile(
       state.lamodaEntity.lamodaEmployees,
     );
 
+    state.errors.clear();
     output.fold(
       ifLeft: (String error) {
         state.errors.clear();
@@ -179,7 +216,7 @@ class LamodaCubit extends Cubit<LamodaState> {
       },
       ifRight: (String downloadedFile) {
         emit(state.copyWith(
-          status: LamodaStatus.employeesDownloaded,
+          employeesStatus: EmployeesStatus.employeesDownloaded,
           downloadedFile: downloadedFile,
         ));
       },

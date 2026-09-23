@@ -83,7 +83,7 @@ class LamodaRepositoryImp implements LamodaRepository {
   @override
   Future<Either<String, TariffsEntity>> handleTariffsFile(Uint8List bytes) async {
     final HandleExcelDto dto = HandleExcelDto(bytes: bytes);
-    return  await isolateLauncher.handleTariffsFile(dto);
+    return await isolateLauncher.handleTariffsFile(dto);
   }
 
   @override
@@ -113,6 +113,12 @@ class LamodaRepositoryImp implements LamodaRepository {
       case Left<String, FileOutputDto>(value: final String error):
         return Left<String, String>(error);
     }
+  }
+
+  @override
+  Future<Either<String, LamodaEmployees>> handleEmployeesFile(Uint8List bytes) async {
+    final HandleExcelDto dto = HandleExcelDto(bytes: bytes);
+    return await isolateLauncher.handleEmployeesFile(dto);
   }
 
   @override

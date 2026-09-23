@@ -606,6 +606,8 @@ file:///Users/sergeyburish/fvm/versions/3.44.2/bin/cache/dart-sdk/lib/libraries.
 file:///Users/sergeyburish/projects/utils/.dart_tool/package_config.json
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/employee_details_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/employee_details_dto.g.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/file_output_dto.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/file_output_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_output_dto.dart
@@ -614,7 +616,8 @@ file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/lamoda_entity_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/shift_time_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/shift_time_dto.g.dart
-file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleExcelFile.306044510.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/common/isol_utils.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleExcelFile.179379975.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/handle_excel_file.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/tablesData/consts.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/employee_details.dart

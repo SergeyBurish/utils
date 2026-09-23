@@ -11,6 +11,7 @@ import '../../dto/handle_excel_dto.dart';
 import '../../dto/handle_excel_output_dto.dart';
 import '../../dto/lamoda_entity_dto.dart';
 import '../../tablesData/consts.dart';
+import '../common/isol_utils.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
@@ -68,7 +69,7 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
   final WorkerShifts workerShifts = <String, Works>{};
 
   for (int row = startRow; ; row++) {
-    final String? login = _getTextCellValue(sheet, loginColumn, row);
+    final String? login = getTextCellValue(sheet, loginColumn, row);
     if (login != null && login.isNotEmpty) {
       lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
       if (!workerShifts.keys.contains(login)) {
@@ -78,7 +79,7 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
 
       final int? workValue = _getIntCellValue(sheet, column, row);
       if (workValue != null) {
-        final String? workName = _getTextCellValue(sheet, processColumn, row);
+        final String? workName = getTextCellValue(sheet, processColumn, row);
         if (workName != null && workName.isNotEmpty) {
           final String trimmedWorkName = _trimFcPrefix(workName);
           works?[trimmedWorkName] = workValue;
@@ -91,14 +92,6 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
   }
 
   return workerShifts;
-}
-
-String? _getTextCellValue(Sheet sheet, int columnIndex, int rowIndex) {
-  final Data textCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: rowIndex));
-  if (textCell.value is TextCellValue) {
-    return (textCell.value as TextCellValue).value.text;
-  }
-  return null;
 }
 
 int? _getIntCellValue(Sheet sheet, int columnIndex, int rowIndex) {

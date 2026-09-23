@@ -8,7 +8,6 @@ enum LamodaStatus {
   filesHandled,
   fileDownloading,
   fileDownloaded,
-  employeesDownloaded,
   allFilesErrors,
   error,
 }
@@ -86,10 +85,12 @@ class LamodaState {
 
   bool get inProgress => 
     status == LamodaStatus.sourceFilesLoading ||
+    status == LamodaStatus.fileHandling || 
+    status == LamodaStatus.fileDownloading ||
     tariffsStatus == TariffsStatus.tariffsLoading ||
     tariffsStatus == TariffsStatus.tariffsDownloading ||
-    status == LamodaStatus.fileHandling || 
-    status == LamodaStatus.fileDownloading;
+    employeesStatus == EmployeesStatus.employeesLoading ||
+    employeesStatus == EmployeesStatus.employeesDownloading;
 
   bool get resultIsReady => lamodaEntity.shifts.isNotEmpty;
   bool get fileDownloaded => status == LamodaStatus.fileDownloaded;
@@ -103,7 +104,6 @@ class LamodaState {
     LamodaStatus.filesHandled => 'files_handled'.tr(),
     LamodaStatus.fileDownloading => 'file_downloading'.tr(),
     LamodaStatus.fileDownloaded => 'file_downloaded'.tr(args: <String>[downloadedFile]),
-    LamodaStatus.employeesDownloaded => 'employeesDownloaded'.tr(args: <String>[downloadedFile]),
     LamodaStatus.allFilesErrors => 'all_files_with_errors'.tr(),
     LamodaStatus.error => 'error_occurred'.tr(),
   };
@@ -113,14 +113,20 @@ class LamodaState {
       ? 'tariffs_not_added'.tr()
       : 'tariffs_added_for_dates'.tr(args: <String>[(lamodaTariffs.keys.toList()..sort()).map((DateTime date) => DateFormat('dd-MM-yy').format(date)).join(', ')]),
     TariffsStatus.tariffsLoading => 'tariffs_loading'.tr(),
-    TariffsStatus.tariffsDownloading => 'tariffs_loading'.tr(),
+    TariffsStatus.tariffsDownloading => 'tariffs_downloading'.tr(),
     TariffsStatus.tariffsDownloaded => 'tariffs_downloaded'.tr(args: <String>[downloadedFile]),
     TariffsStatus.tariffsError => 'tariffs_error'.tr(),
   };
 
-  String get employeesMessage => lamodaTariffs.isEmpty
-    ? 'employees_not_added'.tr()
-    : 'employees_added'.tr(args: <String>['0']);
+  String get employeesMessage => switch (employeesStatus) {
+    EmployeesStatus.idle => lamodaTariffs.isEmpty
+      ? 'employees_not_added'.tr()
+      : 'employees_added'.tr(args: <String>['0']),
+    EmployeesStatus.employeesLoading => 'employees_loading'.tr(),
+    EmployeesStatus.employeesDownloading => 'employees_downloading'.tr(),
+    EmployeesStatus.employeesDownloaded => 'employees_downloaded'.tr(args: <String>[downloadedFile]),
+    EmployeesStatus.employeesError => 'employees_error'.tr(),
+  };
 
   String get errorMessage => errors.isEmpty 
     ? 'no_errors'.tr() 

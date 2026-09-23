@@ -12,6 +12,7 @@ abstract interface class LamodaUsecase{
     Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity, LamodaTariffs lamodaTariffs);
     Future<Either<String, TariffsEntity>> handleTariffsFile(Uint8List bytes);
     Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet);
+    Future<Either<String, LamodaEmployees>> handleEmployeesFile(Uint8List bytes);
     Future<Either<String, String>> downloadEmployeesExcelFile(LamodaEmployees lamodaEmployees);
 }
 class LamodaUsecaseImp implements LamodaUsecase{
@@ -37,6 +38,11 @@ class LamodaUsecaseImp implements LamodaUsecase{
   @override
   Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet) async {
     return await repository.downloadTariffsExcelFile(lamodaTariffs, worksSet);
+  }
+
+  @override
+  Future<Either<String, LamodaEmployees>> handleEmployeesFile(Uint8List bytes) async {
+    return await repository.handleEmployeesFile(bytes);
   }
 
   @override

@@ -11,7 +11,7 @@ class HandleTariffsOutputDto {
   final List<String> errorArgs;
 
   HandleTariffsOutputDto({
-    required this.tariffsEntityDto,
+    this.tariffsEntityDto,
     required this.error,
     required this.errorArgs,
   });

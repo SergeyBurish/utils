@@ -43,3 +43,44 @@ String stringIndexFixed({required int colInd, required int rowInd,}) {
   
   return '\$${ci.substring(0, index)}\$${ci.substring(index)}';
 }
+
+String? getTextCellValue(Sheet sheet, int columnIndex, int rowIndex) {
+  final Data textCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: rowIndex));
+  if (textCell.value is TextCellValue) {
+    return (textCell.value as TextCellValue).value.text;
+  }
+  return null;
+}
+
+DateTime? tryParseDateTimeFromCell(CellValue? value){
+  if (value == null) {
+    return null;
+  }
+
+  if (value is DateCellValue) {
+    return value.asDateTimeLocal();
+  }
+
+  if (value is IntCellValue && value.value > 0) {
+    return _intToDateTime(value.value);
+  }
+
+  if (value is DoubleCellValue && value.value >= 0.5) {
+    return _intToDateTime(value.value.round());
+  }
+
+  final DateTime? date = DateTime.tryParse(value.toString());
+  if (date != null) {
+    return date;
+  }
+
+  final List<String> dateParts = value.toString().split('.');
+  if (dateParts.length < 3) return null;
+
+  final String formattedString = dateParts.reversed.join('-');
+  return DateTime.tryParse(formattedString);
+}
+
+// Excel's base epoch date (December 30, 1899)
+DateTime? _intToDateTime(int days) => DateTime(1899, 12, 30).add(Duration(days: days));
+

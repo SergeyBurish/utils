@@ -23,6 +23,11 @@ String isolHandleExcelFile(String handleExcelJson) {
 
     if (excel.tables.keys.isNotEmpty) {
       final LamodaEntity lamodaEntity = _handleSalarySheet(excel);
+      final LamodaEntity lamodaEntityNtt = _handleNttSheet(excel);
+      lamodaEntity.nttShifts.addAll(lamodaEntityNtt.nttShifts);
+      lamodaEntity.nttWorksSet.addAll(lamodaEntityNtt.nttWorksSet);
+      lamodaEntity.lamodaEmployees.addAll(lamodaEntityNtt.lamodaEmployees);
+      
       if (lamodaEntity.isEmpty) {
         return _outputJson(error: 'no_data_found');
       }
@@ -41,14 +46,17 @@ LamodaEntity _handleSalarySheet(Excel excel) {
   final Set<String> worksSet = <String>{};
   final LamodaEntity lamodaEntity = LamodaEntity(
     shifts: lamodaShifts,
+    nttShifts: <ShiftTime, WorkerShifts>{},
     lamodaEmployees: lamodaEmployees,
     worksSet: worksSet,
+    nttWorksSet: <String>{},
   );
 
   if (excel.tables.keys.contains(salarySheet)) {
-    for (int column = startColumn; ; column++) {
-      final Sheet sheet = excel[salarySheet];
-      final Data cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: column, rowIndex: 0));
+    final Sheet sheet = excel[salarySheet];
+    for (int column = saStartColumn; ; column++) {
+      final Data cell = sheet.cell(CellIndex.indexByColumnRow(
+        columnIndex: column, rowIndex: saHeaderRow));
       if (cell.value is DateTimeCellValue) {
         final DateTimeCellValue dateTimeCellValue = cell.value as DateTimeCellValue;
         final DateTime dateTime = dateTimeCellValue.asDateTimeUtc();
@@ -65,11 +73,43 @@ LamodaEntity _handleSalarySheet(Excel excel) {
   return lamodaEntity;
 }
 
+LamodaEntity _handleNttSheet(Excel excel) {
+  final LamodaShifts lamodaShifts = <ShiftTime, WorkerShifts>{};
+  final LamodaEmployees lamodaEmployees = <String, EmployeeDetails>{};
+  final LamodaEntity lamodaEntity = LamodaEntity(
+    shifts: <ShiftTime, WorkerShifts>{},
+    nttShifts: lamodaShifts,
+    lamodaEmployees: lamodaEmployees,
+    worksSet: <String>{},
+    nttWorksSet: <String>{nttOperations},
+  );
+
+  if (excel.tables.keys.contains(nttSheet)) {
+    final Sheet sheet = excel[nttSheet];
+    for (int column = ntStartColumn; ; column++) {
+      final Data cell = sheet.cell(CellIndex.indexByColumnRow(
+        columnIndex: column, rowIndex: ntHeaderRow));
+      if (cell.value is DateTimeCellValue) {
+        final DateTimeCellValue dateTimeCellValue = cell.value as DateTimeCellValue;
+        final DateTime dateTime = dateTimeCellValue.asDateTimeUtc();
+        final ShiftTime shiftTime = ShiftTime(date: dateTime, day: dateTime.hour == 8);
+
+        final WorkerShifts workerShifts = _handleNttDateColumn(sheet, column, lamodaEmployees);
+        lamodaShifts[shiftTime] = workerShifts;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return lamodaEntity;
+}
+
 WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, LamodaEmployees lamodaEmployees) {
   final WorkerShifts workerShifts = <String, Works>{};
 
-  for (int row = startRow; ; row++) {
-    final String? login = getTextCellValue(sheet, loginColumn, row);
+  for (int row = saStartRow; ; row++) {
+    final String? login = getTextCellValue(sheet, saLogin, row);
     if (login != null && login.isNotEmpty) {
       lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
       if (!workerShifts.keys.contains(login)) {
@@ -79,12 +119,36 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
 
       final int? workValue = _getIntCellValue(sheet, column, row);
       if (workValue != null) {
-        final String? workName = getTextCellValue(sheet, processColumn, row);
+        final String? workName = getTextCellValue(sheet, saProcess, row);
         if (workName != null && workName.isNotEmpty) {
           final String trimmedWorkName = _trimFcPrefix(workName);
           works?[trimmedWorkName] = workValue;
           worksSet.add(trimmedWorkName);
         }
+      }
+    } else {
+      break;
+    }
+  }
+
+  return workerShifts;
+}
+
+WorkerShifts _handleNttDateColumn(Sheet sheet, int column, LamodaEmployees lamodaEmployees) {
+  final WorkerShifts workerShifts = <String, Works>{};
+
+  for (int row = ntStartRow; ; row++) {
+    final String? login = getTextCellValue(sheet, ntLogin, row);
+    if (login != null && login.isNotEmpty) {
+      lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
+      if (!workerShifts.keys.contains(login)) {
+        workerShifts[login] = <String, int>{};
+      }
+      final Works? works = workerShifts[login];
+
+      final int? workValue = _getIntCellValue(sheet, column, row);
+      if (workValue != null) {
+        works?[nttOperations] = workValue;
       }
     } else {
       break;

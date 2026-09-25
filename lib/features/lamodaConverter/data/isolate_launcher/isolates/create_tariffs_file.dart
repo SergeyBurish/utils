@@ -15,9 +15,11 @@ String isolCreateTariffsFile(String createTariffsJson) {
   final CreateTariffsDto createTariffsDto = CreateTariffsDto.fromJson(jsonDecode(createTariffsJson));
   final LamodaTariffs lamodaTariffs = createTariffsDto.lamodaTariffs;
   final List<String> works = createTariffsDto.worksSet.toList();
+  final List<String> nttWorks = createTariffsDto.nttWorksSet.toList();
   final CreateTariffsStrings strings = createTariffsDto.createTariffsStrings;
 
   works.sort();
+  nttWorks.sort();
 
   try {
     final Excel excel = Excel.createExcel();
@@ -27,6 +29,7 @@ String isolCreateTariffsFile(String createTariffsJson) {
       sheet: sheet,
       lamodaTariffs: lamodaTariffs,
       works: works,
+      nttWorks: nttWorks,
       strings: strings,
     );
 

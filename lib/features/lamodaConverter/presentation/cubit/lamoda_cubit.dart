@@ -63,8 +63,10 @@ class LamodaCubit extends Cubit<LamodaState> {
           },
           ifRight: (LamodaEntity lamodaEntity) {
             state.lamodaEntity.shifts.addAll(lamodaEntity.shifts);
+            state.lamodaEntity.nttShifts.addAll(lamodaEntity.nttShifts);
             state.lamodaEntity.lamodaEmployees.addAll(lamodaEntity.lamodaEmployees);
             state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
+            state.lamodaEntity.nttWorksSet.addAll(lamodaEntity.nttWorksSet);
             emit(state.copyWith.status(LamodaStatus.fileHandling));
           },
         );
@@ -145,6 +147,7 @@ class LamodaCubit extends Cubit<LamodaState> {
     final Either<String, String> output = await lamodaUsecase.downloadTariffsExcelFile(
       state.lamodaTariffs,
       state.lamodaEntity.worksSet,
+      state.lamodaEntity.nttWorksSet,
     );
 
     state.errors.clear();

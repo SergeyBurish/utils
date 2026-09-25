@@ -19,6 +19,9 @@ CreateTariffsDto _$CreateTariffsDtoFromJson(Map<String, dynamic> json) =>
       worksSet: (json['worksSet'] as List<dynamic>)
           .map((e) => e as String)
           .toSet(),
+      nttWorksSet: (json['nttWorksSet'] as List<dynamic>)
+          .map((e) => e as String)
+          .toSet(),
       createTariffsStrings: CreateTariffsStrings.fromJson(
         json['createTariffsStrings'] as Map<String, dynamic>,
       ),
@@ -30,5 +33,6 @@ Map<String, dynamic> _$CreateTariffsDtoToJson(CreateTariffsDto instance) =>
         (k, e) => MapEntry(k.toIso8601String(), e),
       ),
       'worksSet': instance.worksSet.toList(),
+      'nttWorksSet': instance.nttWorksSet.toList(),
       'createTariffsStrings': instance.createTariffsStrings,
     };

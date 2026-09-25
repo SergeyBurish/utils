@@ -1,9 +1,23 @@
 // --- input file
+// -- Salary sheet
 const String salarySheet = 'Salary';
-const int processColumn = 0;
-const int loginColumn = 1;
-const int startColumn = 3;
-const int startRow = 1;
+// - columns
+const int saProcess = 0;
+const int saLogin = 1;
+const int saStartColumn = 3;
+// - rows
+const int saHeaderRow = 0;
+const int saStartRow = 1;
+// -- NTT sheet
+const String nttSheet = 'NTT';
+const String nttOperations = 'NTT operations';
+// - columns
+const int ntLogin = 2;
+const int ntStartColumn = 3;
+// - rows
+const int ntHeaderRow = 0;
+const int ntStartRow = 1;
+
 const String fc2Prefix = 'FC2_';
 
 
@@ -53,13 +67,15 @@ const int edStartRow = 1;
 const int trCoeffName = 0;
 const int trCoeffVal = 1;
 const int trWorks = 0;
-const int trStartColumn = 1;
+const int trStartColumn = 2;
 // - rows
 const int trCoeffWages = 0;
 const int trCoeffWages2months = 1;
 const int trDateRow = 2;
 const int trHeaderRow = 3;
 const int trStartRow = 4;
+// - rows offsets
+const int trNttOffset = 2;
 
 
 const String dateFormat = 'dd/MM/yy';

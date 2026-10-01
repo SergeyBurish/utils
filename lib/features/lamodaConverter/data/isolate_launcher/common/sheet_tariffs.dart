@@ -10,6 +10,7 @@ void fillOutTariffsSheet({
   required Sheet sheet,
   required LamodaTariffs lamodaTariffs,
   required List<String> works,
+  required List<String> nttWorks,
   required CreateTariffsStrings strings,
 }) {
   final CellStyle blueCellStyle = CellStyle(
@@ -63,7 +64,7 @@ void fillOutTariffsSheet({
   );
 
   // столбец работ
-  _fillOutWorks(works, sheet);
+  _fillOutWorks(works, nttWorks, sheet);
 
   final String coeffWagesIndex = stringIndexFixed(
     colInd: trCoeffVal, rowInd: trCoeffWages);
@@ -79,6 +80,7 @@ void fillOutTariffsSheet({
       date: strings.shouldBeDateHere,
       cost1serviceCol: trStartColumn,
       works: works,
+      nttWorks: nttWorks,
       coeffWagesIndex: coeffWagesIndex,
       coeffWages2mIndex: coeffWages2mIndex,
       strings: strings,
@@ -94,6 +96,7 @@ void fillOutTariffsSheet({
       date: DateFormat(dateFormat2).format(date),
       cost1serviceCol: trStartColumn + i * 3,
       works: works,
+      nttWorks: nttWorks,
       coeffWagesIndex: coeffWagesIndex,
       coeffWages2mIndex: coeffWages2mIndex,
       strings: strings,
@@ -104,14 +107,24 @@ void fillOutTariffsSheet({
   sheet.setColumnWidth(trWorks, 40);
   sheet.setRowHeight(trDateRow, 25);
   sheet.setRowHeight(trHeaderRow, 25);
+  sheet.freezePanes(rows: trStartRow, columns: trStartColumn);
 }
 
-void _fillOutWorks(List<String> works, Sheet sheet) {
+void _fillOutWorks(List<String> works, List<String> nttWorks, Sheet sheet) {
   for (int i = 0; i < works.length; i++) {
     sheet.updateCell(CellIndex.indexByColumnRow(
         columnIndex: trWorks,
         rowIndex: trStartRow + i), 
       TextCellValue(works[i]),
+    );
+  }
+
+  final int nttStartRow = trStartRow + works.length + trNttOffset;
+  for (int i = 0; i < nttWorks.length; i++) {
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: trWorks,
+        rowIndex: nttStartRow + i), 
+      TextCellValue(nttWorks[i]),
     );
   }
 }
@@ -121,6 +134,7 @@ void _fillOutDate({
   required String date,
   required int cost1serviceCol,
   required List<String> works,
+  required List<String> nttWorks,
   required String coeffWagesIndex,
   required String coeffWages2mIndex,
   required CreateTariffsStrings strings,
@@ -217,6 +231,29 @@ void _fillOutDate({
         rightBorder: Border(borderStyle: BorderStyle.Thin),
         topBorder: Border(borderStyle: BorderStyle.Thin),
       ),
+    );
+  }
+
+  // тарифы ntt
+  final int nttStartRow = trStartRow + works.length + trNttOffset;
+  for (int i = 0; i < nttWorks.length; i++) {
+    final CellIndex nntCellInd = CellIndex.indexByColumnRow(
+      columnIndex: cost1serviceCol,
+      rowIndex: nttStartRow + i,
+    );
+
+    if(tariffs != null) {
+      final double? tariff = tariffs[nttWorks[i]];
+      if (tariff != null) {
+        sheet.updateCell(
+          nntCellInd,
+          DoubleCellValue(tariff),
+        );
+      }
+    }
+
+    sheet.cell(nntCellInd).cellStyle = CellStyle(
+      backgroundColorHex: ExcelColor.fromHexString(lilac02),
     );
   }
 

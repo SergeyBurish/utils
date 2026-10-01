@@ -14,12 +14,16 @@ part 'lamoda_entity_dto.g.dart';
 @JsonSerializable()
 class LamodaEntityDto {
   final Map<String, WorkerShifts> shifts;
+  final Map<String, WorkerShifts> nttShifts;
   final Map<String, EmployeeDetailsDto> lamodaEmployees;
   final Set<String> worksSet;
+  final Set<String> nttWorksSet;
   LamodaEntityDto({
     required this.shifts,
+    required this.nttShifts,
     required this.lamodaEmployees,
     required this.worksSet,
+    required this.nttWorksSet,
   });
 
   factory LamodaEntityDto.fromJson(Map<String, dynamic> json) => _$LamodaEntityDtoFromJson(json);
@@ -34,7 +38,14 @@ extension LamodaEntityDtoMapper on LamodaEntityDto {
         workerShifts,
       );
     }),
+    nttShifts: nttShifts.map((String shiftTimeJson, WorkerShifts workerShifts) {
+      return MapEntry<ShiftTime, WorkerShifts>(
+        ShiftTimeDto.fromJson(jsonDecode(shiftTimeJson)),
+        workerShifts,
+      );
+    }),
     worksSet: worksSet,
+    nttWorksSet: nttWorksSet,
     lamodaEmployees: lamodaEmployees,
   );
 }
@@ -42,11 +53,14 @@ extension LamodaEntityDtoMapper on LamodaEntityDto {
 extension LamodaEntityMapper on LamodaEntity {
   LamodaEntityDto toDto() => LamodaEntityDto(
     shifts: shifts.map((ShiftTime shiftTime, WorkerShifts shifts) => 
-    MapEntry<String, WorkerShifts>(
-      jsonEncode(shiftTime.toDto().toJson()), shifts)),
-      worksSet: worksSet,
-      lamodaEmployees: lamodaEmployees.map(
-        (String key, EmployeeDetails value) => MapEntry<String, EmployeeDetailsDto>(key, value.toDto())
-      ),
+      MapEntry<String, WorkerShifts>(
+        jsonEncode(shiftTime.toDto().toJson()), shifts)),
+    nttShifts: nttShifts.map((ShiftTime shiftTime, WorkerShifts shifts) => 
+      MapEntry<String, WorkerShifts>(
+        jsonEncode(shiftTime.toDto().toJson()), shifts)),
+    worksSet: worksSet,
+    nttWorksSet: nttWorksSet,
+    lamodaEmployees: lamodaEmployees.map((String key, EmployeeDetails value) => 
+      MapEntry<String, EmployeeDetailsDto>(key, value.toDto())),
     );
 }

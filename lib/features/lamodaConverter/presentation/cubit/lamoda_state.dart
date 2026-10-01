@@ -79,8 +79,10 @@ class LamodaState {
     errors = <String>[],
     lamodaEntity = LamodaEntity(
       shifts: <ShiftTime, WorkerShifts>{},
+      nttShifts: <ShiftTime, WorkerShifts>{},
       lamodaEmployees: <String, EmployeeDetails>{},
       worksSet: <String>{},
+      nttWorksSet: <String>{},
     ),
     lamodaTariffs = <DateTime, Tariffs>{};
 

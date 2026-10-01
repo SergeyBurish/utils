@@ -9,11 +9,13 @@ part 'create_tariffs_dto.g.dart';
 class CreateTariffsDto {
   final LamodaTariffs lamodaTariffs;
   final Set<String> worksSet;
+  final Set<String> nttWorksSet;
   final CreateTariffsStrings createTariffsStrings;
 
   CreateTariffsDto({
     required this.lamodaTariffs,
     required this.worksSet,
+    required this.nttWorksSet,
     required this.createTariffsStrings,
   });
 

@@ -31,17 +31,23 @@ String isolCreateOutputFile(String createOutputJson) {
 
   final LamodaEntity lamodaEntity = lamodaEntityDto.toLamodaEntity();
 
-  final List<ShiftTime> dates = lamodaEntity.shifts.keys.toList();
+  final Set<ShiftTime> datesSet = lamodaEntity.shifts.keys.toSet();
+  datesSet.addAll(lamodaEntity.nttShifts.keys);
+  final List<ShiftTime> dates = datesSet.toList();
+
   final List<String> workNames = lamodaEntity.worksSet.toList();
+  final List<String> nttWorkNames = lamodaEntity.nttWorksSet.toList();
   final LamodaEmployees lamodaEmployees = lamodaEntity.lamodaEmployees;
   final List<String> logins = lamodaEmployees.keys.toList();
   final List<DateTime> tariffsDates = lamodaTariffs.keys.toList();
+
   if (dates.isEmpty || workNames.isEmpty) {
     return outputJson(error: 'no_data');
   }
 
   dates.sort();
   workNames.sort();
+  nttWorkNames.sort();
   logins.sort();
   tariffsDates.sort();
 
@@ -61,12 +67,14 @@ String isolCreateOutputFile(String createOutputJson) {
       sheet: sheetBT,
       lamodaTariffs: lamodaTariffs,
       works: workNames,
+      nttWorks: nttWorkNames,
       strings: strings,
     );
     _fillOutSheetFromDate(
       sheet: sheetFD,
       lamodaEntity: lamodaEntity,
       workNames: workNames,
+      nttWorkNames: nttWorkNames,
       logins: logins,
       dates: dates,
       tariffsDates: tariffsDates,
@@ -98,6 +106,7 @@ void _fillOutSheetFromDate({
   required Sheet sheet,
   required LamodaEntity lamodaEntity,
   required List<String> workNames,
+  required List<String> nttWorkNames,
   required List<String> logins,
   required List<ShiftTime> dates,
   required List<DateTime> tariffsDates,
@@ -136,10 +145,24 @@ void _fillOutSheetFromDate({
     );
   }
 
+  final int nttStartWorks = fStartWorks + workNames.length;
+  for (int i = 0; i < nttWorkNames.length; i++) {
+    // заголовок: столбцы ntt работ
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: i + nttStartWorks,
+        rowIndex: fHeaderRow), 
+      TextCellValue(nttWorkNames[i]),
+      cellStyle: CellStyle(
+        rotation: 90,
+        textWrapping: TextWrapping.WrapText,
+      ),
+    );
+  }
+
   // заголовок: столбцы после работ
   for(final MapEntry<int, LmColumn> el in columns2.entries){
     sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: el.key + fStartWorks + workNames.length,
+        columnIndex: el.key + nttStartWorks + nttWorkNames.length,
         rowIndex: fHeaderRow), 
       TextCellValue(el.value.name),
       cellStyle: CellStyle(
@@ -194,6 +217,23 @@ void _fillOutSheetFromDate({
         cellStyle: bidStyle,
       );
     }
+
+    // ряд ставок - продолжение для ntt
+    final int nttTarifsStartRow = trStartRow + workNames.length + trNttOffset;
+    final int nttBidStartCol = fStartWorks + workNames.length;
+    for (int workInd = 0; workInd < nttWorkNames.length; workInd++) {
+
+      final String bidIndexOnBasicTariffs = stringIndex(
+        colInd: trStartColumn + dateInd * 3, // для ntt тариф берём из "Стоимость 1 услуги"
+        rowInd: nttTarifsStartRow + workInd);
+
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: workInd + nttBidStartCol,
+          rowIndex: row), 
+        FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
+        cellStyle: bidStyle,
+      );
+    }
   }
 
   final int startPeepsRow = fStartBidRow + tariffsDates.length;
@@ -201,7 +241,11 @@ void _fillOutSheetFromDate({
 
   // строки: дата, смена, логин, пики, формулы, итд
   for (final ShiftTime shiftTime in dates) {
-    final WorkerShifts? workerShifts = lamodaEntity.shifts[shiftTime];
+
+    final WorkerShifts? workerShifts = _mergeWorkerShifts(
+      lamodaEntity.shifts[shiftTime],
+      lamodaEntity.nttShifts[shiftTime],
+    );
 
     if (workerShifts != null) {
       for (final MapEntry<String, Works> workerShift in workerShifts.entries) {
@@ -214,6 +258,7 @@ void _fillOutSheetFromDate({
           login: login,
           works: workerShift.value,
           workNames: workNames,
+          nttWorkNames: nttWorkNames,
           day: strings.day,
           night: strings.night,
           employeeDetails: strings.employeeDetails,
@@ -235,6 +280,7 @@ void _formRow({
   required String login,
   required Works works,
   required List<String> workNames,
+  required List<String> nttWorkNames,
   required String day,
   required String night,
   required String employeeDetails,
@@ -313,10 +359,18 @@ void _formRow({
         columnIndex: workNameInd + fStartWorks,
         rowIndex: row), 
       IntCellValue(work.value));
+    } else {
+      final int nttWorkNameInd = nttWorkNames.indexOf(work.key);
+      if (nttWorkNameInd > -1) {
+        sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: nttWorkNameInd + fStartWorks + workNames.length,
+          rowIndex: row), 
+        IntCellValue(work.value));
+      }
     }
   }
 
-  final int startFormulaColumn = fStartWorks + workNames.length;
+  final int startFormulaColumn = fStartWorks + workNames.length + nttWorkNames.length;
 
   final String startIndex = stringIndex(colInd: fStartWorks, rowInd: row);
   final String endIndex = stringIndex(
@@ -348,6 +402,25 @@ void _formRow({
       rowIndex: row),
     FormulaCellValue('SUM($startIndex:$endIndex)'),
   );
+
+  if (nttWorkNames.isNotEmpty) {
+    // формула: Пики без NTT
+    final String wholePeepsIndex = stringIndex(
+      colInd: fTotalNumberPeeps + startFormulaColumn, 
+      rowInd: row,
+    );
+    // TODO: list of indexes of ntt works
+    final String nttPeepsIndex = stringIndex(
+      colInd: fStartWorks + workNames.length, 
+      rowInd: row,
+    );
+
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fPeepsWithoutNtt + startFormulaColumn,
+        rowIndex: row),
+      FormulaCellValue('$wholePeepsIndex-$nttPeepsIndex'),
+    );
+  }
 
   final String statusIndex = stringIndex(colInd: fStatus, rowInd: row);
 
@@ -389,6 +462,24 @@ void _formRow({
       rowIndex: row),
     FormulaCellValue('IF($fixed4000For5DaysIndex>$basedOnPeepsIndex,$fixed4000For5DaysIndex,$basedOnPeepsIndex)+$forTrainingIndex+$foremanIndex'),
   );
+}
+
+WorkerShifts? _mergeWorkerShifts(WorkerShifts? wShiftsA, WorkerShifts? wShiftsB) {
+  if (wShiftsA == null) return wShiftsB;
+  if (wShiftsB == null) return wShiftsA;
+
+  for (final MapEntry<String, Works> wShiftA in wShiftsA.entries) {
+    final Works? works = wShiftsB[wShiftA.key];
+    if (works != null) {
+      wShiftsA[wShiftA.key]?.addAll(works);
+    }
+  }
+
+  for (final MapEntry<String, Works> wShiftB in wShiftsB.entries) {
+    wShiftsA.putIfAbsent(wShiftB.key, ()=>wShiftB.value);
+  }
+
+  return wShiftsA;
 }
 
 String _accruedPerShiftFormula({

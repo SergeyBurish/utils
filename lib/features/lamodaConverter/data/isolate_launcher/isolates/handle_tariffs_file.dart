@@ -27,6 +27,7 @@ String isolHandleTariffsFile(String handleExcelJson) {
     final TariffsEntity tariffsEntity = TariffsEntity(
       lamodaTariffs: <DateTime, Tariffs>{},
       worksSet: <String>{},
+      nttWorksSet: <String>{},
     );
     for (int column = trStartColumn; ; column += 3) {
       final Data cell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: column, rowIndex: trDateRow));
@@ -40,16 +41,31 @@ String isolHandleTariffsFile(String handleExcelJson) {
     if (tariffsEntity.lamodaTariffs.isEmpty) {
       return _outputJson(error: 'no_data_found');
     }
-    tariffsEntity.worksSet.addAll(_getWorksSet(sheet));
+
+    final Set<String> worksSet = <String>{};
+    final Set<String> nttWorksSet = <String>{};
+    _getWorksSet(sheet, worksSet, nttWorksSet);
+    tariffsEntity.worksSet.addAll(worksSet);
+    tariffsEntity.nttWorksSet.addAll(nttWorksSet);
+
     return _outputJson(tariffsEntity: tariffsEntity);
   } on Exception catch (e) {
     return _outputJson(error: 'fail_open_excel_file', errorArgs: <String>['$e']);
   }
 }
 
-Tariffs _getTariffs(Sheet sheet, int column, ){
+Tariffs _getTariffs(Sheet sheet, int column){
   final Tariffs tariffs = <String, double>{};
-  for (int row = trStartRow; ; row++) {
+
+  int row = _getTariffsFromRow(trStartRow, sheet, column, tariffs);
+  row += trNttOffset;
+  _getTariffsFromRow(row, sheet, column, tariffs);
+  
+  return tariffs;
+}
+
+int _getTariffsFromRow(int row, Sheet sheet, int column, Tariffs tariffs) {
+  for ( ; ; row++) {
     final Data workCell = sheet.cell(CellIndex.indexByColumnRow(
       columnIndex: trWorks, rowIndex: row));
 
@@ -71,13 +87,13 @@ Tariffs _getTariffs(Sheet sheet, int column, ){
 
     tariffs[workCell.value.toString()] = tariff;
   }
-  
-  return tariffs;
+
+  return row;
 }
 
-Set<String> _getWorksSet(Sheet sheet) {
-  final Set<String> worksSet = <String>{};
-  for (int row = trStartRow; ; row++) {
+void _getWorksSet(Sheet sheet, Set<String> worksSet, Set<String> nttWorksSet) {
+  int row = 0;
+  for (row = trStartRow; ; row++) {
     final Data workCell = sheet.cell(CellIndex.indexByColumnRow(
       columnIndex: trWorks, rowIndex: row));
 
@@ -87,7 +103,18 @@ Set<String> _getWorksSet(Sheet sheet) {
 
     worksSet.add(workCell.value.toString());
   }
-  return worksSet;
+
+  row += trNttOffset;
+  for (; ; row++) {
+    final Data workCell = sheet.cell(CellIndex.indexByColumnRow(
+      columnIndex: trWorks, rowIndex: row));
+
+    if (workCell.value == null || workCell.value.toString().isEmpty) {
+      break;
+    }
+
+    nttWorksSet.add(workCell.value.toString());
+  }
 }
 
 String _outputJson({

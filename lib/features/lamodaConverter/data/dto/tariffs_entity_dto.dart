@@ -6,12 +6,12 @@ part 'tariffs_entity_dto.g.dart';
 
 @JsonSerializable()
 class TariffsEntityDto extends TariffsEntity {
-  TariffsEntityDto({required super.lamodaTariffs, required super.worksSet});
+  TariffsEntityDto({required super.lamodaTariffs, required super.worksSet, required super.nttWorksSet});
 
   factory TariffsEntityDto.fromJson(Map<String, dynamic> json) => _$TariffsEntityDtoFromJson(json);
   Map<String, dynamic> toJson() => _$TariffsEntityDtoToJson(this);
 }
 
 extension TariffsEntityMapper on TariffsEntity {
-  TariffsEntityDto toDto() => TariffsEntityDto(lamodaTariffs: lamodaTariffs, worksSet: worksSet);
+  TariffsEntityDto toDto() => TariffsEntityDto(lamodaTariffs: lamodaTariffs, worksSet: worksSet, nttWorksSet: nttWorksSet);
 }

@@ -40,87 +40,89 @@ class LamodaConverterView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(Dm.s10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: Dm.s10,
-        children: <Widget>[
-          CardWrap(
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: Dm.s10,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: onUpload,
-                    child: Text('upload_source_files'.tr()),
-                  ),
-                  ElevatedButton(
-                    onPressed: onDownload,
-                    child: Text(downloadButton),
-                  ),
-                ],
-              ),
-              Text(
-                message,
-                style: context.textStyles.middleText,
-              ),
-            ],
-          ),
-          CardWrap(
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: Dm.s10,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: onUploadTariffs,
-                    child: Text('upload_tariffs'.tr()),
-                  ),
-                  ElevatedButton(
-                    onPressed: onDownloadTariffs,
-                    child: Text('download_tariffs'.tr()),
-                  ),
-                ],
-              ),
-              Text(
-                tariffsMessage,
-                style: context.textStyles.middleText,
-              ),
-            ],
-          ),
-          CardWrap(
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: Dm.s10,
-                children: <Widget>[
-                  ElevatedButton(
-                    onPressed: onUploadEmployees,
-                    child: Text('upload_employees'.tr()),
-                  ),
-                  ElevatedButton(
-                    onPressed: onDownloadEmployees,
-                    child: Text('download_employees'.tr()),
-                  ),
-                ],
-              ),
-              Text(
-                employeesMessage,
-                style: context.textStyles.middleText,
-              ),
-            ],
-          ),
-          Text(
-            errorMessage,
-            style: context.textStyles.middleText,
-            maxLines: 50,
-          ),
-          if(loading) const LinearProgressIndicator(),
-          Text(
-            version,
-            style: context.textStyles.smallText,
-          ),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: Dm.s10,
+          children: <Widget>[
+            CardWrap(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: Dm.s10,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: onUpload,
+                      child: Text('upload_source_files'.tr()),
+                    ),
+                    ElevatedButton(
+                      onPressed: onDownload,
+                      child: Text(downloadButton),
+                    ),
+                  ],
+                ),
+                Text(
+                  message,
+                  style: context.textStyles.middleText,
+                ),
+              ],
+            ),
+            CardWrap(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: Dm.s10,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: onUploadTariffs,
+                      child: Text('upload_tariffs'.tr()),
+                    ),
+                    ElevatedButton(
+                      onPressed: onDownloadTariffs,
+                      child: Text('download_tariffs'.tr()),
+                    ),
+                  ],
+                ),
+                Text(
+                  tariffsMessage,
+                  style: context.textStyles.middleText,
+                ),
+              ],
+            ),
+            CardWrap(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: Dm.s10,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: onUploadEmployees,
+                      child: Text('upload_employees'.tr()),
+                    ),
+                    ElevatedButton(
+                      onPressed: onDownloadEmployees,
+                      child: Text('download_employees'.tr()),
+                    ),
+                  ],
+                ),
+                Text(
+                  employeesMessage,
+                  style: context.textStyles.middleText,
+                ),
+              ],
+            ),
+            if(loading) const LinearProgressIndicator(),
+            Text(
+              errorMessage,
+              style: context.textStyles.middleText,
+              maxLines: 50,
+            ),
+            Text(
+              version,
+              style: context.textStyles.smallText,
+            ),
+          ],
+        ),
       ),
     );
   }

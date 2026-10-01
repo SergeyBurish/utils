@@ -88,10 +88,15 @@ class LamodaRepositoryImp implements LamodaRepository {
   }
 
   @override
-  Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet) async {
+  Future<Either<String, String>> downloadTariffsExcelFile(
+      LamodaTariffs lamodaTariffs,
+      Set<String> worksSet,
+      Set<String> nttWorksSet,
+  ) async {
     final CreateTariffsDto dto = CreateTariffsDto(
       lamodaTariffs: lamodaTariffs,
       worksSet: worksSet,
+      nttWorksSet: nttWorksSet,
       createTariffsStrings: CreateTariffsStrings(
         tariffs: 'tariffs'.tr(),
         coeffWages: 'coeff_wages'.tr(),

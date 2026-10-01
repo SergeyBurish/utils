@@ -19,6 +19,9 @@ TariffsEntityDto _$TariffsEntityDtoFromJson(Map<String, dynamic> json) =>
       worksSet: (json['worksSet'] as List<dynamic>)
           .map((e) => e as String)
           .toSet(),
+      nttWorksSet: (json['nttWorksSet'] as List<dynamic>)
+          .map((e) => e as String)
+          .toSet(),
     );
 
 Map<String, dynamic> _$TariffsEntityDtoToJson(TariffsEntityDto instance) =>
@@ -27,4 +30,5 @@ Map<String, dynamic> _$TariffsEntityDtoToJson(TariffsEntityDto instance) =>
         (k, e) => MapEntry(k.toIso8601String(), e),
       ),
       'worksSet': instance.worksSet.toList(),
+      'nttWorksSet': instance.nttWorksSet.toList(),
     };

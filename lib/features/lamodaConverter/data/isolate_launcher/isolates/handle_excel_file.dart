@@ -112,16 +112,18 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
     final String? login = getTextCellValue(sheet, saLogin, row);
     if (login != null && login.isNotEmpty) {
       lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
-      if (!workerShifts.keys.contains(login)) {
-        workerShifts[login] = <String, int>{};
-      }
-      final Works? works = workerShifts[login];
 
       final int? workValue = _getIntCellValue(sheet, column, row);
       if (workValue != null) {
         final String? workName = getTextCellValue(sheet, saProcess, row);
         if (workName != null && workName.isNotEmpty) {
           final String trimmedWorkName = _trimFcPrefix(workName);
+
+          if (!workerShifts.keys.contains(login)) {
+            workerShifts[login] = <String, int>{};
+          }
+          final Works? works = workerShifts[login];
+
           works?[trimmedWorkName] = workValue;
           worksSet.add(trimmedWorkName);
         }
@@ -141,13 +143,14 @@ WorkerShifts _handleNttDateColumn(Sheet sheet, int column, LamodaEmployees lamod
     final String? login = getTextCellValue(sheet, ntLogin, row);
     if (login != null && login.isNotEmpty) {
       lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
-      if (!workerShifts.keys.contains(login)) {
-        workerShifts[login] = <String, int>{};
-      }
-      final Works? works = workerShifts[login];
-
+      
       final int? workValue = _getIntCellValue(sheet, column, row);
       if (workValue != null) {
+        if (!workerShifts.keys.contains(login)) {
+          workerShifts[login] = <String, int>{};
+        }
+        final Works? works = workerShifts[login];
+
         works?[nttOperations] = workValue;
       }
     } else {

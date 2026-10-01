@@ -3762,21 +3762,21 @@ m.p(0,new A.bQ(p,A.cd(p)===8),A.uh(s,r,k))}else break}}return new A.fW(A.v(o,n),
 ug(a,b,c,d){var s,r,q,p,o,n,m,l=t.N,k=A.v(l,t.a)
 for(s=t.S,r=1;;++r){q=A.on(a,1,r)
 if(q!=null&&q.length!==0){d.bK(q,new A.n3())
+p=A.q0(a,b,r)
+if(p!=null){o=A.on(a,0,r)
+if(o!=null&&o.length!==0){if(B.c.aT(o,"FC2_"))n=A.vK(o,"FC2_","",0)
+else n=o
 if(!k.O(q))k.p(0,q,A.v(l,s))
-p=k.i(0,q)
-o=A.q0(a,b,r)
-if(o!=null){n=A.on(a,0,r)
-if(n!=null&&n.length!==0){if(B.c.aT(n,"FC2_"))m=A.vK(n,"FC2_","",0)
-else m=n
-if(p!=null)p.p(0,m,o)
-c.E(0,m)}}}else break}return k},
+m=k.i(0,q)
+if(m!=null)m.p(0,n,p)
+c.E(0,n)}}}else break}return k},
 uh(a,b,c){var s,r,q,p,o,n=t.N,m=A.v(n,t.a)
 for(s=t.S,r=1;;++r){q=A.on(a,2,r)
 if(q!=null&&q.length!==0){c.bK(q,new A.n4())
-if(!m.O(q))m.p(0,q,A.v(n,s))
-p=m.i(0,q)
-o=A.q0(a,b,r)
-if(o!=null)if(p!=null)p.p(0,"NTT operations",o)}else break}return m},
+p=A.q0(a,b,r)
+if(p!=null){if(!m.O(q))m.p(0,q,A.v(n,s))
+o=m.i(0,q)
+if(o!=null)o.p(0,"NTT operations",p)}}else break}return m},
 q0(a,b,c){var s=a.bD(new A.b6(c,b)).b
 if(s instanceof A.b9)return s.a
 return null},

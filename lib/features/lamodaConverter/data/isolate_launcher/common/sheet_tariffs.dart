@@ -237,31 +237,23 @@ void _fillOutDate({
   // тарифы ntt
   final int nttStartRow = trStartRow + works.length + trNttOffset;
   for (int i = 0; i < nttWorks.length; i++) {
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: cost1serviceCol,
-        rowIndex: nttStartRow + i),
-      const DoubleCellValue(0),
+    final CellIndex nntCellInd = CellIndex.indexByColumnRow(
+      columnIndex: cost1serviceCol,
+      rowIndex: nttStartRow + i,
     );
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: tariffWagesCol,
-        rowIndex: nttStartRow + i),
-      const DoubleCellValue(0),
-      cellStyle: CellStyle(
-        backgroundColorHex: ExcelColor.fromHexString(orange),
-        leftBorder: Border(borderStyle: BorderStyle.Thin),
-        rightBorder: Border(borderStyle: BorderStyle.Thin),
-        topBorder: Border(borderStyle: BorderStyle.Thin),
-      ),
-    );
-    sheet.updateCell(CellIndex.indexByColumnRow(
-        columnIndex: tariffWages2mCol,
-        rowIndex: nttStartRow + i),
-      const DoubleCellValue(0),
-      cellStyle: CellStyle(
-        backgroundColorHex: ExcelColor.fromHexString(green02),
-        rightBorder: Border(borderStyle: BorderStyle.Thin),
-        topBorder: Border(borderStyle: BorderStyle.Thin),
-      ),
+
+    if(tariffs != null) {
+      final double? tariff = tariffs[nttWorks[i]];
+      if (tariff != null) {
+        sheet.updateCell(
+          nntCellInd,
+          DoubleCellValue(tariff),
+        );
+      }
+    }
+
+    sheet.cell(nntCellInd).cellStyle = CellStyle(
+      backgroundColorHex: ExcelColor.fromHexString(lilac02),
     );
   }
 

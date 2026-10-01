@@ -132,6 +132,7 @@ class LamodaCubit extends Cubit<LamodaState> {
         ifRight: (TariffsEntity tariffsEntity) {
           state.lamodaTariffs.addAll(tariffsEntity.lamodaTariffs);
           state.lamodaEntity.worksSet.addAll(tariffsEntity.worksSet);
+          state.lamodaEntity.nttWorksSet.addAll(tariffsEntity.nttWorksSet);
           emit(state.copyWith.tariffsStatus(TariffsStatus.idle));
         },
       );

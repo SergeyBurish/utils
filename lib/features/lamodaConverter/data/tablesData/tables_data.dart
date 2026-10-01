@@ -67,27 +67,27 @@ final Map<int, LmColumn> columnsFD2 = <int, LmColumn>{
   fAccruedForeman: LmColumn(
     name: 'accrued_foreman'.tr(),
     rotation: 90,
-    bgColor: lilac,
+    bgColor: lilac01,
   ),
   fNumberOfPeopleAdditionally: LmColumn(
     name: 'number_of_people_additionally'.tr(),
     rotation: 90,
-    bgColor: lilac,
+    bgColor: lilac01,
   ),
   fAmountOfAdditionalPayment: LmColumn(
     name: 'amount_of_additional_payment'.tr(),
     rotation: 90,
-    bgColor: lilac,
+    bgColor: lilac01,
   ),
   fPercentageOfProductivity: LmColumn(
     name: 'percentage_of_productivity_per_shift'.tr(),
     rotation: 90,
-    bgColor: lilac,
+    bgColor: lilac01,
   ),
   fBonusPayment: LmColumn(
     name: 'bonus_payment_for_production'.tr(),
     rotation: 90,
-    bgColor: lilac,
+    bgColor: lilac01,
   ),
   fFixed4000For5Days: LmColumn(
     name: 'fixed_at_4000_5_days'.tr(),

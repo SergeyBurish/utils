@@ -218,6 +218,23 @@ void _fillOutSheetFromDate({
         cellStyle: bidStyle,
       );
     }
+
+    // ряд ставок - продолжение для ntt
+    final int nttTarifsStartRow = trStartRow + workNames.length + trNttOffset;
+    final int nttBidStartCol = fStartWorks + workNames.length;
+    for (int workInd = 0; workInd < nttWorkNames.length; workInd++) {
+
+      final String bidIndexOnBasicTariffs = stringIndex(
+        colInd: trStartColumn + dateInd * 3, // для ntt тариф берём из "Стоимость 1 услуги"
+        rowInd: nttTarifsStartRow + workInd);
+
+      sheet.updateCell(CellIndex.indexByColumnRow(
+          columnIndex: workInd + nttBidStartCol,
+          rowIndex: row), 
+        FormulaCellValue('\'${strings.basicTariffs}\'!$bidIndexOnBasicTariffs'),
+        cellStyle: bidStyle,
+      );
+    }
   }
 
   final int startPeepsRow = fStartBidRow + tariffsDates.length;

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:excel_plus/excel_plus.dart';
 import 'package:intl/intl.dart';
@@ -242,8 +241,6 @@ void _fillOutSheetFromDate({
 
   // строки: дата, смена, логин, пики, формулы, итд
   for (final ShiftTime shiftTime in dates) {
-    // final WorkerShifts? workerShifts = lamodaEntity.shifts[shiftTime];
-    // final WorkerShifts? nttWorkerShifts = lamodaEntity.nttShifts[shiftTime];
 
     final WorkerShifts? workerShifts = _mergeWorkerShifts(
       lamodaEntity.shifts[shiftTime],
@@ -405,6 +402,25 @@ void _formRow({
       rowIndex: row),
     FormulaCellValue('SUM($startIndex:$endIndex)'),
   );
+
+  if (nttWorkNames.isNotEmpty) {
+    // формула: Пики без NTT
+    final String wholePeepsIndex = stringIndex(
+      colInd: fTotalNumberPeeps + startFormulaColumn, 
+      rowInd: row,
+    );
+    // TODO: list of indexes of ntt works
+    final String nttPeepsIndex = stringIndex(
+      colInd: fStartWorks + workNames.length, 
+      rowInd: row,
+    );
+
+    sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: fPeepsWithoutNtt + startFormulaColumn,
+        rowIndex: row),
+      FormulaCellValue('$wholePeepsIndex-$nttPeepsIndex'),
+    );
+  }
 
   final String statusIndex = stringIndex(colInd: fStatus, rowInd: row);
 

@@ -396,6 +396,41 @@ void _formRow({
     rowInd: row,
   );
 
+  final String totalAccruedIndex = stringIndex(
+    colInd: fTotalAccrued + startFormulaColumn, 
+    rowInd: row,
+  );
+
+  final String finesDeductedIndex = stringIndex(
+    colInd: fFinesDeducted + startFormulaColumn, 
+    rowInd: row,
+  );
+
+  final String accommodationDeductedIndex = stringIndex(
+    colInd: fAccommodationDeducted + startFormulaColumn, 
+    rowInd: row,
+  );
+
+  final String footwearClothingDeductedIndex = stringIndex(
+    colInd: fFootwearClothingDeducted + startFormulaColumn, 
+    rowInd: row,
+  );
+
+  final String advancesIndex = stringIndex(
+    colInd: fAdvances + startFormulaColumn, 
+    rowInd: row,
+  );
+
+  final String vermeAccruedIndex = stringIndex(
+    colInd: fVermeAccrued + startFormulaColumn, 
+    rowInd: row,
+  );
+
+  final String additionalPaymentsIndex = stringIndex(
+    colInd: fAdditionalPayments + startFormulaColumn, 
+    rowInd: row,
+  );
+
   // формула: Всего количество пиков
   sheet.updateCell(CellIndex.indexByColumnRow(
       columnIndex: fTotalNumberPeeps + startFormulaColumn,
@@ -461,6 +496,14 @@ void _formRow({
       columnIndex: fTotalAccrued + startFormulaColumn,
       rowIndex: row),
     FormulaCellValue('IF($fixed4000For5DaysIndex>$basedOnPeepsIndex,$fixed4000For5DaysIndex,$basedOnPeepsIndex)+$forTrainingIndex+$foremanIndex'),
+  );
+
+  // формула: Итого к выплате 
+  // Начислено всего - Удержано штрафов - Удержано проживание - Удержано обувь/одежда - Авансы + Начислено Verme + Доплаты
+  sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: fTotalPayable + startFormulaColumn,
+      rowIndex: row),
+    FormulaCellValue('$totalAccruedIndex-$finesDeductedIndex-$accommodationDeductedIndex-$footwearClothingDeductedIndex-$advancesIndex+$vermeAccruedIndex+$additionalPaymentsIndex'),
   );
 }
 

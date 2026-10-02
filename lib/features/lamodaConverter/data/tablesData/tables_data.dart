@@ -99,6 +99,56 @@ final Map<int, LmColumn> columnsFD2 = <int, LmColumn>{
     rotation: 90,
     bgColor: blue03,
   ),
+  fFinesDeducted: LmColumn(
+    name: 'fines_deducted'.tr(),
+    rotation: 90,
+    bgColor: yellow04,
+  ),
+  fAccommodationDeducted: LmColumn(
+    name: 'accommodation_deducted'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  fFootwearClothingDeducted: LmColumn(
+    name: 'footwear_clothing_deducted'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  fAdvances: LmColumn(
+    name: 'advances'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  fVermeAccrued: LmColumn(
+    name: 'verme_accrued'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  fAdditionalPayments: LmColumn(
+    name: 'additional_payments'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  fTotalPayable: LmColumn(
+    name: 'total_payable'.tr(),
+    rotation: 90,
+    bgColor: green01,
+  ),
+  fRecipient: LmColumn(
+    name: 'recipient'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  fRegistry: LmColumn(
+    name: 'registry'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
+  fPaymentDate: LmColumn(
+    name: 'payment_date'.tr(),
+    rotation: 90,
+    bgColor: blue01,
+  ),
 };
 
 // SheetEmployeeDetails

@@ -81,12 +81,11 @@ void fillOutSheetEmployeeDetails(
 
       // формула: Не заполнено.
       final String fullNameIndex = stringIndex(colInd: edFullName, rowInd: rowIndex);
-      final String statusIndex = stringIndex(colInd: edStatus, rowInd: rowIndex);
       final String dateIndex = stringIndex(colInd: edStartDateOfWork, rowInd: rowIndex);
       sheet.updateCell(CellIndex.indexByColumnRow(
           columnIndex: edNotFilledIn,
           rowIndex: rowIndex),
-        FormulaCellValue('IF(OR(ISBLANK($fullNameIndex),ISBLANK($statusIndex),ISBLANK($dateIndex)),"$notFilledIn","")'),
+        FormulaCellValue('IF(OR(ISBLANK($fullNameIndex),ISBLANK($dateIndex)),"$notFilledIn","")'),
       );
     }
   }

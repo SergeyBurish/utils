@@ -57,9 +57,16 @@ String isolHandleTariffsFile(String handleExcelJson) {
 Tariffs _getTariffs(Sheet sheet, int column){
   final Tariffs tariffs = <String, double>{};
 
-  int row = _getTariffsFromRow(trStartRow, sheet, column, tariffs);
-  row += trNttOffset;
-  _getTariffsFromRow(row, sheet, column, tariffs);
+  int row = trStartRow;
+  while (row > 0) {
+    row = _getTariffsFromRow(row, sheet, column, tariffs);
+    ({bool nttHeader, int row}) nextRow = _findNextTariffRow(row, sheet);
+    if (nextRow.nttHeader) { // пропускаем nttHeader
+      nextRow = _findNextTariffRow(nextRow.row + 1, sheet);
+    }
+
+    row = nextRow.row;
+  }
   
   return tariffs;
 }
@@ -92,8 +99,26 @@ int _getTariffsFromRow(int row, Sheet sheet, int column, Tariffs tariffs) {
 }
 
 void _getWorksSet(Sheet sheet, Set<String> worksSet, Set<String> nttWorksSet) {
-  int row = 0;
-  for (row = trStartRow; ; row++) {
+  int row = trStartRow;
+  while (row > 0) {
+    row = _getWorksSetFromRow(row, sheet, worksSet);
+    final ({bool nttHeader, int row}) nextRow = _findNextTariffRow(row, sheet);
+    row = nextRow.row;
+    if (nextRow.nttHeader) {
+      row++;
+      break;
+    }
+  }
+
+  while (row > 0) {
+    row = _getWorksSetFromRow(row, sheet, nttWorksSet);
+    final ({bool nttHeader, int row}) nextRow = _findNextTariffRow(row, sheet);
+    row = nextRow.row;
+  }
+}
+
+int _getWorksSetFromRow(int row, Sheet sheet, Set<String> worksSet) {
+  for (; ; row++) {
     final Data workCell = sheet.cell(CellIndex.indexByColumnRow(
       columnIndex: trWorks, rowIndex: row));
 
@@ -104,18 +129,21 @@ void _getWorksSet(Sheet sheet, Set<String> worksSet, Set<String> nttWorksSet) {
     worksSet.add(workCell.value.toString());
   }
 
-  row += trNttOffset;
-  for (; ; row++) {
-    final Data workCell = sheet.cell(CellIndex.indexByColumnRow(
-      columnIndex: trWorks, rowIndex: row));
-
-    if (workCell.value == null || workCell.value.toString().isEmpty) {
-      break;
-    }
-
-    nttWorksSet.add(workCell.value.toString());
-  }
+  return row;
 }
+
+({int row, bool nttHeader}) _findNextTariffRow(int row, Sheet sheet) {
+  for (int i = 0; i < 10; i++) { // поиск первой непустой в следующей десятке строк
+    final Data workCell = sheet.cell(CellIndex.indexByColumnRow(
+      columnIndex: trWorks, rowIndex: row + i));
+    if (workCell.value != null && workCell.value.toString().isNotEmpty) {
+      return (row: row + i, nttHeader: workCell.value.toString() == nttHeader);
+    }
+  }
+  
+  return (row: -1, nttHeader: false);
+}
+
 
 String _outputJson({
   TariffsEntity? tariffsEntity,

@@ -10,6 +10,7 @@ const int saHeaderRow = 0;
 const int saStartRow = 1;
 // -- NTT sheet
 const String nttSheet = 'NTT';
+const String nttHeader = 'NTT';
 const String nttOperations = 'NTT operations';
 // - columns
 const int ntLogin = 2;
@@ -85,7 +86,7 @@ const int trDateRow = 2;
 const int trHeaderRow = 3;
 const int trStartRow = 4;
 // - rows offsets
-const int trNttOffset = 2;
+const int trNttOffset = 2; // не меньше двух чтоб влез NTT заголовок 
 
 
 const String dateFormat = 'dd/MM/yy';

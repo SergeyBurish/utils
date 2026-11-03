@@ -120,6 +120,17 @@ void _fillOutWorks(List<String> works, List<String> nttWorks, Sheet sheet) {
   }
 
   final int nttStartRow = trStartRow + works.length + trNttOffset;
+
+  sheet.updateCell(CellIndex.indexByColumnRow(
+        columnIndex: trWorks,
+        rowIndex: nttStartRow -1), 
+      TextCellValue(nttHeader),
+      cellStyle: CellStyle(
+        horizontalAlign: HorizontalAlign.Center,
+        bold: true,
+      ),
+  );
+
   for (int i = 0; i < nttWorks.length; i++) {
     sheet.updateCell(CellIndex.indexByColumnRow(
         columnIndex: trWorks,

@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
+import '../../domain/entity/penalty_entity.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
 import '../../domain/repository/lamoda_repository.dart';
@@ -159,5 +160,11 @@ class LamodaRepositoryImp implements LamodaRepository {
     }
     
     return Right<String, String>(fileName);
+  }
+
+  @override
+  Future<Either<String, List<PenaltyEntity>>> handlePenaltiesFile(Uint8List bytes) async {
+    final HandleExcelDto dto = HandleExcelDto(bytes: bytes);
+    return await isolateLauncher.handlePenaltiesFile(dto);
   }
 }

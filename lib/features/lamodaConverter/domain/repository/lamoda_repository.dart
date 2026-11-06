@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dart_either/dart_either.dart';
 
 import '../entity/lamoda_entity.dart';
+import '../entity/penalty_entity.dart';
 import '../entity/tariffs_entity.dart';
 import '../entity/typedefs.dart';
 
@@ -13,4 +14,5 @@ abstract interface class LamodaRepository {
   Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet, Set<String> nttWorksSet,);
   Future<Either<String, LamodaEmployees>> handleEmployeesFile(Uint8List bytes);
   Future<Either<String, String>> downloadEmployeesExcelFile(LamodaEmployees lamodaEmployees);
+  Future<Either<String, List<PenaltyEntity>>> handlePenaltiesFile(Uint8List bytes);
 }

@@ -4,6 +4,7 @@ import 'package:dart_either/dart_either.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
+import '../../domain/entity/penalty_entity.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
 import '../dto/create_employees_dto.dart';
@@ -13,6 +14,7 @@ import '../dto/file_output_dto.dart';
 import '../dto/handle_employees_output_dto.dart';
 import '../dto/handle_excel_dto.dart';
 import '../dto/handle_excel_output_dto.dart';
+import '../dto/handle_penalties_output_dto.dart';
 import '../dto/handle_tariffs_output_dto.dart';
 import '../dto/lamoda_entity_dto.dart';
 import 'isolates/create_employees_file.dart';
@@ -20,6 +22,7 @@ import 'isolates/create_output_file.dart';
 import 'isolates/create_tariffs_file.dart';
 import 'isolates/handle_employees_file.dart';
 import 'isolates/handle_excel_file.dart';
+import 'isolates/handle_penalties_file.dart';
 import 'isolates/handle_tariffs_file.dart';
 
 abstract interface class IsolateLauncher {
@@ -29,6 +32,7 @@ abstract interface class IsolateLauncher {
   Future<Either<String, FileOutputDto>> createTariffsFile(CreateTariffsDto dto);
   Future<Either<String, LamodaEmployees>> handleEmployeesFile(HandleExcelDto dto);
   Future<Either<String, FileOutputDto>> createEmployeesFile(CreateEmployeesDto dto);
+  Future<Either<String, List<PenaltyEntity>>> handlePenaltiesFile(HandleExcelDto dto);
 }
 
 class IsolateLauncherImp implements IsolateLauncher{
@@ -135,6 +139,23 @@ class IsolateLauncherImp implements IsolateLauncher{
       return Right<String, FileOutputDto>(fileOutput);
     } else {
       return Left<String, FileOutputDto>(fileOutput.error.tr(args: fileOutput.errorArgs));
+    }
+  }
+
+  @override
+  Future<Either<String, List<PenaltyEntity>>> handlePenaltiesFile(HandleExcelDto dto) async {
+    final IsolateManager<String, String> isolate = 
+      IsolateManager<String, String>.create(
+        isolHandlePenaltiesFile,
+        workerName: 'isolHandlePenaltiesFile',
+      );
+
+    final String isolResult = await isolate.compute(jsonEncode(dto.toJson()));
+    final HandlePenaltiesOutputDto employeesOutput = HandlePenaltiesOutputDto.fromJson(jsonDecode(isolResult));
+    if (employeesOutput.penaltiesList != null) {
+      return Right<String, List<PenaltyEntity>>(employeesOutput.penaltiesList!);
+    } else {
+      return Left<String, List<PenaltyEntity>>(employeesOutput.error.tr(args: employeesOutput.errorArgs));
     }
   }
 }

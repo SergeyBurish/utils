@@ -89,6 +89,14 @@ const int trStartRow = 4;
 const int trNttOffset = 2; // не меньше двух чтоб влез NTT заголовок 
 
 
+// -- penalties sheet
+// - columns
+const int penDescription = 1;
+const int penPrice = 2;
+// - rows
+const int penStartRow = 0;
+
+
 const String dateFormat = 'dd/MM/yy';
 const String dateFormat2 = 'dd.MM.yyyy';
 

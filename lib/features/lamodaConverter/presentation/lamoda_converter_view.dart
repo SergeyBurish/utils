@@ -128,7 +128,7 @@ class LamodaConverterView extends StatelessWidget {
               ],
             ),
             if(loading) const LinearProgressIndicator(),
-            Text(
+            SelectableText(
               errorMessage,
               style: context.textStyles.middleText,
               maxLines: 50,

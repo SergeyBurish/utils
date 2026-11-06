@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
+import '../../domain/entity/penalty_entity.dart';
 import '../../domain/entity/shift_time.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
@@ -67,6 +68,7 @@ class LamodaCubit extends Cubit<LamodaState> {
             state.lamodaEntity.lamodaEmployees.addAll(lamodaEntity.lamodaEmployees);
             state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
             state.lamodaEntity.nttWorksSet.addAll(lamodaEntity.nttWorksSet);
+            // _updatePpenaltiesInShifts();
             emit(state.copyWith.status(LamodaStatus.fileHandling));
           },
         );
@@ -229,6 +231,42 @@ class LamodaCubit extends Cubit<LamodaState> {
 
   void onUploadPenalties() async {
     emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesLoading));
+
+    const XTypeGroup excelTypeGroup = XTypeGroup(
+      label: 'Excel',
+      extensions: <String>['xls', 'xlsx'],
+      uniformTypeIdentifiers: <String>['public.xlsx'],
+    );
+
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[excelTypeGroup],
+    );
+
+    if (file == null) {
+      emit(state.copyWith.penaltiesStatus(PenaltiesStatus.idle));
+      return;
+    }
+
+    try {
+      final Uint8List bytes = await file.readAsBytes();
+      final Either<String, List<PenaltyEntity>> output = await lamodaUsecase.handlePenaltiesFile(bytes);
+      state.errors.clear();
+      output.fold(
+        ifLeft: (String error) {
+          state.errors.add('${file.name}: $error');
+          emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesError));
+        },
+        ifRight: (List<PenaltyEntity> penaltiesList) {
+          state.penaltiesList.clear();
+          state.penaltiesList.addAll(penaltiesList);
+          // _updatePpenaltiesInShifts();
+          emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesLoaded));
+        },
+      );
+    } on Exception catch (e) {
+      state.errors.add('${file.name}: $e');
+      emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesError));
+    }
   }
 
   void _onLoad () async {

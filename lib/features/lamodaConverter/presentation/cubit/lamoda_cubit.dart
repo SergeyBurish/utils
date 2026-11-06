@@ -227,6 +227,10 @@ class LamodaCubit extends Cubit<LamodaState> {
     );
   }
 
+  void onUploadPenalties() async {
+    emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesLoading));
+  }
+
   void _onLoad () async {
   }
 

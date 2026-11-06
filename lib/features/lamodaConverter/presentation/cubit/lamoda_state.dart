@@ -29,11 +29,19 @@ enum EmployeesStatus {
   employeesError,
 }
 
+enum PenaltiesStatus {
+  idle,
+  penaltiesLoading,
+  penaltiesLoaded,
+  penaltiesError,
+}
+
 @CopyWith(constructor: '_')
 class LamodaState {
   final LamodaStatus status;
   final TariffsStatus tariffsStatus;
   final EmployeesStatus employeesStatus;
+  final PenaltiesStatus penaltiesStatus;
   final int filesLength;
   final String currentFile;
   final int currentFileInd;
@@ -46,6 +54,7 @@ class LamodaState {
     required this.status,
     required this.tariffsStatus,
     required this.employeesStatus,
+    required this.penaltiesStatus,
     required this.filesLength,
     required this.currentFile,
     required this.currentFileInd,
@@ -59,6 +68,7 @@ class LamodaState {
     required this.status,
     required this.tariffsStatus,
     required this.employeesStatus,
+    required this.penaltiesStatus,
     required this.filesLength,
     required this.currentFile,
     required this.currentFileInd,
@@ -72,6 +82,7 @@ class LamodaState {
     status = LamodaStatus.idle,
     tariffsStatus = TariffsStatus.idle,
     employeesStatus = EmployeesStatus.idle,
+    penaltiesStatus = PenaltiesStatus.idle,
     filesLength = 0,
     currentFile = '',
     currentFileInd = 0,
@@ -80,6 +91,7 @@ class LamodaState {
     lamodaEntity = LamodaEntity(
       shifts: <ShiftTime, WorkerShifts>{},
       nttShifts: <ShiftTime, WorkerShifts>{},
+      lamodaPenalties: <ShiftTime, WorkerPenalties>{},
       lamodaEmployees: <String, EmployeeDetails>{},
       worksSet: <String>{},
       nttWorksSet: <String>{},
@@ -93,7 +105,8 @@ class LamodaState {
     tariffsStatus == TariffsStatus.tariffsLoading ||
     tariffsStatus == TariffsStatus.tariffsDownloading ||
     employeesStatus == EmployeesStatus.employeesLoading ||
-    employeesStatus == EmployeesStatus.employeesDownloading;
+    employeesStatus == EmployeesStatus.employeesDownloading ||
+    penaltiesStatus == PenaltiesStatus.penaltiesLoading;
 
   bool get resultIsReady => lamodaEntity.shifts.isNotEmpty && !inProgress;
   bool get fileDownloaded => status == LamodaStatus.fileDownloaded;
@@ -128,6 +141,13 @@ class LamodaState {
     EmployeesStatus.employeesDownloading => 'employees_downloading'.tr(),
     EmployeesStatus.employeesDownloaded => 'employees_downloaded'.tr(args: <String>[downloadedFile]),
     EmployeesStatus.employeesError => 'employees_error'.tr(),
+  };
+
+  String get penaltiesMessage => switch (penaltiesStatus) {
+    PenaltiesStatus.idle => 'penalties_not_added'.tr(),
+    PenaltiesStatus.penaltiesLoaded => 'penalties_added'.tr(args: <String>['${lamodaEntity.lamodaEmployees.length}']),
+    PenaltiesStatus.penaltiesLoading => 'penalties_loading'.tr(),
+    PenaltiesStatus.penaltiesError => 'penalties_error'.tr(),
   };
 
   String get errorMessage => errors.isEmpty 

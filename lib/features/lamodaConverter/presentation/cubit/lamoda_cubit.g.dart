@@ -13,6 +13,8 @@ abstract class _$LamodaStateCWProxy {
 
   LamodaState employeesStatus(EmployeesStatus employeesStatus);
 
+  LamodaState penaltiesStatus(PenaltiesStatus penaltiesStatus);
+
   LamodaState filesLength(int filesLength);
 
   LamodaState currentFile(String currentFile);
@@ -38,6 +40,7 @@ abstract class _$LamodaStateCWProxy {
     LamodaStatus status,
     TariffsStatus tariffsStatus,
     EmployeesStatus employeesStatus,
+    PenaltiesStatus penaltiesStatus,
     int filesLength,
     String currentFile,
     int currentFileInd,
@@ -65,6 +68,10 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
   @override
   LamodaState employeesStatus(EmployeesStatus employeesStatus) =>
       call(employeesStatus: employeesStatus);
+
+  @override
+  LamodaState penaltiesStatus(PenaltiesStatus penaltiesStatus) =>
+      call(penaltiesStatus: penaltiesStatus);
 
   @override
   LamodaState filesLength(int filesLength) => call(filesLength: filesLength);
@@ -103,6 +110,7 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
     Object? status = const $CopyWithPlaceholder(),
     Object? tariffsStatus = const $CopyWithPlaceholder(),
     Object? employeesStatus = const $CopyWithPlaceholder(),
+    Object? penaltiesStatus = const $CopyWithPlaceholder(),
     Object? filesLength = const $CopyWithPlaceholder(),
     Object? currentFile = const $CopyWithPlaceholder(),
     Object? currentFileInd = const $CopyWithPlaceholder(),
@@ -127,6 +135,12 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
           ? _value.employeesStatus
           // ignore: cast_nullable_to_non_nullable
           : employeesStatus as EmployeesStatus,
+      penaltiesStatus:
+          penaltiesStatus == const $CopyWithPlaceholder() ||
+              penaltiesStatus == null
+          ? _value.penaltiesStatus
+          // ignore: cast_nullable_to_non_nullable
+          : penaltiesStatus as PenaltiesStatus,
       filesLength:
           filesLength == const $CopyWithPlaceholder() || filesLength == null
           ? _value.filesLength

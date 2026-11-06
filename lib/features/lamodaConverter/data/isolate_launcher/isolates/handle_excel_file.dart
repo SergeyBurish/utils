@@ -47,6 +47,7 @@ LamodaEntity _handleSalarySheet(Excel excel) {
   final LamodaEntity lamodaEntity = LamodaEntity(
     shifts: lamodaShifts,
     nttShifts: <ShiftTime, WorkerShifts>{},
+    lamodaPenalties: <ShiftTime, WorkerPenalties>{},
     lamodaEmployees: lamodaEmployees,
     worksSet: worksSet,
     nttWorksSet: <String>{},
@@ -79,6 +80,7 @@ LamodaEntity _handleNttSheet(Excel excel) {
   final LamodaEntity lamodaEntity = LamodaEntity(
     shifts: <ShiftTime, WorkerShifts>{},
     nttShifts: lamodaShifts,
+    lamodaPenalties: <ShiftTime, WorkerPenalties>{},
     lamodaEmployees: lamodaEmployees,
     worksSet: <String>{},
     nttWorksSet: <String>{nttOperations},

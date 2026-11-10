@@ -9,9 +9,9 @@ part of 'handle_penalties_output_dto.dart';
 HandlePenaltiesOutputDto _$HandlePenaltiesOutputDtoFromJson(
   Map<String, dynamic> json,
 ) => HandlePenaltiesOutputDto(
-  penaltiesList: (json['penaltiesList'] as List<dynamic>?)
-      ?.map((e) => PenaltyEntityDto.fromJson(e as Map<String, dynamic>))
-      .toList(),
+  penalties: (json['penalties'] as Map<String, dynamic>?)?.map(
+    (k, e) => MapEntry(k, AmountPriceDto.fromJson(e as Map<String, dynamic>)),
+  ),
   error: json['error'] as String,
   errorArgs: (json['errorArgs'] as List<dynamic>)
       .map((e) => e as String)
@@ -21,7 +21,7 @@ HandlePenaltiesOutputDto _$HandlePenaltiesOutputDtoFromJson(
 Map<String, dynamic> _$HandlePenaltiesOutputDtoToJson(
   HandlePenaltiesOutputDto instance,
 ) => <String, dynamic>{
-  'penaltiesList': instance.penaltiesList,
+  'penalties': instance.penalties,
   'error': instance.error,
   'errorArgs': instance.errorArgs,
 };

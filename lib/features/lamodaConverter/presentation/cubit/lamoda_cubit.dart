@@ -6,9 +6,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/entity/amount_price.dart';
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
-import '../../domain/entity/penalty_entity.dart';
 import '../../domain/entity/shift_time.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
@@ -68,6 +68,7 @@ class LamodaCubit extends Cubit<LamodaState> {
             state.lamodaEntity.lamodaEmployees.addAll(lamodaEntity.lamodaEmployees);
             state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
             state.lamodaEntity.nttWorksSet.addAll(lamodaEntity.nttWorksSet);
+            state.lamodaEntity.lamodaPenalties.addAll(lamodaEntity.lamodaPenalties);
             // _updatePpenaltiesInShifts();
             emit(state.copyWith.status(LamodaStatus.fileHandling));
           },
@@ -249,16 +250,16 @@ class LamodaCubit extends Cubit<LamodaState> {
 
     try {
       final Uint8List bytes = await file.readAsBytes();
-      final Either<String, List<PenaltyEntity>> output = await lamodaUsecase.handlePenaltiesFile(bytes);
+      final Either<String, Penalties> output = await lamodaUsecase.handlePenaltiesFile(bytes);
       state.errors.clear();
       output.fold(
         ifLeft: (String error) {
           state.errors.add('${file.name}: $error');
           emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesError));
         },
-        ifRight: (List<PenaltyEntity> penaltiesList) {
-          state.penaltiesList.clear();
-          state.penaltiesList.addAll(penaltiesList);
+        ifRight: (Penalties penalties) {
+          state.penalties.clear();
+          state.penalties.addAll(penalties);
           // _updatePpenaltiesInShifts();
           emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesLoaded));
         },

@@ -69,6 +69,15 @@ double? getDoubleCellValue(Sheet sheet, int columnIndex, int rowIndex) {
   return getIntCellValue(sheet, columnIndex, rowIndex)?.toDouble();
 }
 
+DateTime? getDateCellValue(Sheet sheet, int columnIndex, int rowIndex) {
+  final Data doubleCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: rowIndex));
+  if (doubleCell.value is DateCellValue) {
+    return (doubleCell.value as DateCellValue).asDateTimeLocal();
+  }
+
+  return null;
+}
+
 DateTime? tryParseDateTimeFromCell(CellValue? value){
   if (value == null) {
     return null;

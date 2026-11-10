@@ -49,7 +49,7 @@ class LamodaState {
   final List<String> errors;
   final LamodaEntity lamodaEntity;
   final LamodaTariffs lamodaTariffs;
-  final List<PenaltyEntity> penaltiesList;
+  final Penalties penalties;
 
   LamodaState({
     required this.status,
@@ -63,7 +63,7 @@ class LamodaState {
     required this.errors,
     required this.lamodaEntity,
     required this.lamodaTariffs,
-    required this.penaltiesList,
+    required this.penalties,
   });
 
   LamodaState._({
@@ -78,7 +78,7 @@ class LamodaState {
     required this.errors,
     required this.lamodaEntity,
     required this.lamodaTariffs,
-    required this.penaltiesList,
+    required this.penalties,
   });
 
   LamodaState.initial() :
@@ -100,7 +100,7 @@ class LamodaState {
       nttWorksSet: <String>{},
     ),
     lamodaTariffs = <DateTime, Tariffs>{},
-    penaltiesList = <PenaltyEntity>[];
+    penalties = <String, AmountPrice>{};
 
   bool get inProgress => 
     status == LamodaStatus.sourceFilesLoading ||
@@ -149,7 +149,7 @@ class LamodaState {
 
   String get penaltiesMessage => switch (penaltiesStatus) {
     PenaltiesStatus.idle => 'penalties_not_added'.tr(),
-    PenaltiesStatus.penaltiesLoaded => 'penalties_added'.tr(args: <String>['${penaltiesList.length}']),
+    PenaltiesStatus.penaltiesLoaded => 'penalties_added'.tr(args: <String>['${penalties.length}']),
     PenaltiesStatus.penaltiesLoading => 'penalties_loading'.tr(),
     PenaltiesStatus.penaltiesError => 'penalties_error'.tr(),
   };

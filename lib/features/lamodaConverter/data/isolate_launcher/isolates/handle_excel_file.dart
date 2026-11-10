@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:excel_plus/excel_plus.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
+import '../../../domain/entity/amount_price.dart';
 import '../../../domain/entity/employee_details.dart';
 import '../../../domain/entity/lamoda_entity.dart';
 import '../../../domain/entity/shift_time.dart';
@@ -31,6 +32,9 @@ String isolHandleExcelFile(String handleExcelJson) {
       if (lamodaEntity.isEmpty) {
         return _outputJson(error: 'no_data_found');
       }
+
+      lamodaEntity.lamodaPenalties.addAll(_handleMistakesSheet(excel));
+
       return _outputJson(lamodaEntityDto: lamodaEntity.toDto());
     } else {
       return _outputJson(error: 'no_data_found');
@@ -105,6 +109,54 @@ LamodaEntity _handleNttSheet(Excel excel) {
   }
 
   return lamodaEntity;
+}
+
+LamodaPenalties _handleMistakesSheet(Excel excel) {
+  final LamodaPenalties lamodaPenalties = <ShiftTime, WorkerPenalties>{};
+
+  if (excel.tables.keys.contains(mistakesSheet)) {
+    final Sheet sheet = excel[mistakesSheet];
+
+    for (int row = mistStartRow; ; row++) {
+      final DateTime? date = getDateCellValue(sheet, mistData, row);
+      if (date == null) {
+        break;
+      }
+
+      final String? login = getTextCellValue(sheet, mistLogin, row);
+      if (login == null) {
+        break;
+      }
+
+      final String? description = getTextCellValue(sheet, mistDescr, row);
+      if (description == null) {
+        break;
+      }
+
+      final int? amount = getIntCellValue(sheet, mistAamount, row);
+      if (amount == null || amount < 1) {
+        break;
+      }
+
+      final bool day = getTextCellValue(sheet, mistDayNight, row) == mistDay;
+      final ShiftTime shiftTime = ShiftTime(date: date, day: day);
+
+      final WorkerPenalties workerPenalties = lamodaPenalties[shiftTime] ?? <String, Penalties>{};
+      if (!lamodaPenalties.containsKey(shiftTime)) {
+        lamodaPenalties[shiftTime] = workerPenalties;
+      }
+
+      final Penalties penalties = workerPenalties[login] ?? <String, AmountPrice>{};
+      if (!workerPenalties.containsKey(login)) {
+        workerPenalties[login] = penalties;
+      }
+
+      final int currentAmount = penalties[description]?.amount ?? 0;
+      penalties[description] = AmountPrice(amount: currentAmount + amount);
+    }
+  }
+
+  return lamodaPenalties;
 }
 
 WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, LamodaEmployees lamodaEmployees) {

@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../domain/entity/amount_price.dart';
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
-import '../../domain/entity/penalty_entity.dart';
 import '../../domain/entity/shift_time.dart';
 import '../../domain/entity/typedefs.dart';
+import 'amount_price_dto.dart';
 import 'employee_details_dto.dart';
-import 'penalty_entity_dto.dart';
 import 'shift_time_dto.dart';
 import 'typedefs_dto.dart';
 
@@ -72,8 +72,11 @@ extension LamodaEntityMapper on LamodaEntity {
     lamodaPenalties: lamodaPenalties.map((ShiftTime shiftTime, WorkerPenalties workerPenalties) => 
       MapEntry<String, WorkerPenaltiesDto>(
         jsonEncode(shiftTime.toDto().toJson()),
-        workerPenalties.map((String login, PenaltyEntity penalty) => 
-          MapEntry<String, PenaltyEntityDto>(login, penalty.toDto())
+        workerPenalties.map((String login, Penalties penalties) => 
+          MapEntry<String, PenaltiesDto>(login, 
+          penalties.map((String description, AmountPrice amountPrice) => 
+            MapEntry<String, AmountPriceDto>(description, amountPrice.toDto())
+          ))
         )
       )
     ),

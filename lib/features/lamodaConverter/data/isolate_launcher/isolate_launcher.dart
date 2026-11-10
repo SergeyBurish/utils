@@ -4,7 +4,6 @@ import 'package:dart_either/dart_either.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
-import '../../domain/entity/penalty_entity.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
 import '../dto/create_employees_dto.dart';
@@ -32,7 +31,7 @@ abstract interface class IsolateLauncher {
   Future<Either<String, FileOutputDto>> createTariffsFile(CreateTariffsDto dto);
   Future<Either<String, LamodaEmployees>> handleEmployeesFile(HandleExcelDto dto);
   Future<Either<String, FileOutputDto>> createEmployeesFile(CreateEmployeesDto dto);
-  Future<Either<String, List<PenaltyEntity>>> handlePenaltiesFile(HandleExcelDto dto);
+  Future<Either<String, Penalties>> handlePenaltiesFile(HandleExcelDto dto);
 }
 
 class IsolateLauncherImp implements IsolateLauncher{
@@ -143,7 +142,7 @@ class IsolateLauncherImp implements IsolateLauncher{
   }
 
   @override
-  Future<Either<String, List<PenaltyEntity>>> handlePenaltiesFile(HandleExcelDto dto) async {
+  Future<Either<String, Penalties>> handlePenaltiesFile(HandleExcelDto dto) async {
     final IsolateManager<String, String> isolate = 
       IsolateManager<String, String>.create(
         isolHandlePenaltiesFile,
@@ -152,10 +151,10 @@ class IsolateLauncherImp implements IsolateLauncher{
 
     final String isolResult = await isolate.compute(jsonEncode(dto.toJson()));
     final HandlePenaltiesOutputDto employeesOutput = HandlePenaltiesOutputDto.fromJson(jsonDecode(isolResult));
-    if (employeesOutput.penaltiesList != null) {
-      return Right<String, List<PenaltyEntity>>(employeesOutput.penaltiesList!);
+    if (employeesOutput.penalties != null) {
+      return Right<String, Penalties>(employeesOutput.penalties!);
     } else {
-      return Left<String, List<PenaltyEntity>>(employeesOutput.error.tr(args: employeesOutput.errorArgs));
+      return Left<String, Penalties>(employeesOutput.error.tr(args: employeesOutput.errorArgs));
     }
   }
 }

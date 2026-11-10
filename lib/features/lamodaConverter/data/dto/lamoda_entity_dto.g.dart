@@ -29,8 +29,13 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(
     (k, e) => MapEntry(
       k,
       (e as Map<String, dynamic>).map(
-        (k, e) =>
-            MapEntry(k, PenaltyEntityDto.fromJson(e as Map<String, dynamic>)),
+        (k, e) => MapEntry(
+          k,
+          (e as Map<String, dynamic>).map(
+            (k, e) =>
+                MapEntry(k, AmountPriceDto.fromJson(e as Map<String, dynamic>)),
+          ),
+        ),
       ),
     ),
   ),

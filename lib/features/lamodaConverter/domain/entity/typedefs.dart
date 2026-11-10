@@ -1,5 +1,5 @@
+import 'amount_price.dart';
 import 'employee_details.dart';
-import 'penalty_entity.dart';
 import 'shift_time.dart';
 
 typedef Works = Map<String, int>; // work, number
@@ -11,5 +11,6 @@ typedef LamodaTariffs = Map<DateTime, Tariffs>; // date, tariffs
 
 typedef LamodaEmployees = Map<String, EmployeeDetails>; // login, EmployeeDetails
 
-typedef WorkerPenalties = Map<String, PenaltyEntity>; // login, penalties
+typedef Penalties = Map<String, AmountPrice>; // penalty description, AmountPrice
+typedef WorkerPenalties = Map<String, Penalties>; // login, penalties
 typedef LamodaPenalties = Map<ShiftTime, WorkerPenalties>;

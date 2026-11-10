@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:excel_plus/excel_plus.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
+import '../../dto/amount_price_dto.dart';
 import '../../dto/handle_excel_dto.dart';
 import '../../dto/handle_penalties_output_dto.dart';
-import '../../dto/penalty_entity_dto.dart';
+import '../../dto/typedefs_dto.dart';
 import '../../tablesData/consts.dart';
 import '../common/isol_utils.dart';
 
@@ -22,7 +23,7 @@ String isolHandlePenaltiesFile(String handleExcelJson) {
     }
     final Sheet sheet = excel[firstSheetName];
 
-    List<PenaltyEntityDto> penaltiesList = <PenaltyEntityDto>[];
+    final PenaltiesDto penalties = <String, AmountPriceDto>{};
     for (int row = penStartRow; ; row++) {
       final String? description = getTextCellValue(sheet, penDescription, row);
       if (description?.isEmpty ?? true) {
@@ -34,31 +35,26 @@ String isolHandlePenaltiesFile(String handleExcelJson) {
         break;
       }
 
-      penaltiesList.add(PenaltyEntityDto(
-          description: description!,
-          price: price,
-          amount: 1,
-        )
-      );
+      penalties[description!] = AmountPriceDto(price: price, amount: 1);
     }
 
-    if (penaltiesList.isEmpty) {
+    if (penalties.isEmpty) {
       return _outputJson(error: 'no_data_found');
     }
 
-    return _outputJson(penaltiesList: penaltiesList);
+    return _outputJson(penalties: penalties);
   } on Exception catch (e) {
     return _outputJson(error: 'fail_open_excel_file', errorArgs: <String>['$e']);
   }
 }
 
 String _outputJson({
-  List<PenaltyEntityDto>? penaltiesList,
+  PenaltiesDto? penalties,
   String error = '',
   List<String> errorArgs = const <String>[]
 }) {
   final HandlePenaltiesOutputDto tariffsOutput = HandlePenaltiesOutputDto(
-    penaltiesList: penaltiesList,
+    penalties: penalties,
     error: error,
     errorArgs: errorArgs);
   return jsonEncode(tariffsOutput.toJson());

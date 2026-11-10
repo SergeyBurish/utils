@@ -1,3 +1,4 @@
-import 'penalty_entity_dto.dart';
+import 'amount_price_dto.dart';
 
-typedef WorkerPenaltiesDto = Map<String, PenaltyEntityDto>; // login, penalties
+typedef PenaltiesDto = Map<String, AmountPriceDto>; // description, AmountPrice
+typedef WorkerPenaltiesDto = Map<String, PenaltiesDto>; // login, penalties

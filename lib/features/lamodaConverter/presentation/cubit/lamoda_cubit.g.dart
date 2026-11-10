@@ -29,7 +29,7 @@ abstract class _$LamodaStateCWProxy {
 
   LamodaState lamodaTariffs(LamodaTariffs lamodaTariffs);
 
-  LamodaState penaltiesList(List<PenaltyEntity> penaltiesList);
+  LamodaState penalties(Penalties penalties);
 
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LamodaState(...).copyWith.fieldName(value)`.
@@ -50,7 +50,7 @@ abstract class _$LamodaStateCWProxy {
     List<String> errors,
     LamodaEntity lamodaEntity,
     LamodaTariffs lamodaTariffs,
-    List<PenaltyEntity> penaltiesList,
+    Penalties penalties,
   });
 }
 
@@ -102,8 +102,7 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
       call(lamodaTariffs: lamodaTariffs);
 
   @override
-  LamodaState penaltiesList(List<PenaltyEntity> penaltiesList) =>
-      call(penaltiesList: penaltiesList);
+  LamodaState penalties(Penalties penalties) => call(penalties: penalties);
 
   @override
   /// Creates a new instance with the provided field values.
@@ -125,7 +124,7 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
     Object? errors = const $CopyWithPlaceholder(),
     Object? lamodaEntity = const $CopyWithPlaceholder(),
     Object? lamodaTariffs = const $CopyWithPlaceholder(),
-    Object? penaltiesList = const $CopyWithPlaceholder(),
+    Object? penalties = const $CopyWithPlaceholder(),
   }) {
     return LamodaState._(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -185,11 +184,10 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
           ? _value.lamodaTariffs
           // ignore: cast_nullable_to_non_nullable
           : lamodaTariffs as LamodaTariffs,
-      penaltiesList:
-          penaltiesList == const $CopyWithPlaceholder() || penaltiesList == null
-          ? _value.penaltiesList
+      penalties: penalties == const $CopyWithPlaceholder() || penalties == null
+          ? _value.penalties
           // ignore: cast_nullable_to_non_nullable
-          : penaltiesList as List<PenaltyEntity>,
+          : penalties as Penalties,
     );
   }
 }

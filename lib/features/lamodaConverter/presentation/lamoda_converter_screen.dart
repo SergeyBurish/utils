@@ -28,7 +28,7 @@ class LamodaConverterScreen extends StatelessWidget {
             penaltiesMessage: state.penaltiesMessage,
             errorMessage: state.errorMessage,
             downloadButton: state.fileDownloaded ? 'download_result_again'.tr() : 'download_result'.tr(),
-            version: 'version'.tr(args: <String>['1.9.0']),
+            version: 'version'.tr(args: <String>['1.10.0']),
             loading: state.inProgress,
             onUpload: state.inProgress ? null : cubit.onUpload,
             onDownload: state.resultIsReady ? cubit.onDownload : null,

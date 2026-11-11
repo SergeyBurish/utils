@@ -4,7 +4,8 @@ class ShiftTime extends Equatable implements Comparable<ShiftTime> {
   final DateTime date;
   final bool day;
 
-  const ShiftTime({required this.date, required this.day});
+  ShiftTime({required DateTime date, required this.day})
+    : date = DateTime(date.year, date.month, date.day);
   
   @override
   int compareTo(ShiftTime other) => date.compareTo(other.date);

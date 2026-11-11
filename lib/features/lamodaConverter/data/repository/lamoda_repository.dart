@@ -3,12 +3,14 @@ import 'dart:typed_data';
 import 'package:dart_either/dart_either.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../domain/entity/amount_price.dart';
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
 import '../../domain/repository/lamoda_repository.dart';
 import '../data_sources/local_data_source.dart';
+import '../dto/amount_price_dto.dart';
 import '../dto/create_employees_dto.dart';
 import '../dto/create_employees_strings.dart';
 import '../dto/create_output_dto.dart';
@@ -16,6 +18,7 @@ import '../dto/create_output_strings.dart';
 import '../dto/create_tariffs_dto.dart';
 import '../dto/create_tariffs_strings.dart';
 import '../dto/employee_details_dto.dart';
+import '../dto/excel_and_penalties_dto.dart';
 import '../dto/file_output_dto.dart';
 import '../dto/handle_excel_dto.dart';
 import '../dto/lamoda_entity_dto.dart';
@@ -30,8 +33,12 @@ class LamodaRepositoryImp implements LamodaRepository {
   LamodaRepositoryImp({required this.localDataSource, required this.isolateLauncher});
 
   @override
-  Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes) async {
-    final HandleExcelDto dto = HandleExcelDto(bytes: bytes);
+  Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes, Penalties penalties) async {
+
+    final ExcelAndPenaltiesDto dto = ExcelAndPenaltiesDto(
+      bytes: bytes, 
+      penalties: penalties.map((String descr, AmountPrice amountPrice) => MapEntry<String, AmountPriceDto>(descr, amountPrice.toDto()))
+    );
 
     final Either<String, LamodaEntityDto> output = await isolateLauncher.handleExcelFile(dto);
     switch (output) {

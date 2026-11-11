@@ -26,7 +26,7 @@ String isolHandleEmployeesFile(String handleExcelJson) {
     final LamodaEmployees lamodaEmployees = <String, EmployeeDetails>{};
 
     for (int row = edStartRow; ; row++) {
-      final String? login = getTextCellValue(sheet, edLogin, row);
+      final String? login = getTextCellValue(sheet, edLogin, row)?.toLowerCase();
       if (login?.isEmpty ?? true) {
         break;
       }

@@ -4,6 +4,7 @@ import 'package:excel_plus/excel_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
+import '../../../domain/entity/amount_price.dart';
 import '../../../domain/entity/lamoda_entity.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
@@ -251,6 +252,9 @@ void _fillOutSheetFromDate({
       for (final MapEntry<String, Works> workerShift in workerShifts.entries) {
         final String login = workerShift.key;
         final int indexOflogin = logins.indexOf(login);
+
+        final double? penalty = _getPenalty(shiftTime, login, lamodaEntity.lamodaPenalties);
+
         _formRow(
           sheet: sheet,
           row: row++,
@@ -264,6 +268,7 @@ void _fillOutSheetFromDate({
           employeeDetails: strings.employeeDetails,
           indexOflogin: indexOflogin,
           tariffsDates: tariffsDates,
+          penalty: penalty
         );
       }
     }
@@ -286,6 +291,7 @@ void _formRow({
   required String employeeDetails,
   required int indexOflogin,
   required List<DateTime> tariffsDates,
+  double? penalty,
 }){
   // дата
   sheet.updateCell(CellIndex.indexByColumnRow(
@@ -371,6 +377,14 @@ void _formRow({
   }
 
   final int startFormulaColumn = fStartWorks + workNames.length + nttWorkNames.length;
+
+  // штраф
+  if (penalty != null) {
+    sheet.updateCell(CellIndex.indexByColumnRow(
+      columnIndex: fFinesDeducted + startFormulaColumn,
+      rowIndex: row), 
+    DoubleCellValue(penalty));
+  }
 
   final String startIndex = stringIndex(colInd: fStartWorks, rowInd: row);
   final String endIndex = stringIndex(
@@ -549,6 +563,21 @@ String _accruedPerShiftFormula({
     list.add('$bid*$work');
   }
   return list.join('+');
+}
+
+double? _getPenalty(ShiftTime shiftTime, String login, LamodaPenalties lamodaPenalties) {
+  final WorkerPenalties? workerPenalties = lamodaPenalties[shiftTime];
+  if (workerPenalties == null) return null;
+
+  final Penalties? penalties = workerPenalties[login];
+  if (penalties == null) return null;
+
+  double penalty = 0;
+  for (final AmountPrice amountPrice in penalties.values) {
+    penalty += amountPrice.amount * (amountPrice.price ?? 0);
+  }
+
+  return penalty > 0 ? penalty : null;
 }
 
 bool _isSameDay(DateTime a, DateTime b) => 

@@ -55,7 +55,7 @@ class LamodaCubit extends Cubit<LamodaState> {
 
       try {
         final Uint8List bytes = await files[i].readAsBytes();
-        final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes);
+        final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes, state.penalties);
         
         output.fold(
           ifLeft: (String error) {
@@ -69,7 +69,8 @@ class LamodaCubit extends Cubit<LamodaState> {
             state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
             state.lamodaEntity.nttWorksSet.addAll(lamodaEntity.nttWorksSet);
             state.lamodaEntity.lamodaPenalties.addAll(lamodaEntity.lamodaPenalties);
-            // _updatePpenaltiesInShifts();
+            state.lamodaEntity.uncnownPenalties.addAll(lamodaEntity.uncnownPenalties);
+            _updateErrorsWithUncnownPenalties();
             emit(state.copyWith.status(LamodaStatus.fileHandling));
           },
         );
@@ -217,7 +218,6 @@ class LamodaCubit extends Cubit<LamodaState> {
     state.errors.clear();
     output.fold(
       ifLeft: (String error) {
-        state.errors.clear();
         state.errors.add(error);
         emit(state.copyWith.status(LamodaStatus.error));
       },
@@ -273,9 +273,16 @@ class LamodaCubit extends Cubit<LamodaState> {
   void _onLoad () async {
   }
 
+  void _updateErrorsWithUncnownPenalties() {
+    for (final String uncnownPenalty in state.lamodaEntity.uncnownPenalties) {
+      state.errors.add('uncnown_penalty'.tr(args: <String>[uncnownPenalty]));
+    }
+  }
+
   void _clear () async {
     state.errors.clear();
     state.lamodaEntity.shifts.clear();
     state.lamodaEntity.worksSet.clear();
+    state.lamodaEntity.uncnownPenalties.clear();
   }
 }

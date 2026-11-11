@@ -98,6 +98,7 @@ class LamodaState {
       lamodaEmployees: <String, EmployeeDetails>{},
       worksSet: <String>{},
       nttWorksSet: <String>{},
+      uncnownPenalties: <String>{},
     ),
     lamodaTariffs = <DateTime, Tariffs>{},
     penalties = <String, AmountPrice>{};

@@ -8,19 +8,20 @@ import '../../../domain/entity/employee_details.dart';
 import '../../../domain/entity/lamoda_entity.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
-import '../../dto/handle_excel_dto.dart';
+import '../../dto/excel_and_penalties_dto.dart';
 import '../../dto/handle_excel_output_dto.dart';
 import '../../dto/lamoda_entity_dto.dart';
+import '../../dto/typedefs_dto.dart';
 import '../../tablesData/consts.dart';
 import '../common/isol_utils.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
 String isolHandleExcelFile(String handleExcelJson) {
-  final HandleExcelDto handleExcelDto = HandleExcelDto.fromJson(jsonDecode(handleExcelJson));
+  final ExcelAndPenaltiesDto excelAndPenaltiesDto = ExcelAndPenaltiesDto.fromJson(jsonDecode(handleExcelJson));
 
   try {
-    final Excel excel = Excel.decodeBytes(handleExcelDto.bytes);
+    final Excel excel = Excel.decodeBytes(excelAndPenaltiesDto.bytes);
 
     if (excel.tables.keys.isNotEmpty) {
       final LamodaEntity lamodaEntity = _handleSalarySheet(excel);
@@ -33,7 +34,13 @@ String isolHandleExcelFile(String handleExcelJson) {
         return _outputJson(error: 'no_data_found');
       }
 
-      lamodaEntity.lamodaPenalties.addAll(_handleMistakesSheet(excel));
+      final (
+        :LamodaPenalties lamodaPenalties,
+        :Set<String> uncnownPenalties
+      ) = _handleMistakesSheet(excel, excelAndPenaltiesDto.penalties);
+
+      lamodaEntity.lamodaPenalties.addAll(lamodaPenalties);
+      lamodaEntity.uncnownPenalties.addAll(uncnownPenalties);
 
       return _outputJson(lamodaEntityDto: lamodaEntity.toDto());
     } else {
@@ -55,6 +62,7 @@ LamodaEntity _handleSalarySheet(Excel excel) {
     lamodaEmployees: lamodaEmployees,
     worksSet: worksSet,
     nttWorksSet: <String>{},
+    uncnownPenalties: <String>{},
   );
 
   if (excel.tables.keys.contains(salarySheet)) {
@@ -88,6 +96,7 @@ LamodaEntity _handleNttSheet(Excel excel) {
     lamodaEmployees: lamodaEmployees,
     worksSet: <String>{},
     nttWorksSet: <String>{nttOperations},
+    uncnownPenalties: <String>{},
   );
 
   if (excel.tables.keys.contains(nttSheet)) {
@@ -111,8 +120,11 @@ LamodaEntity _handleNttSheet(Excel excel) {
   return lamodaEntity;
 }
 
-LamodaPenalties _handleMistakesSheet(Excel excel) {
+({LamodaPenalties lamodaPenalties, Set<String> uncnownPenalties}) _handleMistakesSheet(
+  Excel excel, PenaltiesDto penaltiesPrices) {
+
   final LamodaPenalties lamodaPenalties = <ShiftTime, WorkerPenalties>{};
+  final Set<String> uncnownPenalties = <String>{};
 
   if (excel.tables.keys.contains(mistakesSheet)) {
     final Sheet sheet = excel[mistakesSheet];
@@ -123,7 +135,7 @@ LamodaPenalties _handleMistakesSheet(Excel excel) {
         break;
       }
 
-      final String? login = getTextCellValue(sheet, mistLogin, row);
+      final String? login = getTextCellValue(sheet, mistLogin, row)?.toLowerCase();
       if (login == null) {
         break;
       }
@@ -152,18 +164,22 @@ LamodaPenalties _handleMistakesSheet(Excel excel) {
       }
 
       final int currentAmount = penalties[description]?.amount ?? 0;
-      penalties[description] = AmountPrice(amount: currentAmount + amount);
+      penalties[description] = AmountPrice(amount: currentAmount + amount, price: penaltiesPrices[description]?.price);
+
+      if (penaltiesPrices.isNotEmpty && !penaltiesPrices.containsKey(description)) {
+        uncnownPenalties.add(description);
+      }
     }
   }
 
-  return lamodaPenalties;
+  return (lamodaPenalties: lamodaPenalties, uncnownPenalties: uncnownPenalties);
 }
 
 WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, LamodaEmployees lamodaEmployees) {
   final WorkerShifts workerShifts = <String, Works>{};
 
   for (int row = saStartRow; ; row++) {
-    final String? login = getTextCellValue(sheet, saLogin, row);
+    final String? login = getTextCellValue(sheet, saLogin, row)?.toLowerCase();
     if (login != null && login.isNotEmpty) {
       lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
 
@@ -194,7 +210,7 @@ WorkerShifts _handleNttDateColumn(Sheet sheet, int column, LamodaEmployees lamod
   final WorkerShifts workerShifts = <String, Works>{};
 
   for (int row = ntStartRow; ; row++) {
-    final String? login = getTextCellValue(sheet, ntLogin, row);
+    final String? login = getTextCellValue(sheet, ntLogin, row)?.toLowerCase();
     if (login != null && login.isNotEmpty) {
       lamodaEmployees.putIfAbsent(login, ()=>EmployeeDetails());
       

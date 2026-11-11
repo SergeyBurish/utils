@@ -4116,7 +4116,8 @@ f=g.ch.j(0,f)
 f.toString
 q=f
 p=A.E(h,t.bl)
-for(o=1;;++o){n=A.oi(q,0,o)
+for(o=1;;++o){h=A.oi(q,0,o)
+n=h==null?d:h.toLowerCase()
 h=n
 h=h==null?d:J.aR(h)===0
 if(h!==!1)break

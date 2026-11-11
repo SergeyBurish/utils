@@ -7,10 +7,11 @@ import '../entity/tariffs_entity.dart';
 import '../entity/typedefs.dart';
 
 abstract interface class LamodaRepository {
-  Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes);
+  Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes, Penalties penalties);
   Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity, LamodaTariffs lamodaTariffs);
   Future<Either<String, TariffsEntity>> handleTariffsFile(Uint8List bytes);
   Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet, Set<String> nttWorksSet,);
   Future<Either<String, LamodaEmployees>> handleEmployeesFile(Uint8List bytes);
   Future<Either<String, String>> downloadEmployeesExcelFile(LamodaEmployees lamodaEmployees);
+  Future<Either<String, Penalties>> handlePenaltiesFile(Uint8List bytes);
 }

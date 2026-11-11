@@ -89,6 +89,27 @@ const int trStartRow = 4;
 const int trNttOffset = 2; // не меньше двух чтоб влез NTT заголовок 
 
 
+// -- mistakes sheet
+const String mistakesSheet = 'Mistakes';
+const String mistDay = 'День';
+// - columns
+const int mistData = 1;
+const int mistDayNight = 3;
+const int mistLogin = 5;
+const int mistDescr = 8;
+const int mistAamount = 12;
+// - rows
+const int mistStartRow = 1;
+
+
+// -- penalties sheet
+// - columns
+const int penDescription = 1;
+const int penPrice = 2;
+// - rows
+const int penStartRow = 0;
+
+
 const String dateFormat = 'dd/MM/yy';
 const String dateFormat2 = 'dd.MM.yyyy';
 

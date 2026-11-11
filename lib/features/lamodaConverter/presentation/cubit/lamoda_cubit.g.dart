@@ -13,6 +13,8 @@ abstract class _$LamodaStateCWProxy {
 
   LamodaState employeesStatus(EmployeesStatus employeesStatus);
 
+  LamodaState penaltiesStatus(PenaltiesStatus penaltiesStatus);
+
   LamodaState filesLength(int filesLength);
 
   LamodaState currentFile(String currentFile);
@@ -27,6 +29,8 @@ abstract class _$LamodaStateCWProxy {
 
   LamodaState lamodaTariffs(LamodaTariffs lamodaTariffs);
 
+  LamodaState penalties(Penalties penalties);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LamodaState(...).copyWith.fieldName(value)`.
   ///
@@ -38,6 +42,7 @@ abstract class _$LamodaStateCWProxy {
     LamodaStatus status,
     TariffsStatus tariffsStatus,
     EmployeesStatus employeesStatus,
+    PenaltiesStatus penaltiesStatus,
     int filesLength,
     String currentFile,
     int currentFileInd,
@@ -45,6 +50,7 @@ abstract class _$LamodaStateCWProxy {
     List<String> errors,
     LamodaEntity lamodaEntity,
     LamodaTariffs lamodaTariffs,
+    Penalties penalties,
   });
 }
 
@@ -65,6 +71,10 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
   @override
   LamodaState employeesStatus(EmployeesStatus employeesStatus) =>
       call(employeesStatus: employeesStatus);
+
+  @override
+  LamodaState penaltiesStatus(PenaltiesStatus penaltiesStatus) =>
+      call(penaltiesStatus: penaltiesStatus);
 
   @override
   LamodaState filesLength(int filesLength) => call(filesLength: filesLength);
@@ -92,6 +102,9 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
       call(lamodaTariffs: lamodaTariffs);
 
   @override
+  LamodaState penalties(Penalties penalties) => call(penalties: penalties);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LamodaState(...).copyWith.fieldName(value)`.
   ///
@@ -103,6 +116,7 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
     Object? status = const $CopyWithPlaceholder(),
     Object? tariffsStatus = const $CopyWithPlaceholder(),
     Object? employeesStatus = const $CopyWithPlaceholder(),
+    Object? penaltiesStatus = const $CopyWithPlaceholder(),
     Object? filesLength = const $CopyWithPlaceholder(),
     Object? currentFile = const $CopyWithPlaceholder(),
     Object? currentFileInd = const $CopyWithPlaceholder(),
@@ -110,6 +124,7 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
     Object? errors = const $CopyWithPlaceholder(),
     Object? lamodaEntity = const $CopyWithPlaceholder(),
     Object? lamodaTariffs = const $CopyWithPlaceholder(),
+    Object? penalties = const $CopyWithPlaceholder(),
   }) {
     return LamodaState._(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -127,6 +142,12 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
           ? _value.employeesStatus
           // ignore: cast_nullable_to_non_nullable
           : employeesStatus as EmployeesStatus,
+      penaltiesStatus:
+          penaltiesStatus == const $CopyWithPlaceholder() ||
+              penaltiesStatus == null
+          ? _value.penaltiesStatus
+          // ignore: cast_nullable_to_non_nullable
+          : penaltiesStatus as PenaltiesStatus,
       filesLength:
           filesLength == const $CopyWithPlaceholder() || filesLength == null
           ? _value.filesLength
@@ -163,6 +184,10 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
           ? _value.lamodaTariffs
           // ignore: cast_nullable_to_non_nullable
           : lamodaTariffs as LamodaTariffs,
+      penalties: penalties == const $CopyWithPlaceholder() || penalties == null
+          ? _value.penalties
+          // ignore: cast_nullable_to_non_nullable
+          : penalties as Penalties,
     );
   }
 }

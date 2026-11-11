@@ -1,12 +1,13 @@
 {
   "lamoda_converter": "Lamoda конвертер",
   "upload_source_files": "Загрузить исходные файлы",
+  "download_result": "Скачать результат",
+  "download_result_again": "Скачать результат ещё раз",
   "upload_tariffs": "Загрузить тарифы",
   "download_tariffs": "Сохранить тарифы",
   "upload_employees": "Загрузить данные работников",
   "download_employees": "Сохранить данные работников",
-  "download_result": "Скачать результат",
-  "download_result_again": "Скачать результат ещё раз",
+  "upload_penalties": "Загрузить штрафы",
   "waiting_for_source_files": "Ожидание загрузки исходных файлов",
   "source_files_loading": "Загрузка исходных файлов",
   "file_handling": "{} из {}: обработка файла '{}'",
@@ -23,6 +24,11 @@
   "employees_downloaded": "Данные работников успешно скачаны в '{}'",
   "employees_not_added": "Данные работников не добавлены",
   "employees_added": "Данные работников добавлены ({} чел)",
+
+  "penalties_loading": "Загрузка штрафов",
+  "penalties_not_added": "Шртрафы не добавлены",
+  "penalties_added": "Шртрафы добавлены ({} штрафов)",
+
   "version": "Версия {}",
 
   "@_____________________FROM_SHEET_____________________": {},
@@ -80,6 +86,7 @@
   "error_occurred": "Произошла ошибка",
   "tariffs_error": "Ошибка тарифов",
   "employees_error": "Ошибка данных работников",
+  "penalties_error": "Ошибка обработки штрафов",
   "no_errors": "Ошибок нет",
   "errors": "Ошибки:",
   "fail_open_excel_file": "Не удалось открыть Excel файл, ошибка: {}",
@@ -87,5 +94,6 @@
   "fail_create_excel_spreadsheet": "Не удалось создать Excel таблицу",
   "no_data_found": "Данные не обнаружены",
   "no_data": "Нет данных для формирования результата",
-  "all_files_with_errors": "Все файлы обработаны с ошибками, поробуйте загрузить другие файлы"
+  "all_files_with_errors": "Все файлы обработаны с ошибками, поробуйте загрузить другие файлы",
+  "uncnown_penalty": "Неизвестный штраф: {}"
 }

@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/entity/amount_price.dart';
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
 import '../../domain/entity/shift_time.dart';
@@ -54,7 +55,7 @@ class LamodaCubit extends Cubit<LamodaState> {
 
       try {
         final Uint8List bytes = await files[i].readAsBytes();
-        final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes);
+        final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes, state.penalties);
         
         output.fold(
           ifLeft: (String error) {
@@ -67,6 +68,9 @@ class LamodaCubit extends Cubit<LamodaState> {
             state.lamodaEntity.lamodaEmployees.addAll(lamodaEntity.lamodaEmployees);
             state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
             state.lamodaEntity.nttWorksSet.addAll(lamodaEntity.nttWorksSet);
+            state.lamodaEntity.lamodaPenalties.addAll(lamodaEntity.lamodaPenalties);
+            state.lamodaEntity.uncnownPenalties.addAll(lamodaEntity.uncnownPenalties);
+            _updateErrorsWithUncnownPenalties();
             emit(state.copyWith.status(LamodaStatus.fileHandling));
           },
         );
@@ -214,7 +218,6 @@ class LamodaCubit extends Cubit<LamodaState> {
     state.errors.clear();
     output.fold(
       ifLeft: (String error) {
-        state.errors.clear();
         state.errors.add(error);
         emit(state.copyWith.status(LamodaStatus.error));
       },
@@ -227,12 +230,59 @@ class LamodaCubit extends Cubit<LamodaState> {
     );
   }
 
+  void onUploadPenalties() async {
+    emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesLoading));
+
+    const XTypeGroup excelTypeGroup = XTypeGroup(
+      label: 'Excel',
+      extensions: <String>['xls', 'xlsx'],
+      uniformTypeIdentifiers: <String>['public.xlsx'],
+    );
+
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[excelTypeGroup],
+    );
+
+    if (file == null) {
+      emit(state.copyWith.penaltiesStatus(PenaltiesStatus.idle));
+      return;
+    }
+
+    try {
+      final Uint8List bytes = await file.readAsBytes();
+      final Either<String, Penalties> output = await lamodaUsecase.handlePenaltiesFile(bytes);
+      state.errors.clear();
+      output.fold(
+        ifLeft: (String error) {
+          state.errors.add('${file.name}: $error');
+          emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesError));
+        },
+        ifRight: (Penalties penalties) {
+          state.penalties.clear();
+          state.penalties.addAll(penalties);
+          // _updatePpenaltiesInShifts();
+          emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesLoaded));
+        },
+      );
+    } on Exception catch (e) {
+      state.errors.add('${file.name}: $e');
+      emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesError));
+    }
+  }
+
   void _onLoad () async {
+  }
+
+  void _updateErrorsWithUncnownPenalties() {
+    for (final String uncnownPenalty in state.lamodaEntity.uncnownPenalties) {
+      state.errors.add('uncnown_penalty'.tr(args: <String>[uncnownPenalty]));
+    }
   }
 
   void _clear () async {
     state.errors.clear();
     state.lamodaEntity.shifts.clear();
     state.lamodaEntity.worksSet.clear();
+    state.lamodaEntity.uncnownPenalties.clear();
   }
 }

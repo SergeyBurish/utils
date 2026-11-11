@@ -52,6 +52,32 @@ String? getTextCellValue(Sheet sheet, int columnIndex, int rowIndex) {
   return null;
 }
 
+int? getIntCellValue(Sheet sheet, int columnIndex, int rowIndex) {
+  final Data intCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: rowIndex));
+  if (intCell.value is IntCellValue) {
+    return (intCell.value as IntCellValue).value;
+  }
+  return null;
+}
+
+double? getDoubleCellValue(Sheet sheet, int columnIndex, int rowIndex) {
+  final Data doubleCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: rowIndex));
+  if (doubleCell.value is DoubleCellValue) {
+    return (doubleCell.value as DoubleCellValue).value;
+  }
+
+  return getIntCellValue(sheet, columnIndex, rowIndex)?.toDouble();
+}
+
+DateTime? getDateCellValue(Sheet sheet, int columnIndex, int rowIndex) {
+  final Data doubleCell = sheet.cell(CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: rowIndex));
+  if (doubleCell.value is DateCellValue) {
+    return (doubleCell.value as DateCellValue).asDateTimeLocal();
+  }
+
+  return null;
+}
+
 DateTime? tryParseDateTimeFromCell(CellValue? value){
   if (value == null) {
     return null;

@@ -8,12 +8,13 @@ import '../entity/typedefs.dart';
 import '../repository/lamoda_repository.dart';
 
 abstract interface class LamodaUsecase{
-    Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes);
+    Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes, Penalties penalties);
     Future<Either<String, String>> downloadExcelFile(LamodaEntity lamodaEntity, LamodaTariffs lamodaTariffs);
     Future<Either<String, TariffsEntity>> handleTariffsFile(Uint8List bytes);
     Future<Either<String, String>> downloadTariffsExcelFile(LamodaTariffs lamodaTariffs, Set<String> worksSet, Set<String> nttWorksSet,);
     Future<Either<String, LamodaEmployees>> handleEmployeesFile(Uint8List bytes);
     Future<Either<String, String>> downloadEmployeesExcelFile(LamodaEmployees lamodaEmployees);
+    Future<Either<String, Penalties>> handlePenaltiesFile(Uint8List bytes);
 }
 class LamodaUsecaseImp implements LamodaUsecase{
   final LamodaRepository repository;
@@ -21,8 +22,8 @@ class LamodaUsecaseImp implements LamodaUsecase{
   LamodaUsecaseImp({required this.repository});
   
   @override
-  Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes) async {
-    return await repository.handleExcelFile(bytes);
+  Future<Either<String, LamodaEntity>> handleExcelFile(Uint8List bytes, Penalties penalties) async {
+    return await repository.handleExcelFile(bytes, penalties);
   }
 
   @override
@@ -48,5 +49,10 @@ class LamodaUsecaseImp implements LamodaUsecase{
   @override
   Future<Either<String, String>> downloadEmployeesExcelFile(LamodaEmployees lamodaEmployees) async {
     return await repository.downloadEmployeesExcelFile(lamodaEmployees);
+  }
+
+  @override
+  Future<Either<String, Penalties>> handlePenaltiesFile(Uint8List bytes) async {
+    return await repository.handlePenaltiesFile(bytes);
   }
 }

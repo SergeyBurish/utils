@@ -91,6 +91,10 @@ file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/collection-1.19.1/lib/src/u
 file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/collection-1.19.1/lib/src/unmodifiable_wrappers.dart
 file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/collection-1.19.1/lib/src/utils.dart
 file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/collection-1.19.1/lib/src/wrappers.dart
+file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/equatable-3.0.0/lib/equatable.dart
+file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/equatable-3.0.0/lib/src/equatable.dart
+file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/equatable-3.0.0/lib/src/equatable_config.dart
+file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/equatable-3.0.0/lib/src/equatable_utils.dart
 file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/excel_plus-1.1.0/lib/excel_plus.dart
 file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/excel_plus-1.1.0/lib/src/core/config.dart
 file:///Users/sergeyburish/.pub-cache/hosted/pub.dev/excel_plus-1.1.0/lib/src/core/excel.dart
@@ -613,9 +617,10 @@ file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_dto.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/dto/handle_excel_dto.g.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/common/isol_utils.dart
-file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleEmployeesFile.15271724.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/.IsolateManagerWorker.isolHandleEmployeesFile.669490784.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/isolate_launcher/isolates/handle_employees_file.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/data/tablesData/consts.dart
+file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/amount_price.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/employee_details.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/shift_time.dart
 file:///Users/sergeyburish/projects/utils/lib/features/lamodaConverter/domain/entity/typedefs.dart

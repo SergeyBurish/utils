@@ -9,31 +9,35 @@ class LamodaConverterView extends StatelessWidget {
   final String message;
   final String tariffsMessage;
   final String employeesMessage;
+  final String penaltiesMessage;
   final String errorMessage;
   final String downloadButton;
   final String version;
   final bool loading;
   final void Function()? onUpload;
+  final void Function()? onDownload;
   final void Function()? onUploadTariffs;
   final void Function()? onDownloadTariffs;
   final void Function()? onUploadEmployees;
   final void Function()? onDownloadEmployees;
-  final void Function()? onDownload;
+  final void Function()? onUploadPenalties;
   const LamodaConverterView({
     super.key,
     required this.message,
     required this.tariffsMessage,
     required this.employeesMessage,
+    required this.penaltiesMessage,
     required this.errorMessage,
     required this.downloadButton,
     required this.version,
     required this.loading,
     this.onUpload,
+    this.onDownload,
     this.onUploadTariffs,
     this.onDownloadTariffs,
     this.onUploadEmployees,
     this.onDownloadEmployees,
-    this.onDownload,
+    this.onUploadPenalties,
   });
 
   @override
@@ -111,11 +115,25 @@ class LamodaConverterView extends StatelessWidget {
                 ),
               ],
             ),
+            CardWrap(
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: onUploadPenalties,
+                  child: Text('upload_penalties'.tr()),
+                ),
+                Text(
+                  penaltiesMessage,
+                  style: context.textStyles.middleText,
+                ),
+              ],
+            ),
             if(loading) const LinearProgressIndicator(),
-            Text(
-              errorMessage,
-              style: context.textStyles.middleText,
-              maxLines: 50,
+            SelectionArea(
+              child: Text(
+                errorMessage,
+                style: context.textStyles.middleText,
+                maxLines: 50,
+              ),
             ),
             Text(
               version,

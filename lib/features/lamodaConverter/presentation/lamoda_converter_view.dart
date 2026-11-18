@@ -57,7 +57,7 @@ class LamodaConverterView extends StatelessWidget {
                   children: <Widget>[
                     ElevatedButton(
                       onPressed: onUpload,
-                      child: Text('upload_source_files'.tr()),
+                      child: Text('upload_peeps_files'.tr()),
                     ),
                     ElevatedButton(
                       onPressed: onDownload,

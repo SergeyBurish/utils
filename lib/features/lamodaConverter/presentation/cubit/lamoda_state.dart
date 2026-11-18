@@ -117,12 +117,13 @@ class LamodaState {
   bool get fileDownloaded => status == LamodaStatus.fileDownloaded;
 
   String get message => switch (status) {
-    LamodaStatus.idle => 'waiting_for_source_files'.tr(),
+    LamodaStatus.idle => 'peeps_not_added'.tr(),
     LamodaStatus.inProgress => 'inProgress',
     LamodaStatus.sourceFilesLoading => 'source_files_loading'.tr(),
     LamodaStatus.fileHandling => 'file_handling'.tr(args: <String>[
       '${currentFileInd + 1}', '$filesLength', currentFile]),
-    LamodaStatus.filesHandled => 'files_handled'.tr(),
+    LamodaStatus.filesHandled => 'peeps_added_for_shifts'.tr(args: <String>[
+      (lamodaEntity.shifts.keys.toList()..sort()).map((ShiftTime shiftTime) => '${DateFormat('dd-MM-yy').format(shiftTime.date)}-${shiftTime.day ? 'д' : 'н'}').join(', ')]),
     LamodaStatus.fileDownloading => 'file_downloading'.tr(),
     LamodaStatus.fileDownloaded => 'file_downloaded'.tr(args: <String>[downloadedFile]),
     LamodaStatus.allFilesErrors => 'all_files_with_errors'.tr(),

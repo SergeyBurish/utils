@@ -6,6 +6,7 @@ import 'package:isolate_manager/isolate_manager.dart';
 import '../../../domain/entity/amount_price.dart';
 import '../../../domain/entity/employee_details.dart';
 import '../../../domain/entity/lamoda_entity.dart';
+import '../../../domain/entity/shift.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
 import '../../dto/excel_and_penalties_dto.dart';
@@ -176,7 +177,7 @@ LamodaEntity _handleNttSheet(Excel excel) {
 }
 
 WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, LamodaEmployees lamodaEmployees) {
-  final WorkerShifts workerShifts = <String, Works>{};
+  final WorkerShifts workerShifts = <String, Shift>{};
 
   for (int row = saStartRow; ; row++) {
     final String? login = getTextCellValue(sheet, saLogin, row)?.toLowerCase();
@@ -190,11 +191,11 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
           final String trimmedWorkName = _trimFcPrefix(workName);
 
           if (!workerShifts.keys.contains(login)) {
-            workerShifts[login] = <String, int>{};
+            workerShifts[login] = Shift(works: <String, int>{});
           }
-          final Works? works = workerShifts[login];
+          final Shift? shift = workerShifts[login];
 
-          works?[trimmedWorkName] = workValue;
+          shift?.works[trimmedWorkName] = workValue;
           worksSet.add(trimmedWorkName);
         }
       }
@@ -207,7 +208,7 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
 }
 
 WorkerShifts _handleNttDateColumn(Sheet sheet, int column, LamodaEmployees lamodaEmployees) {
-  final WorkerShifts workerShifts = <String, Works>{};
+  final WorkerShifts workerShifts = <String, Shift>{};
 
   for (int row = ntStartRow; ; row++) {
     final String? login = getTextCellValue(sheet, ntLogin, row)?.toLowerCase();
@@ -217,11 +218,11 @@ WorkerShifts _handleNttDateColumn(Sheet sheet, int column, LamodaEmployees lamod
       final int? workValue = getIntCellValue(sheet, column, row);
       if (workValue != null) {
         if (!workerShifts.keys.contains(login)) {
-          workerShifts[login] = <String, int>{};
+          workerShifts[login] = Shift(works: <String, int>{});
         }
-        final Works? works = workerShifts[login];
+        final Shift? shift = workerShifts[login];
 
-        works?[nttOperations] = workValue;
+        shift?.works[nttOperations] = workValue;
       }
     } else {
       break;

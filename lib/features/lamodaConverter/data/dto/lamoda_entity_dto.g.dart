@@ -13,7 +13,7 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(
     (k, e) => MapEntry(
       k,
       (e as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, Map<String, int>.from(e as Map)),
+        (k, e) => MapEntry(k, ShiftDto.fromJson(e as Map<String, dynamic>)),
       ),
     ),
   ),
@@ -21,7 +21,7 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(
     (k, e) => MapEntry(
       k,
       (e as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, Map<String, int>.from(e as Map)),
+        (k, e) => MapEntry(k, ShiftDto.fromJson(e as Map<String, dynamic>)),
       ),
     ),
   ),

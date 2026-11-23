@@ -6,7 +6,7 @@ part 'shift_dto.g.dart';
 
 @JsonSerializable()
 class ShiftDto extends Shift {
-  ShiftDto({required super.works, required super.penalty});
+  ShiftDto({required super.works, super.penalty});
 
   factory ShiftDto.fromJson(Map<String, dynamic> json) => _$ShiftDtoFromJson(json);
   Map<String, dynamic> toJson() => _$ShiftDtoToJson(this);

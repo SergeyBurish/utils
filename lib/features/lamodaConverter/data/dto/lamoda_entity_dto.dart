@@ -24,7 +24,6 @@ class LamodaEntityDto {
   final Map<String, EmployeeDetailsDto> lamodaEmployees;
   final Set<String> worksSet;
   final Set<String> nttWorksSet;
-  final Set<String> uncnownPenalties;
   LamodaEntityDto({
     required this.shifts,
     required this.nttShifts,
@@ -32,7 +31,6 @@ class LamodaEntityDto {
     required this.lamodaEmployees,
     required this.worksSet,
     required this.nttWorksSet,
-    required this.uncnownPenalties,
   });
 
   factory LamodaEntityDto.fromJson(Map<String, dynamic> json) => _$LamodaEntityDtoFromJson(json);
@@ -61,7 +59,6 @@ extension LamodaEntityDtoMapper on LamodaEntityDto {
     }),
     worksSet: worksSet,
     nttWorksSet: nttWorksSet,
-    uncnownPenalties: uncnownPenalties,
     lamodaEmployees: lamodaEmployees,
   );
 }
@@ -91,7 +88,6 @@ extension LamodaEntityMapper on LamodaEntity {
     ),
     worksSet: worksSet,
     nttWorksSet: nttWorksSet,
-    uncnownPenalties: uncnownPenalties,
     lamodaEmployees: lamodaEmployees.map((String key, EmployeeDetails value) => 
       MapEntry<String, EmployeeDetailsDto>(key, value.toDto())),
     );

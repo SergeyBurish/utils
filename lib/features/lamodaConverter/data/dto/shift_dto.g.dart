@@ -8,7 +8,7 @@ part of 'shift_dto.dart';
 
 ShiftDto _$ShiftDtoFromJson(Map<String, dynamic> json) => ShiftDto(
   works: Map<String, int>.from(json['works'] as Map),
-  penalty: (json['penalty'] as num).toDouble(),
+  penalty: (json['penalty'] as num?)?.toDouble() ?? 0,
 );
 
 Map<String, dynamic> _$ShiftDtoToJson(ShiftDto instance) => <String, dynamic>{

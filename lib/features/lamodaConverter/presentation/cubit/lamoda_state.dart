@@ -50,6 +50,7 @@ class LamodaState {
   final LamodaEntity lamodaEntity;
   final LamodaTariffs lamodaTariffs;
   final Penalties penalties;
+  final Set<String> uncnownPenalties;
 
   LamodaState({
     required this.status,
@@ -64,6 +65,7 @@ class LamodaState {
     required this.lamodaEntity,
     required this.lamodaTariffs,
     required this.penalties,
+    required this.uncnownPenalties,
   });
 
   LamodaState._({
@@ -79,6 +81,7 @@ class LamodaState {
     required this.lamodaEntity,
     required this.lamodaTariffs,
     required this.penalties,
+    required this.uncnownPenalties,
   });
 
   LamodaState.initial() :
@@ -98,10 +101,10 @@ class LamodaState {
       lamodaEmployees: <String, EmployeeDetails>{},
       worksSet: <String>{},
       nttWorksSet: <String>{},
-      uncnownPenalties: <String>{},
     ),
     lamodaTariffs = <DateTime, Tariffs>{},
-    penalties = <String, AmountPrice>{};
+    penalties = <String, AmountPrice>{},
+    uncnownPenalties = <String>{};
 
   bool get inProgress => 
     status == LamodaStatus.sourceFilesLoading ||

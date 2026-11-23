@@ -7,7 +7,6 @@ class LamodaEntity {
   final LamodaEmployees lamodaEmployees;
   final Set<String> worksSet;
   final Set<String> nttWorksSet;
-  final Set<String> uncnownPenalties;
 
   LamodaEntity({
     required this.shifts, 
@@ -16,7 +15,6 @@ class LamodaEntity {
     required this.lamodaEmployees,
     required this.worksSet,
     required this.nttWorksSet,
-    required this.uncnownPenalties,
   });
 
   bool get isEmpty => shifts.isEmpty && worksSet.isEmpty && lamodaEmployees.isEmpty ;

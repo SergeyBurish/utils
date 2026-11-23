@@ -1,6 +1,6 @@
 class AmountPrice {
   final int amount;
-  final double? price;
+  double? price;
 
   AmountPrice({required this.amount, this.price});
 }

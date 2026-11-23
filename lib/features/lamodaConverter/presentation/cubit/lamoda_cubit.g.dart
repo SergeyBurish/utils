@@ -31,6 +31,8 @@ abstract class _$LamodaStateCWProxy {
 
   LamodaState penalties(Penalties penalties);
 
+  LamodaState uncnownPenalties(Set<String> uncnownPenalties);
+
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LamodaState(...).copyWith.fieldName(value)`.
   ///
@@ -51,6 +53,7 @@ abstract class _$LamodaStateCWProxy {
     LamodaEntity lamodaEntity,
     LamodaTariffs lamodaTariffs,
     Penalties penalties,
+    Set<String> uncnownPenalties,
   });
 }
 
@@ -105,6 +108,10 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
   LamodaState penalties(Penalties penalties) => call(penalties: penalties);
 
   @override
+  LamodaState uncnownPenalties(Set<String> uncnownPenalties) =>
+      call(uncnownPenalties: uncnownPenalties);
+
+  @override
   /// Creates a new instance with the provided field values.
   /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored. To update a single field use `LamodaState(...).copyWith.fieldName(value)`.
   ///
@@ -125,6 +132,7 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
     Object? lamodaEntity = const $CopyWithPlaceholder(),
     Object? lamodaTariffs = const $CopyWithPlaceholder(),
     Object? penalties = const $CopyWithPlaceholder(),
+    Object? uncnownPenalties = const $CopyWithPlaceholder(),
   }) {
     return LamodaState._(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -188,6 +196,12 @@ class _$LamodaStateCWProxyImpl implements _$LamodaStateCWProxy {
           ? _value.penalties
           // ignore: cast_nullable_to_non_nullable
           : penalties as Penalties,
+      uncnownPenalties:
+          uncnownPenalties == const $CopyWithPlaceholder() ||
+              uncnownPenalties == null
+          ? _value.uncnownPenalties
+          // ignore: cast_nullable_to_non_nullable
+          : uncnownPenalties as Set<String>,
     );
   }
 }

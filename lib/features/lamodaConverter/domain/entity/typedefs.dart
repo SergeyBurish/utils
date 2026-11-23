@@ -1,9 +1,10 @@
 import 'amount_price.dart';
 import 'employee_details.dart';
+import 'shift.dart';
 import 'shift_time.dart';
 
 typedef Works = Map<String, int>; // work, number
-typedef WorkerShifts = Map<String, Works>; // login, works
+typedef WorkerShifts = Map<String, Shift>; // login, shift
 typedef LamodaShifts = Map<ShiftTime, WorkerShifts>;
 
 typedef Tariffs = Map<String, double>; // work, price

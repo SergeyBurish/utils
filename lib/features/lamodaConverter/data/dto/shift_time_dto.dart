@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../domain/entity/shift_time.dart';
 
-part 'shift_time_dto.g.dart'; 
+part 'shift_time_dto.g.dart';
 
 @JsonSerializable()
 class ShiftTimeDto extends ShiftTime {

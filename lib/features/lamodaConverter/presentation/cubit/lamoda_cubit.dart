@@ -6,9 +6,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../data/dto/shift_dto.dart';
 import '../../domain/entity/amount_price.dart';
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
+import '../../domain/entity/shift.dart';
 import '../../domain/entity/shift_time.dart';
 import '../../domain/entity/tariffs_entity.dart';
 import '../../domain/entity/typedefs.dart';
@@ -55,7 +57,7 @@ class LamodaCubit extends Cubit<LamodaState> {
 
       try {
         final Uint8List bytes = await files[i].readAsBytes();
-        final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes, state.penalties);
+        final Either<String, LamodaEntity> output = await lamodaUsecase.handleExcelFile(bytes);
         
         output.fold(
           ifLeft: (String error) {
@@ -69,8 +71,7 @@ class LamodaCubit extends Cubit<LamodaState> {
             state.lamodaEntity.worksSet.addAll(lamodaEntity.worksSet);
             state.lamodaEntity.nttWorksSet.addAll(lamodaEntity.nttWorksSet);
             state.lamodaEntity.lamodaPenalties.addAll(lamodaEntity.lamodaPenalties);
-            state.lamodaEntity.uncnownPenalties.addAll(lamodaEntity.uncnownPenalties);
-            _updateErrorsWithUncnownPenalties();
+            _updatePpenaltiesInShifts();
             emit(state.copyWith.status(LamodaStatus.fileHandling));
           },
         );
@@ -260,7 +261,7 @@ class LamodaCubit extends Cubit<LamodaState> {
         ifRight: (Penalties penalties) {
           state.penalties.clear();
           state.penalties.addAll(penalties);
-          // _updatePpenaltiesInShifts();
+          _updatePpenaltiesInShifts();
           emit(state.copyWith.penaltiesStatus(PenaltiesStatus.penaltiesLoaded));
         },
       );
@@ -273,8 +274,53 @@ class LamodaCubit extends Cubit<LamodaState> {
   void _onLoad () async {
   }
 
+  void _updatePpenaltiesInShifts() {
+    if (state.penalties.isEmpty) {
+      return;
+    }
+
+    state.lamodaEntity.lamodaPenalties.forEach((ShiftTime shiftTime, WorkerPenalties workerPenalties) {
+      workerPenalties.forEach((String login, Penalties penalties) {
+        penalties.forEach((String description, AmountPrice amountPrice) {
+          final double? price = state.penalties[description]?.price;
+          if (price != null) {
+            amountPrice.price = price;
+            _updatePenalty(shiftTime, login, amountPrice);
+          } else {
+            state.uncnownPenalties.add(description);
+          }
+        });
+      });
+    });
+
+    _updateErrorsWithUncnownPenalties();
+  }
+
+  void _updatePenalty(ShiftTime shiftTime, String login, AmountPrice amountPrice) {
+    WorkerShifts? workerShifts = state.lamodaEntity.shifts[shiftTime];
+    workerShifts ??= state.lamodaEntity.nttShifts[shiftTime];
+    workerShifts ??= <String, ShiftDto>{}; // создаём ShiftDto т.к. подходит и для Shift и для ShiftDto
+
+    if (!state.lamodaEntity.shifts.containsKey(shiftTime) &&
+        !state.lamodaEntity.nttShifts.containsKey(shiftTime)) {
+      state.lamodaEntity.shifts[shiftTime] = workerShifts;
+    }
+
+    Shift? shift = workerShifts[login];
+    shift ??= ShiftDto(works: <String, int>{}); // создаём ShiftDto т.к. подходит и для Shift и для ShiftDto
+
+    if (!workerShifts.containsKey(login)) {
+      workerShifts[login] = shift;
+    }
+
+    final double penalty = amountPrice.amount * (amountPrice.price ?? 0.0);
+    if (penalty > 0) {
+      shift.penalty = penalty;
+    }
+  }
+
   void _updateErrorsWithUncnownPenalties() {
-    for (final String uncnownPenalty in state.lamodaEntity.uncnownPenalties) {
+    for (final String uncnownPenalty in state.uncnownPenalties) {
       state.errors.add('uncnown_penalty'.tr(args: <String>[uncnownPenalty]));
     }
   }
@@ -283,6 +329,6 @@ class LamodaCubit extends Cubit<LamodaState> {
     state.errors.clear();
     state.lamodaEntity.shifts.clear();
     state.lamodaEntity.worksSet.clear();
-    state.lamodaEntity.uncnownPenalties.clear();
+    state.uncnownPenalties.clear();
   }
 }

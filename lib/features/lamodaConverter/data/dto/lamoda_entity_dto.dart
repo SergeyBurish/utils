@@ -5,10 +5,12 @@ import 'package:json_annotation/json_annotation.dart';
 import '../../domain/entity/amount_price.dart';
 import '../../domain/entity/employee_details.dart';
 import '../../domain/entity/lamoda_entity.dart';
+import '../../domain/entity/shift.dart';
 import '../../domain/entity/shift_time.dart';
 import '../../domain/entity/typedefs.dart';
 import 'amount_price_dto.dart';
 import 'employee_details_dto.dart';
+import 'shift_dto.dart';
 import 'shift_time_dto.dart';
 import 'typedefs_dto.dart';
 
@@ -16,13 +18,12 @@ part 'lamoda_entity_dto.g.dart';
 
 @JsonSerializable()
 class LamodaEntityDto {
-  final Map<String, WorkerShifts> shifts;
-  final Map<String, WorkerShifts> nttShifts;
+  final Map<String, WorkerShiftsDto> shifts;
+  final Map<String, WorkerShiftsDto> nttShifts;
   final Map<String, WorkerPenaltiesDto> lamodaPenalties;
   final Map<String, EmployeeDetailsDto> lamodaEmployees;
   final Set<String> worksSet;
   final Set<String> nttWorksSet;
-  final Set<String> uncnownPenalties;
   LamodaEntityDto({
     required this.shifts,
     required this.nttShifts,
@@ -30,7 +31,6 @@ class LamodaEntityDto {
     required this.lamodaEmployees,
     required this.worksSet,
     required this.nttWorksSet,
-    required this.uncnownPenalties,
   });
 
   factory LamodaEntityDto.fromJson(Map<String, dynamic> json) => _$LamodaEntityDtoFromJson(json);
@@ -39,13 +39,13 @@ class LamodaEntityDto {
 
 extension LamodaEntityDtoMapper on LamodaEntityDto {
   LamodaEntity toLamodaEntity() => LamodaEntity(
-    shifts: shifts.map((String shiftTimeJson, WorkerShifts workerShifts) {
+    shifts: shifts.map((String shiftTimeJson, WorkerShiftsDto workerShifts) {
       return MapEntry<ShiftTime, WorkerShifts>(
         ShiftTimeDto.fromJson(jsonDecode(shiftTimeJson)),
         workerShifts,
       );
     }),
-    nttShifts: nttShifts.map((String shiftTimeJson, WorkerShifts workerShifts) {
+    nttShifts: nttShifts.map((String shiftTimeJson, WorkerShiftsDto workerShifts) {
       return MapEntry<ShiftTime, WorkerShifts>(
         ShiftTimeDto.fromJson(jsonDecode(shiftTimeJson)),
         workerShifts,
@@ -59,7 +59,6 @@ extension LamodaEntityDtoMapper on LamodaEntityDto {
     }),
     worksSet: worksSet,
     nttWorksSet: nttWorksSet,
-    uncnownPenalties: uncnownPenalties,
     lamodaEmployees: lamodaEmployees,
   );
 }
@@ -67,11 +66,15 @@ extension LamodaEntityDtoMapper on LamodaEntityDto {
 extension LamodaEntityMapper on LamodaEntity {
   LamodaEntityDto toDto() => LamodaEntityDto(
     shifts: shifts.map((ShiftTime shiftTime, WorkerShifts shifts) => 
-      MapEntry<String, WorkerShifts>(
-        jsonEncode(shiftTime.toDto().toJson()), shifts)),
+      MapEntry<String, WorkerShiftsDto>(
+        jsonEncode(shiftTime.toDto().toJson()),
+        shifts.map((String login, Shift shift)=>MapEntry<String, ShiftDto>(login, shift.toDto())),
+      )),
     nttShifts: nttShifts.map((ShiftTime shiftTime, WorkerShifts shifts) => 
-      MapEntry<String, WorkerShifts>(
-        jsonEncode(shiftTime.toDto().toJson()), shifts)),
+      MapEntry<String, WorkerShiftsDto>(
+        jsonEncode(shiftTime.toDto().toJson()),
+        shifts.map((String login, Shift shift)=>MapEntry<String, ShiftDto>(login, shift.toDto())),
+      )),
     lamodaPenalties: lamodaPenalties.map((ShiftTime shiftTime, WorkerPenalties workerPenalties) => 
       MapEntry<String, WorkerPenaltiesDto>(
         jsonEncode(shiftTime.toDto().toJson()),
@@ -85,7 +88,6 @@ extension LamodaEntityMapper on LamodaEntity {
     ),
     worksSet: worksSet,
     nttWorksSet: nttWorksSet,
-    uncnownPenalties: uncnownPenalties,
     lamodaEmployees: lamodaEmployees.map((String key, EmployeeDetails value) => 
       MapEntry<String, EmployeeDetailsDto>(key, value.toDto())),
     );

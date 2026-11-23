@@ -6,22 +6,22 @@ import 'package:isolate_manager/isolate_manager.dart';
 import '../../../domain/entity/amount_price.dart';
 import '../../../domain/entity/employee_details.dart';
 import '../../../domain/entity/lamoda_entity.dart';
+import '../../../domain/entity/shift.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
-import '../../dto/excel_and_penalties_dto.dart';
+import '../../dto/handle_excel_dto.dart';
 import '../../dto/handle_excel_output_dto.dart';
 import '../../dto/lamoda_entity_dto.dart';
-import '../../dto/typedefs_dto.dart';
 import '../../tablesData/consts.dart';
 import '../common/isol_utils.dart';
 
 @pragma('vm:entry-point')
 @isolateManagerWorker
 String isolHandleExcelFile(String handleExcelJson) {
-  final ExcelAndPenaltiesDto excelAndPenaltiesDto = ExcelAndPenaltiesDto.fromJson(jsonDecode(handleExcelJson));
+  final HandleExcelDto handleExcelDto = HandleExcelDto.fromJson(jsonDecode(handleExcelJson));
 
   try {
-    final Excel excel = Excel.decodeBytes(excelAndPenaltiesDto.bytes);
+    final Excel excel = Excel.decodeBytes(handleExcelDto.bytes);
 
     if (excel.tables.keys.isNotEmpty) {
       final LamodaEntity lamodaEntity = _handleSalarySheet(excel);
@@ -34,13 +34,8 @@ String isolHandleExcelFile(String handleExcelJson) {
         return _outputJson(error: 'no_data_found');
       }
 
-      final (
-        :LamodaPenalties lamodaPenalties,
-        :Set<String> uncnownPenalties
-      ) = _handleMistakesSheet(excel, excelAndPenaltiesDto.penalties);
-
+      final LamodaPenalties lamodaPenalties = _handleMistakesSheet(excel);
       lamodaEntity.lamodaPenalties.addAll(lamodaPenalties);
-      lamodaEntity.uncnownPenalties.addAll(uncnownPenalties);
 
       return _outputJson(lamodaEntityDto: lamodaEntity.toDto());
     } else {
@@ -62,7 +57,6 @@ LamodaEntity _handleSalarySheet(Excel excel) {
     lamodaEmployees: lamodaEmployees,
     worksSet: worksSet,
     nttWorksSet: <String>{},
-    uncnownPenalties: <String>{},
   );
 
   if (excel.tables.keys.contains(salarySheet)) {
@@ -96,7 +90,6 @@ LamodaEntity _handleNttSheet(Excel excel) {
     lamodaEmployees: lamodaEmployees,
     worksSet: <String>{},
     nttWorksSet: <String>{nttOperations},
-    uncnownPenalties: <String>{},
   );
 
   if (excel.tables.keys.contains(nttSheet)) {
@@ -120,11 +113,9 @@ LamodaEntity _handleNttSheet(Excel excel) {
   return lamodaEntity;
 }
 
-({LamodaPenalties lamodaPenalties, Set<String> uncnownPenalties}) _handleMistakesSheet(
-  Excel excel, PenaltiesDto penaltiesPrices) {
+LamodaPenalties _handleMistakesSheet(Excel excel) {
 
   final LamodaPenalties lamodaPenalties = <ShiftTime, WorkerPenalties>{};
-  final Set<String> uncnownPenalties = <String>{};
 
   if (excel.tables.keys.contains(mistakesSheet)) {
     final Sheet sheet = excel[mistakesSheet];
@@ -164,19 +155,16 @@ LamodaEntity _handleNttSheet(Excel excel) {
       }
 
       final int currentAmount = penalties[description]?.amount ?? 0;
-      penalties[description] = AmountPrice(amount: currentAmount + amount, price: penaltiesPrices[description]?.price);
+      penalties[description] = AmountPrice(amount: currentAmount + amount);
 
-      if (penaltiesPrices.isNotEmpty && !penaltiesPrices.containsKey(description)) {
-        uncnownPenalties.add(description);
-      }
     }
   }
 
-  return (lamodaPenalties: lamodaPenalties, uncnownPenalties: uncnownPenalties);
+  return lamodaPenalties;
 }
 
 WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, LamodaEmployees lamodaEmployees) {
-  final WorkerShifts workerShifts = <String, Works>{};
+  final WorkerShifts workerShifts = <String, Shift>{};
 
   for (int row = saStartRow; ; row++) {
     final String? login = getTextCellValue(sheet, saLogin, row)?.toLowerCase();
@@ -190,11 +178,11 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
           final String trimmedWorkName = _trimFcPrefix(workName);
 
           if (!workerShifts.keys.contains(login)) {
-            workerShifts[login] = <String, int>{};
+            workerShifts[login] = Shift(works: <String, int>{});
           }
-          final Works? works = workerShifts[login];
+          final Shift? shift = workerShifts[login];
 
-          works?[trimmedWorkName] = workValue;
+          shift?.works[trimmedWorkName] = workValue;
           worksSet.add(trimmedWorkName);
         }
       }
@@ -207,7 +195,7 @@ WorkerShifts _handleDateColumn(Sheet sheet, int column, Set<String> worksSet, La
 }
 
 WorkerShifts _handleNttDateColumn(Sheet sheet, int column, LamodaEmployees lamodaEmployees) {
-  final WorkerShifts workerShifts = <String, Works>{};
+  final WorkerShifts workerShifts = <String, Shift>{};
 
   for (int row = ntStartRow; ; row++) {
     final String? login = getTextCellValue(sheet, ntLogin, row)?.toLowerCase();
@@ -217,11 +205,11 @@ WorkerShifts _handleNttDateColumn(Sheet sheet, int column, LamodaEmployees lamod
       final int? workValue = getIntCellValue(sheet, column, row);
       if (workValue != null) {
         if (!workerShifts.keys.contains(login)) {
-          workerShifts[login] = <String, int>{};
+          workerShifts[login] = Shift(works: <String, int>{});
         }
-        final Works? works = workerShifts[login];
+        final Shift? shift = workerShifts[login];
 
-        works?[nttOperations] = workValue;
+        shift?.works[nttOperations] = workValue;
       }
     } else {
       break;

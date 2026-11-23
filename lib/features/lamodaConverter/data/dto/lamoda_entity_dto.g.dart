@@ -13,7 +13,7 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(
     (k, e) => MapEntry(
       k,
       (e as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, Map<String, int>.from(e as Map)),
+        (k, e) => MapEntry(k, ShiftDto.fromJson(e as Map<String, dynamic>)),
       ),
     ),
   ),
@@ -21,7 +21,7 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(
     (k, e) => MapEntry(
       k,
       (e as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, Map<String, int>.from(e as Map)),
+        (k, e) => MapEntry(k, ShiftDto.fromJson(e as Map<String, dynamic>)),
       ),
     ),
   ),
@@ -47,9 +47,6 @@ LamodaEntityDto _$LamodaEntityDtoFromJson(
   nttWorksSet: (json['nttWorksSet'] as List<dynamic>)
       .map((e) => e as String)
       .toSet(),
-  uncnownPenalties: (json['uncnownPenalties'] as List<dynamic>)
-      .map((e) => e as String)
-      .toSet(),
 );
 
 Map<String, dynamic> _$LamodaEntityDtoToJson(LamodaEntityDto instance) =>
@@ -60,5 +57,4 @@ Map<String, dynamic> _$LamodaEntityDtoToJson(LamodaEntityDto instance) =>
       'lamodaEmployees': instance.lamodaEmployees,
       'worksSet': instance.worksSet.toList(),
       'nttWorksSet': instance.nttWorksSet.toList(),
-      'uncnownPenalties': instance.uncnownPenalties.toList(),
     };

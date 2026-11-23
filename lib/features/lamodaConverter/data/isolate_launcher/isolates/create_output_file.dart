@@ -4,8 +4,8 @@ import 'package:excel_plus/excel_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:isolate_manager/isolate_manager.dart';
 
-import '../../../domain/entity/amount_price.dart';
 import '../../../domain/entity/lamoda_entity.dart';
+import '../../../domain/entity/shift.dart';
 import '../../../domain/entity/shift_time.dart';
 import '../../../domain/entity/typedefs.dart';
 import '../../dto/create_output_dto.dart';
@@ -249,18 +249,16 @@ void _fillOutSheetFromDate({
     );
 
     if (workerShifts != null) {
-      for (final MapEntry<String, Works> workerShift in workerShifts.entries) {
+      for (final MapEntry<String, Shift> workerShift in workerShifts.entries) {
         final String login = workerShift.key;
         final int indexOflogin = logins.indexOf(login);
-
-        final double? penalty = _getPenalty(shiftTime, login, lamodaEntity.lamodaPenalties);
 
         _formRow(
           sheet: sheet,
           row: row++,
           shiftTime: shiftTime,
           login: login,
-          works: workerShift.value,
+          works: workerShift.value.works,
           workNames: workNames,
           nttWorkNames: nttWorkNames,
           day: strings.day,
@@ -268,7 +266,7 @@ void _fillOutSheetFromDate({
           employeeDetails: strings.employeeDetails,
           indexOflogin: indexOflogin,
           tariffsDates: tariffsDates,
-          penalty: penalty
+          penalty: workerShift.value.penalty,
         );
       }
     }
@@ -525,14 +523,20 @@ WorkerShifts? _mergeWorkerShifts(WorkerShifts? wShiftsA, WorkerShifts? wShiftsB)
   if (wShiftsA == null) return wShiftsB;
   if (wShiftsB == null) return wShiftsA;
 
-  for (final MapEntry<String, Works> wShiftA in wShiftsA.entries) {
-    final Works? works = wShiftsB[wShiftA.key];
-    if (works != null) {
-      wShiftsA[wShiftA.key]?.addAll(works);
+  for (final MapEntry<String, Shift> wShiftA in wShiftsA.entries) {
+    final Shift? shiftB = wShiftsB[wShiftA.key];
+    if (shiftB != null) {
+      final Works worksA = wShiftA.value.works;
+      worksA.addAll(shiftB.works);
+      final Shift newShiftA = Shift(
+        works: worksA,
+        penalty: wShiftA.value.penalty + shiftB.penalty,
+      );
+      wShiftsA[wShiftA.key] = newShiftA;
     }
   }
 
-  for (final MapEntry<String, Works> wShiftB in wShiftsB.entries) {
+  for (final MapEntry<String, Shift> wShiftB in wShiftsB.entries) {
     wShiftsA.putIfAbsent(wShiftB.key, ()=>wShiftB.value);
   }
 
@@ -565,20 +569,20 @@ String _accruedPerShiftFormula({
   return list.join('+');
 }
 
-double? _getPenalty(ShiftTime shiftTime, String login, LamodaPenalties lamodaPenalties) {
-  final WorkerPenalties? workerPenalties = lamodaPenalties[shiftTime];
-  if (workerPenalties == null) return null;
+// double? _getPenalty(ShiftTime shiftTime, String login, LamodaPenalties lamodaPenalties) {
+//   final WorkerPenalties? workerPenalties = lamodaPenalties[shiftTime];
+//   if (workerPenalties == null) return null;
 
-  final Penalties? penalties = workerPenalties[login];
-  if (penalties == null) return null;
+//   final Penalties? penalties = workerPenalties[login];
+//   if (penalties == null) return null;
 
-  double penalty = 0;
-  for (final AmountPrice amountPrice in penalties.values) {
-    penalty += amountPrice.amount * (amountPrice.price ?? 0);
-  }
+//   double penalty = 0;
+//   for (final AmountPrice amountPrice in penalties.values) {
+//     penalty += amountPrice.amount * (amountPrice.price ?? 0);
+//   }
 
-  return penalty > 0 ? penalty : null;
-}
+//   return penalty > 0 ? penalty : null;
+// }
 
 bool _isSameDay(DateTime a, DateTime b) => 
   a.year == b.year && a.month == b.month && a.day == b.day;
